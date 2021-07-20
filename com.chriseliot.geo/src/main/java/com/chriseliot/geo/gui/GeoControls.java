@@ -14,7 +14,6 @@ import com.chriseliot.util.Namer;
 public class GeoControls extends JPanel implements ActionListener
 {
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
-
     private final Geo geo;
     private final JCheckBox select = new JCheckBox ("Select", false);
     private final JCheckBox line = new JCheckBox ("Line", true);
@@ -28,10 +27,16 @@ public class GeoControls extends JPanel implements ActionListener
     private final JButton debug = new JButton ("Debug");
     private final JButton quit = new JButton ("Quit");
 
-    public GeoControls (Geo geo)
+    /**
+     * Create the control panel.
+     *
+     * @param geo The application window.
+     * @param preview Control showing "preview" features that are not ready for release.
+     */
+    public GeoControls (Geo geo, boolean preview)
     {
         this.geo = geo;
-        setPreferredSize (new Dimension (700, 100));
+        setPreferredSize (new Dimension (700, 75));
         final ButtonGroup group = new ButtonGroup ();
         group.add (select);
         group.add (line);
@@ -39,14 +44,18 @@ public class GeoControls extends JPanel implements ActionListener
         group.add (oval);
         add (select);
         add (line);
-        add (rectangle);
-        add (oval);
-        add (color);
-        add (backColor);
+        if (preview)
+        {
+            add (rectangle);
+            add (oval);
+            add (color);
+            add (backColor);
+            add (debug);
+        }
+
         add (clear);
         add (expandAll);
         add (unknownAll);
-        add (debug);
         add (quit);
         color.addActionListener (this);
         backColor.addActionListener (this);

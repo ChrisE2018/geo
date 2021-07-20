@@ -38,7 +38,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
     private final GeoSolution solution = new GeoSolution (plane);
 
     private final JFrame frame = new JFrame ("Geometry Solver");
-    private final GeoControls controls = new GeoControls (this);
+    private final GeoControls controls = new GeoControls (this, false);
     private final JTable solutionTable = new JTable (solution);
     private final JScrollPane solutionScroll =
         new JScrollPane (solutionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

@@ -33,7 +33,7 @@ public class GeoLine extends GeoItem
      * plane, but straight down using screen coordinates. As it rotates clockwise the angle
      * increases.
      */
-    private final NamedVariable angle;
+    private final AngleVariable angle;
 
     /** Delta x from the endpoint to the start of this line segment. The value may be negative. */
     private final NamedVariable dx;
@@ -55,7 +55,7 @@ public class GeoLine extends GeoItem
         // Midpoint should be draggable, but should move the line to a parallel location.
         midpoint = new TransposePoint (this, true, Color.blue, name + SEP + "M", (from.x + to.x) / 2, (from.y + to.y) / 2,
                 SwingConstants.SOUTH_WEST);
-        angle = new NamedVariable (midpoint, color, name + SEP + "angle");
+        angle = new AngleVariable (midpoint, color, name + SEP + "angle");
         dx = new NamedVariable (midpoint, color, name + SEP + "dx");
         dy = new NamedVariable (midpoint, color, name + SEP + "dy");
         length = new NamedVariable (midpoint, color, name + SEP + "length");
@@ -86,7 +86,7 @@ public class GeoLine extends GeoItem
      * plane, but straight down using screen coordinates. As it rotates clockwise the angle
      * increases.
      */
-    public NamedVariable getAngle ()
+    public AngleVariable getAngle ()
     {
         return angle;
     }

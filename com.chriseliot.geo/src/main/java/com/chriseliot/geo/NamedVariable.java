@@ -341,8 +341,9 @@ public class NamedVariable extends GeoItem
     @Override
     public void setValueAction ()
     {
-        final String result = JOptionPane.showInputDialog (null, String.format ("Enter new value for %s (%s)", getName (), value),
-                "Input Value", JOptionPane.QUESTION_MESSAGE);
+        final String message = (value == null) ? String.format ("Enter new value for %s", getName ())
+                                               : String.format ("Enter new value for %s (%s)", getName (), value);
+        final String result = JOptionPane.showInputDialog (null, message, "Input Value", JOptionPane.QUESTION_MESSAGE);
         if (result != null)
         {
             setValueAction (Double.parseDouble (result));
@@ -368,7 +369,6 @@ public class NamedVariable extends GeoItem
                 p.setValueAction (new Point2D.Double (p.getX ().getDoubleValue (), result));
             }
         }
-
     }
 
     @Override

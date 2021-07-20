@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="ConsoleAppender" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} [%-5level] %logger{36}(%L) - %msg%n" />
+		</Console>
+		<File name="FileAppender"
+			fileName="${sys:user.home}/Documents/foe/logs-${date:yyyy}/foelogs-${date:yyyy-MM}/foe-${date:yyyyMMdd}.log"
+			immediateFlush="true" append="true" bufferedIO="true">
+			<PatternLayout
+				pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger{36}(%L) - %msg%n" />
+		</File>
+		<File name="EyeFileAppender"
+			fileName="${sys:user.home}/Documents/foe/logs-${date:yyyy}/eyelogs-${date:yyyy-MM}/eye-${date:yyyyMMdd}.log"
+			immediateFlush="true" append="true" bufferedIO="true">
+			<PatternLayout
+				pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger{36}(%L) - %msg%n" />
+		</File>
+	</Appenders>
+	<Loggers>
+		<logger name="com.empiremaster.eye" level="info" additivity="false">
+			<AppenderRef ref="EyeFileAppender" />
+			<AppenderRef ref="ConsoleAppender" />
+		</logger>
+		<Root level="debug">
+			<AppenderRef ref="ConsoleAppender" />
+			<AppenderRef ref="FileAppender" />
+		</Root>
+	</Loggers>
+</Configuration>

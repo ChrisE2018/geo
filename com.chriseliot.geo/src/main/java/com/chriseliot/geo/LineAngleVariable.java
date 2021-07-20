@@ -8,14 +8,14 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JOptionPane;
 
-public class AngleVariable extends NamedVariable
+public class LineAngleVariable extends NamedVariable
 {
-    public AngleVariable (GeoItem parent, Color color, String name, Double value)
+    public LineAngleVariable (GeoItem parent, Color color, String name, Double value)
     {
         super (parent, color, name, value);
     }
 
-    public AngleVariable (GeoItem parent, Color color, String name)
+    public LineAngleVariable (GeoItem parent, Color color, String name)
     {
         super (parent, color, name);
     }
@@ -24,17 +24,7 @@ public class AngleVariable extends NamedVariable
     @Override
     public boolean canSetValue ()
     {
-
-        final GeoItem parent = getParent ();
-        if (parent instanceof NamedPoint)
-        {
-            final GeoItem grandParent = parent.getParent ();
-            if (grandParent instanceof GeoLine)
-            {
-                return ((GeoLine)grandParent).getAngle () == this;
-            }
-        }
-        return false;
+        return true;
     }
 
     /** Action to perform for a set value action. */
@@ -59,25 +49,19 @@ public class AngleVariable extends NamedVariable
     public void setValueAction (double result)
     {
         final GeoItem parent = getParent ();
-        if (parent instanceof NamedPoint)
-        {
-            final GeoItem grandParent = parent.getParent ();
-            if (grandParent instanceof GeoLine && this == ((GeoLine)grandParent).getAngle ())
-            {
-                final double radians = toRadians (result);
-                // Compute rotation around midpoint to make the new angle
-                final GeoLine p = (GeoLine)grandParent;
-                final double length = p.getLength ().getDoubleValue ();
-                final double l2 = length / 2;
-                final double bx = l2 * sin (radians);
-                final double by = l2 * cos (radians);
-                final NamedPoint m = p.getMidpoint ();
-                final double mx = m.getPosition ().x;
-                final double my = m.getPosition ().y;
-                p.getFrom ().setValueAction (new Point2D.Double (mx - bx, my - by));
-                p.getTo ().setValueAction (new Point2D.Double (mx + bx, my + by));
-            }
-        }
+        final GeoItem grandParent = parent.getParent ();
+        final GeoLine p = (GeoLine)grandParent;
+        // Compute rotation around midpoint to make the new angle
+        final double radians = toRadians (result);
+        final double length = p.getLength ().getDoubleValue ();
+        final double l2 = length / 2;
+        final double bx = l2 * sin (radians);
+        final double by = l2 * cos (radians);
+        final NamedPoint m = p.getMidpoint ();
+        final double mx = m.getPosition ().x;
+        final double my = m.getPosition ().y;
+        p.getFrom ().setValueAction (new Point2D.Double (mx - bx, my - by));
+        p.getTo ().setValueAction (new Point2D.Double (mx + bx, my + by));
     }
 
     @Override

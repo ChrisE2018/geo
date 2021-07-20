@@ -383,6 +383,29 @@ public class GeoPlane
         return result;
     }
 
+    public void drag (Point2D.Double from, Point2D.Double to)
+    {
+        final List<NamedPoint> dragged = getDragPoints (from);
+        logger.info ("Drag %d items from %s to %s", dragged.size (), from, to);
+        for (final NamedPoint p : dragged)
+        {
+            /*
+             * Need to find the associated shape and move the whole object. For a line, this means
+             * moving the midpoint. For a rectangle it means moving the connected sides. For a
+             * circle it means adjusting the radius and diameter.
+             *
+             * This needs to also adjust the x, y of the point
+             */
+            logger.info ("Drag %s to %s", p, to);
+            p.drag (to);
+        }
+        for (final NamedPoint p : dragged)
+        {
+            p.getParent ().recalculate ();
+        }
+        fireChangeListeners ();
+    }
+
     /**
      * Determine the object clicked on and return the part that was clicked. The part will be a
      * NamedPoint. Each item must create its parts and add them to the internal list. If the mouse

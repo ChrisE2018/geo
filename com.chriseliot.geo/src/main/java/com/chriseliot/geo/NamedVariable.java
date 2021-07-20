@@ -2,6 +2,7 @@
 package com.chriseliot.geo;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.*;
 
 import javax.swing.*;
@@ -326,6 +327,13 @@ public class NamedVariable extends GeoItem
     @Override
     public boolean canSetValue ()
     {
+
+        final GeoItem parent = getParent ();
+        if (parent instanceof NamedPoint)
+        {
+            final NamedPoint p = (NamedPoint)parent;
+            return this == p.getX () || this == p.getY ();
+        }
         return false;
     }
 
@@ -335,19 +343,32 @@ public class NamedVariable extends GeoItem
     {
         final String result = JOptionPane.showInputDialog (null, String.format ("Enter new value for %s (%s)", getName (), value),
                 "Input Value", JOptionPane.QUESTION_MESSAGE);
-        setValueAction (result);
-    }
-
-    /** Action to take when the dialog returns. */
-    public void setValueAction (String result)
-    {
         if (result != null)
         {
-            value = Double.parseDouble (result);
-            setGivenStatus (GeoStatus.fixed);
-            recalculate ();
-            solve ();
+            setValueAction (Double.parseDouble (result));
         }
+    }
+
+    /**
+     * Action to take when the dialog returns. This only works for variables that are x or y of a
+     * named point. If calls the point to make the adjustment.
+     */
+    public void setValueAction (double result)
+    {
+        final GeoItem parent = getParent ();
+        if (parent instanceof NamedPoint)
+        {
+            final NamedPoint p = (NamedPoint)parent;
+            if (this == p.getX ())
+            {
+                p.setValueAction (new Point2D.Double (result, p.getY ().getDoubleValue ()));
+            }
+            else
+            {
+                p.setValueAction (new Point2D.Double (p.getX ().getDoubleValue (), result));
+            }
+        }
+
     }
 
     @Override

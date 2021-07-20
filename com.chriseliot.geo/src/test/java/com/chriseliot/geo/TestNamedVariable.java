@@ -158,8 +158,7 @@ public class TestNamedVariable
         assertFalse (item.canShowDerivation ());
         assertFalse (parent.canShowDerivation ());
         assertEquals (v.getStatus () == GeoStatus.derived, v.canShowDerivation ());
-        assertFalse (v.canSetValue ());
-        assertFalse (parent.canSetValue ());
+        assertEquals (v == parent.getX () || v == parent.getY (), v.canSetValue ());
     }
 
     /**
@@ -204,8 +203,7 @@ public class TestNamedVariable
         thread.isRunning = true;
         thread.start ();
         v.setValueAction ();
-        v.setValueAction (null);
-        v.setValueAction ("45");
+        v.setValueAction (45);
         thread.isRunning = false;
         thread.dream (10);
         System.out.printf ("Derivation dialog returns\n");

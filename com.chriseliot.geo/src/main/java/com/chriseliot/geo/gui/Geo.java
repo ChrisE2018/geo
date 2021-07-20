@@ -6,7 +6,6 @@ import static java.lang.Math.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -342,22 +341,23 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
             // This could be a switch but it is more compact as an if-then-else chain.
             if (geoShape == GeoShape.select)
             {
-                final List<NamedPoint> dragged = plane.getDragPoints (c);
-                logger.info ("Drag %d items from %s to %s", dragged.size (), c, d);
-                for (final NamedPoint p : dragged)
-                {
-                    /*
-                     * Need to find the associated shape and move the whole object. For a line, this
-                     * means moving the midpoint. For a rectangle it means moving the connected
-                     * sides. For a circle it means adjusting the radius and diameter.
-                     */
-                    logger.info ("Drag %s to %s", p, d);
-                    p.drag (d);
-                }
-                for (final NamedPoint p : dragged)
-                {
-                    p.getParent ().recalculate ();
-                }
+                plane.drag (c, d);
+                // final List<NamedPoint> dragged = plane.getDragPoints (c);
+                // logger.info ("Drag %d items from %s to %s", dragged.size (), c, d);
+                // for (final NamedPoint p : dragged)
+                // {
+                // /*
+                // * Need to find the associated shape and move the whole object. For a line, this
+                // * means moving the midpoint. For a rectangle it means moving the connected
+                // * sides. For a circle it means adjusting the radius and diameter.
+                // */
+                // logger.info ("Drag %s to %s", p, d);
+                // p.drag (d);
+                // }
+                // for (final NamedPoint p : dragged)
+                // {
+                // p.getParent ().recalculate ();
+                // }
             }
             else if (geoShape == GeoShape.line)
             {
@@ -468,6 +468,6 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
             popup.add (showDerivation);
         }
         popup.show (this, p.x, p.y);
-        return false;
+        return true;
     }
 }

@@ -132,6 +132,7 @@ public class GeoLine extends GeoItem
             // delete itself and cause a ConcurrentModificationException
             v.recalculate ();
         }
+        midpoint.recalculate ();
         // Now look for newly created vertices
         final GeoPlane plane = getPlane ();
         final List<GeoItem> items = new ArrayList<> ();

@@ -6,6 +6,8 @@ import static java.lang.Math.round;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
+import javax.swing.*;
+
 import com.chriseliot.util.Labels;
 
 public class NamedPoint extends GeoItem
@@ -108,6 +110,7 @@ public class NamedPoint extends GeoItem
     public void drag (Point2D.Double d)
     {
         position = d;
+        recalculate ();
     }
 
     /**
@@ -122,6 +125,13 @@ public class NamedPoint extends GeoItem
     public Point getIntPosition ()
     {
         return new Point ((int)round (position.x), (int)round (position.y));
+    }
+
+    @Override
+    public void recalculate ()
+    {
+        x.setDoubleValue (position.x);
+        y.setDoubleValue (position.y);
     }
 
     /**
@@ -239,6 +249,39 @@ public class NamedPoint extends GeoItem
         final String text = (getStatus () != GeoStatus.derived) ? getName () : getName () + "*";
         final String tooltip = String.format ("%s <%.1f %.1f>", getName (), pos.x, pos.y);
         labels.add (this, color, position, anchor, text, tooltip);
+    }
+
+    /** Should a popup menu on this item include a set value item. */
+    @Override
+    public boolean canSetValue ()
+    {
+        return true;
+    }
+
+    /**
+     * Action to perform for a set value action.
+     *
+     * @see https://stackoverflow.com/questions/6555040/multiple-input-in-joptionpane-showinputdialog/6555051
+     */
+    @Override
+    public void setValueAction ()
+    {
+        final JTextField xField = new JTextField (String.format ("%.3f", x.getDoubleValue ()));
+        final JTextField yField = new JTextField (String.format ("%.3f", y.getDoubleValue ()));
+        final Object[] message = {"X:", xField, "Y:", yField};
+
+        final int option = JOptionPane.showConfirmDialog (null, message, "Set Position", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION)
+        {
+            final double resultX = Double.parseDouble (xField.getText ());
+            final double resultY = Double.parseDouble (yField.getText ());
+            setValueAction (new Point2D.Double (resultX, resultY));
+        }
+    }
+
+    public void setValueAction (Point2D.Double result)
+    {
+        getPlane ().drag (position, result);
     }
 
     @Override

@@ -175,17 +175,14 @@ public class NamedVariable extends GeoItem
         for (final String t : terms)
         {
             final NamedVariable ti = (NamedVariable)getPlane ().get (t);
-            if (ti != this)
+            final String f = ti.getFormula ();
+            if (f != null)
             {
-                final String f = ti.getFormula ();
-                if (f != null)
+                chain.add (f);
+                roots.add (getName ());
+                if (ti != this)
                 {
-                    chain.add (f);
-                    roots.add (getName ());
-                    if (ti != this)
-                    {
-                        ti.getDerivationChain (chain, roots);
-                    }
+                    ti.getDerivationChain (chain, roots);
                 }
             }
         }

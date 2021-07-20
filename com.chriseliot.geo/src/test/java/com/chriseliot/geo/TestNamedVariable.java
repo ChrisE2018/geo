@@ -157,7 +157,7 @@ public class TestNamedVariable
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
         assertFalse (item.canShowDerivation ());
         assertFalse (parent.canShowDerivation ());
-        assertTrue (v.canShowDerivation ());
+        assertEquals (v.getStatus () == GeoStatus.derived, v.canShowDerivation ());
         assertFalse (v.canSetValue ());
         assertFalse (parent.canSetValue ());
     }

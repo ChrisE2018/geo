@@ -294,8 +294,16 @@ public class NamedPoint extends GeoItem
     @Override
     public void getAttributes (Map<String, Object> result)
     {
-        result.put ("positionx", x.getDoubleValue ());
-        result.put ("positiony", y.getDoubleValue ());
+        result.put ("positionx", position.x);
+        result.put ("positiony", position.y);
+    }
+
+    @Override
+    public void readAttributes (Map<String, String> attributes)
+    {
+        super.readAttributes (attributes);
+        position.x = Double.parseDouble (attributes.get ("positionx"));
+        position.y = Double.parseDouble (attributes.get ("positiony"));
     }
 
     @Override

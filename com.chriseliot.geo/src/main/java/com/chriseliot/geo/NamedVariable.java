@@ -4,6 +4,7 @@ package com.chriseliot.geo;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -385,6 +386,28 @@ public class NamedVariable extends GeoItem
         result.put ("terms", tu.join ("+", terms));
         result.put ("location", location == null ? "" : location.getName ());
         result.put ("location2", location2 == null ? "" : location2.getName ());
+    }
+
+    @Override
+    public void readAttributes (Map<String, String> attributes)
+    {
+        super.readAttributes (attributes);
+        value = Double.parseDouble (attributes.get ("value"));
+        formula = attributes.get ("formula");
+        final String termsAttribute = attributes.get ("terms");
+        final List<String> termList = tu.split (termsAttribute, "+");
+        terms = new String[termList.size ()];
+        termList.toArray (terms);
+        final String locationName = attributes.get ("location");
+        final String location2Name = attributes.get ("location2");
+        if (!locationName.isEmpty ())
+        {
+            location = (NamedPoint)getPlane ().get (locationName);
+        }
+        if (!location2Name.isEmpty ())
+        {
+            location2 = (NamedPoint)getPlane ().get (location2Name);
+        }
     }
 
     @Override

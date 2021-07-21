@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.event.*;
 
@@ -106,12 +107,23 @@ public class GeoPlane
         if (!items.contains (item))
         {
             items.add (item);
-            bindings.put (item.getName (), item);
-            if (item instanceof GeoVertex)
+        }
+        if (bindings.containsValue (item))
+        {
+            final String key = getBindingKey (item);
+            bindings.remove (key);
+        }
+        bindings.put (item.getName (), item);
+        if (item instanceof GeoVertex)
+        {
+            if (!vertices.contains (item))
             {
                 vertices.add ((GeoVertex)item);
             }
-            if (item instanceof GeoTriangle)
+        }
+        if (item instanceof GeoTriangle)
+        {
+            if (!triangles.contains (item))
             {
                 triangles.add ((GeoTriangle)item);
             }
@@ -133,13 +145,40 @@ public class GeoPlane
         return items.contains (item);
     }
 
-    /** Remove an item from the plane. Give the item a chance to remove its children too. */
+    /**
+     * Remove an item from the plane. Give the item a chance to remove its children too. This does
+     * not assume the bindings use the correct name for this item.
+     */
     public void remove (GeoItem item)
     {
         item.remove ();
         items.remove (item);
         vertices.remove (item);
         triangles.remove (item);
+        final String key = getBindingKey (item);
+        if (key != null)
+        {
+            bindings.remove (key);
+        }
+    }
+
+    /**
+     * Find the key used to save this item.
+     *
+     * @param item The item to find.
+     *
+     * @return The key used in the bindings map.
+     */
+    public String getBindingKey (GeoItem item)
+    {
+        for (final Entry<String, GeoItem> entry : bindings.entrySet ())
+        {
+            if (entry.getValue () == item)
+            {
+                return entry.getKey ();
+            }
+        }
+        return null;
     }
 
     /** Make all items deselected. */

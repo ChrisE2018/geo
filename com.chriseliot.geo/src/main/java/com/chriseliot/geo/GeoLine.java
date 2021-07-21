@@ -574,6 +574,7 @@ public class GeoLine extends GeoItem
     @Override
     public void getAttributes (Map<String, Object> result)
     {
+        // Must restore vertices
         result.put ("angle", angle.getDoubleValue ());
         result.put ("length", length.getDoubleValue ());
         result.put ("dx", dx.getDoubleValue ());

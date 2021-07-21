@@ -345,7 +345,7 @@ public class GeoItem
         result.put ("name", name);
         result.put ("parent", parent == null ? null : parent.getName ());
         /** Children of this item. */
-        result.put ("color", String.format ("0x%x", color.getRGB ()));
+        result.put ("color", color.getRGB ());
         result.put ("selected", isSelected);
         result.put ("open", isOpen);
         result.put ("status", status);
@@ -356,12 +356,37 @@ public class GeoItem
 
     /**
      * Get named attributes. Used for saving to a csv file. This method should be overriden by
-     * subclasses.
+     * subclasses. Be sure to call the super class if there are method overrides.
      *
      * @param result Map to store attributes.
      */
     public void getAttributes (Map<String, Object> result)
     {
+    }
+
+    /**
+     * Restore attributes after reading. Be sure to call super.readAttributes (attributes); from
+     * method overrides.
+     *
+     * @param attributes The attributes to set for this item.
+     */
+    public void readAttributes (Map<String, String> attributes)
+    {
+        name = attributes.get ("name");
+        // final String parentName = attributes.get ("parent");
+        // if (!parentName.isEmpty ())
+        // {
+        // parent = plane.get (parentName);
+        // }
+        color = new Color (Integer.parseInt (attributes.get ("color"), 16));
+        isSelected = Boolean.parseBoolean (attributes.get ("selected"));
+        isOpen = Boolean.parseBoolean (attributes.get ("open"));
+        status = GeoStatus.valueOf (attributes.get ("status"));
+        reason = attributes.get ("reason");
+
+        // Update binding map
+        plane.remove (this);
+        plane.addItem (this);
     }
 
     @Override

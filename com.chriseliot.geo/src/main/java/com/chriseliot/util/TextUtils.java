@@ -100,6 +100,19 @@ public class TextUtils
         }
     }
 
+    /** Simple split function that does not involve complex patterns. */
+    public List<String> split (String haystack, String punctuation)
+    {
+        final List<String> result = new ArrayList<> ();
+        final StringTokenizer tokens = new StringTokenizer (haystack, punctuation);
+        while (tokens.hasMoreTokens ())
+        {
+            final String token = tokens.nextToken ();
+            result.add (token);
+        }
+        return result;
+    }
+
     /**
      * Determine if some word ends with a search string.
      *

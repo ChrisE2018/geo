@@ -5,7 +5,7 @@ import static java.lang.Math.*;
 
 import java.awt.*;
 import java.awt.geom.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import javax.swing.SwingConstants;
@@ -563,6 +563,21 @@ public class GeoLine extends GeoItem
         gg.setStroke (new BasicStroke (size));
         g.drawLine (a.x, a.y, b.x, b.y);
         gg.setStroke (stroke);
+    }
+
+    /**
+     * Get named attributes. Used for saving to a csv file. This method should be overriden by
+     * subclasses.
+     *
+     * @param result Map to store attributes.
+     */
+    @Override
+    public void getAttributes (Map<String, Object> result)
+    {
+        result.put ("angle", angle.getDoubleValue ());
+        result.put ("length", length.getDoubleValue ());
+        result.put ("dx", dx.getDoubleValue ());
+        result.put ("dy", dy.getDoubleValue ());
     }
 
     @Override

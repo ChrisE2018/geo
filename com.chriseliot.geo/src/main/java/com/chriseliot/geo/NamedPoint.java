@@ -5,6 +5,7 @@ import static java.lang.Math.round;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -282,6 +283,19 @@ public class NamedPoint extends GeoItem
     public void setValueAction (Point2D.Double result)
     {
         getPlane ().drag (position, result);
+    }
+
+    /**
+     * Get named attributes. Used for saving to a csv file. This method should be overriden by
+     * subclasses.
+     *
+     * @param result Map to store attributes.
+     */
+    @Override
+    public void getAttributes (Map<String, Object> result)
+    {
+        result.put ("positionx", x.getDoubleValue ());
+        result.put ("positiony", y.getDoubleValue ());
     }
 
     @Override

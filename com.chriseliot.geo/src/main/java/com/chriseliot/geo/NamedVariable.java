@@ -371,6 +371,22 @@ public class NamedVariable extends GeoItem
         }
     }
 
+    /**
+     * Get named attributes. Used for saving to a csv file. This method should be overriden by
+     * subclasses.
+     *
+     * @param result Map to store attributes.
+     */
+    @Override
+    public void getAttributes (Map<String, Object> result)
+    {
+        result.put ("value", value);
+        result.put ("formula", formula);
+        result.put ("terms", tu.join ("+", terms));
+        result.put ("location", location == null ? "" : location.getName ());
+        result.put ("location2", location2 == null ? "" : location2.getName ());
+    }
+
     @Override
     public String toString ()
     {

@@ -29,6 +29,29 @@ public class TextUtils
     }
 
     /**
+     * Join an array of strings with punctuation in the middle. Inspired by Python List.join method.
+     *
+     * @param punctuation The punctuation to put between words.
+     * @param haystack Array of words. May be empty.
+     *
+     * @return All words joined with punctuation in between.
+     */
+    public String join (String punctuation, String[] haystack)
+    {
+        final StringBuilder builder = new StringBuilder ();
+        if (haystack.length > 0)
+        {
+            builder.append (haystack[0]);
+            for (int i = 1; i < haystack.length; i++)
+            {
+                builder.append (punctuation);
+                builder.append (haystack[i]);
+            }
+        }
+        return builder.toString ();
+    }
+
+    /**
      * Join a list of strings with punctuation in the middle. Inspired by Python List.join method.
      *
      * @param punctuation The punctuation to put between words.

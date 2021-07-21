@@ -3,6 +3,7 @@ package com.chriseliot.geo.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 import javax.swing.*;
 
@@ -25,6 +26,8 @@ public class GeoControls extends JPanel implements ActionListener
     private final JButton expandAll = new JButton ("Expand All");
     private final JButton unknownAll = new JButton ("Unknown All");
     private final JButton debug = new JButton ("Debug");
+    private final JButton save = new JButton ("Save");
+    private final JButton read = new JButton ("Read");
     private final JButton quit = new JButton ("Quit");
 
     /**
@@ -56,6 +59,8 @@ public class GeoControls extends JPanel implements ActionListener
         add (clear);
         add (expandAll);
         add (unknownAll);
+        add (save);
+        add (read);
         add (quit);
         color.addActionListener (this);
         backColor.addActionListener (this);
@@ -63,6 +68,8 @@ public class GeoControls extends JPanel implements ActionListener
         expandAll.addActionListener (this);
         unknownAll.addActionListener (this);
         debug.addActionListener (this);
+        save.addActionListener (this);
+        read.addActionListener (this);
         quit.addActionListener (this);
     }
 
@@ -121,6 +128,18 @@ public class GeoControls extends JPanel implements ActionListener
     public void actionPerformed (ActionEvent e)
     {
         final Object source = e.getSource ();
+        try
+        {
+            doAction (source);
+        }
+        catch (final IOException ex)
+        {
+            ex.printStackTrace ();
+        }
+    }
+
+    private void doAction (Object source) throws UnsupportedEncodingException, FileNotFoundException, IOException
+    {
         if (source == color)
         {
             logger.info ("Color");
@@ -165,6 +184,14 @@ public class GeoControls extends JPanel implements ActionListener
                     logger.info ("Vertex: %s", item);
                 }
             }
+        }
+        else if (source == save)
+        {
+            geo.save ();
+        }
+        else if (source == read)
+        {
+            geo.read ();
         }
         else if (source == quit)
         {

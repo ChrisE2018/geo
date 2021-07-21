@@ -3,7 +3,7 @@ package com.chriseliot.geo;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import com.chriseliot.util.*;
@@ -333,6 +333,34 @@ public class GeoItem
 
     /** Action to perform for a show derivation action. */
     public void showDerivationAction ()
+    {
+    }
+
+    /** Get named attributes. Used for saving to a csv file. */
+    public Map<String, Object> getAttributes ()
+    {
+        final Map<String, Object> result = new LinkedHashMap<> ();
+        result.put ("classname", getClass ().getCanonicalName ());
+
+        result.put ("name", name);
+        result.put ("parent", parent == null ? null : parent.getName ());
+        /** Children of this item. */
+        result.put ("color", String.format ("0x%x", color.getRGB ()));
+        result.put ("selected", isSelected);
+        result.put ("open", isOpen);
+        result.put ("status", status);
+        result.put ("reason", reason);
+        getAttributes (result);
+        return result;
+    }
+
+    /**
+     * Get named attributes. Used for saving to a csv file. This method should be overriden by
+     * subclasses.
+     *
+     * @param result Map to store attributes.
+     */
+    public void getAttributes (Map<String, Object> result)
     {
     }
 

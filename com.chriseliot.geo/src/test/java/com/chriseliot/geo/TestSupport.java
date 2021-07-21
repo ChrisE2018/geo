@@ -49,7 +49,7 @@ public class TestSupport
                 final String var = terms[i];
                 final GeoItem item = plane.get (var);
                 assertNotNull (item);
-                assertEquals (NamedVariable.class, item.getClass ());
+                assertTrue (item instanceof NamedVariable);
                 final NamedVariable nn = (NamedVariable)item;
                 eval.defineVariable (var, nn.getDoubleValue ());
                 if (trace != null)
@@ -58,6 +58,7 @@ public class TestSupport
                 }
             }
             final IExpr expr = eval.parse (formula);
+            assertNotEquals ("true", expr.toString ());
             final IExpr f = expr.getAt (2);
             final double value = eval.evalf (f);
             if (trace != null)

@@ -6,6 +6,9 @@ import static java.lang.Math.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.io.*;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -14,6 +17,7 @@ import org.apache.logging.log4j.*;
 
 import com.chriseliot.geo.*;
 import com.chriseliot.util.*;
+import com.opencsv.*;
 
 /**
  * Toplevel Geometry calculator.
@@ -32,6 +36,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         geo.open ();
     }
 
+    private final TextUtils tu = new TextUtils ();
     /** Storage for all geometry items. */
     private final GeoPlane plane = new GeoPlane ();
     private final GeoSolution solution = new GeoSolution (plane);
@@ -469,5 +474,96 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         }
         popup.show (this, p.x, p.y);
         return true;
+    }
+
+    /**
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws UnsupportedEncodingException
+     *
+     * @see https://www.codejava.net/java-se/swing/show-save-file-dialog-using-jfilechooser
+     * @see https://stackoverflow.com/questions/2885173/how-do-i-create-a-file-and-write-to-it
+     */
+    public void save () throws UnsupportedEncodingException, FileNotFoundException, IOException
+    {
+        final JFileChooser fileChooser = new JFileChooser ();
+        fileChooser.setDialogTitle ("Save geometry to file");
+
+        final int userSelection = fileChooser.showSaveDialog (frame);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION)
+        {
+            final File file = fileChooser.getSelectedFile ();
+            logger.info ("Saving to %s", file.getAbsolutePath ());
+            try (CSVWriter stream = new CSVWriter (new OutputStreamWriter (new FileOutputStream (file), "utf-8")))
+            {
+
+                final Set<String> keys = new TreeSet<> ();
+                for (final GeoItem item : plane.getItems ())
+                {
+                    final Map<String, Object> attributes = item.getAttributes ();
+                    keys.addAll (attributes.keySet ());
+                }
+                final String[] header = new String[keys.size ()];
+                keys.toArray (header);
+                stream.writeNext (header);
+                for (final GeoItem item : plane.getItems ())
+                {
+                    final Map<String, Object> attributes = item.getAttributes ();
+                    // We need to match the order of the keys which are in a sorted TreeSet.
+                    final List<String> values = new ArrayList<> ();
+                    for (final String key : keys)
+                    {
+                        final Object value = attributes.get (key);
+                        if (value == null)
+                        {
+                            values.add ("");
+                        }
+                        else
+                        {
+                            values.add (value.toString ());
+                        }
+                    }
+                    final String[] data = new String[keys.size ()];
+                    values.toArray (data);
+                    stream.writeNext (data);
+                }
+            }
+        }
+    }
+
+    /**
+     * @see https://www.codejava.net/java-se/swing/show-simple-open-file-dialog-using-jfilechooser
+     */
+    public void read ()
+    {
+        final JFileChooser fileChooser = new JFileChooser ();
+        fileChooser.setCurrentDirectory (new File (System.getProperty ("user.home")));
+        final int result = fileChooser.showOpenDialog (this);
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            final File file = fileChooser.getSelectedFile ();
+            System.out.println ("Selected file: " + file.getAbsolutePath ());
+
+            try
+            {
+                // parsing a CSV file into CSVReader class constructor
+                final CSVReader reader = new CSVReader (new FileReader (file));
+                String[] nextLine;
+                // reads one line at a time
+                while ((nextLine = reader.readNext ()) != null)
+                {
+                    for (final String token : nextLine)
+                    {
+                        System.out.print (token);
+                    }
+                    System.out.print ("\n");
+                }
+            }
+            catch (final Exception e)
+            {
+                e.printStackTrace ();
+            }
+        }
     }
 }

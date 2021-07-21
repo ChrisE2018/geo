@@ -48,19 +48,19 @@ public class GeoTriangle extends GeoItem
      * Angle of vertex 3 (degrees). This is the angle from line3 to line1. Opposite l1. This is at
      * the same corner as vertex v1.
      */
-    private final NamedVariable angle1;
+    private final TriangleAngleVariable angle1;
 
     /**
      * Angle of vertex 3 (degrees). This is the angle from line1 to line2. Opposite l2. This is at
      * the same corner as vertex v2.
      */
-    private final NamedVariable angle2;
+    private final TriangleAngleVariable angle2;
 
     /**
      * Angle of vertex 2 (degrees). This is the angle from line2 to line3. Opposite l3. This is at
      * the same corner as vertex v3.
      */
-    private final NamedVariable angle3;
+    private final TriangleAngleVariable angle3;
 
     public GeoTriangle (GeoPlane plane, Color color, GeoVertex iv1, GeoVertex iv2, GeoVertex iv3)
     {
@@ -89,13 +89,13 @@ public class GeoTriangle extends GeoItem
         l3.setLocation (v1.getVertex (), v2.getVertex ());
 
         // Angle opposite vertex 1 is angle between side l3 and l2.
-        angle1 = new NamedVariable (this, color, name + SEP + "angle1",
+        angle1 = new TriangleAngleVariable (this, color, name + SEP + "angle1",
                 theta (l3.getDoubleValue (), l2.getDoubleValue (), l1.getDoubleValue ()));
         // Angle opposite vertex 2 is angle between side l1 and l3.
-        angle2 = new NamedVariable (this, color, name + SEP + "angle2",
+        angle2 = new TriangleAngleVariable (this, color, name + SEP + "angle2",
                 theta (l1.getDoubleValue (), l3.getDoubleValue (), l2.getDoubleValue ()));
         // Angle opposite vertex 3 is angle between side l1 and l2.
-        angle3 = new NamedVariable (this, color, name + SEP + "angle3",
+        angle3 = new TriangleAngleVariable (this, color, name + SEP + "angle3",
                 theta (l1.getDoubleValue (), l2.getDoubleValue (), l3.getDoubleValue ()));
         angle1.setLocation (v1.getVertex ());
         angle2.setLocation (v2.getVertex ());
@@ -184,28 +184,28 @@ public class GeoTriangle extends GeoItem
     }
 
     /**
-     * Angle of vertex 3 (degrees). This is the angle from line3 to line1. Opposite l1. This is at
+     * Angle of vertex 1 (degrees). This is the angle from line3 to line2. Opposite l1. This is at
      * the same corner as vertex v1.
      */
-    public NamedVariable getAngle1 ()
+    public TriangleAngleVariable getAngle1 ()
     {
         return angle1;
     }
 
     /**
-     * Angle of vertex 3 (degrees). This is the angle from line1 to line2. Opposite l2. This is at
+     * Angle of vertex 2 (degrees). This is the angle from line3 to line1. Opposite l2. This is at
      * the same corner as vertex v2.
      */
-    public NamedVariable getAngle2 ()
+    public TriangleAngleVariable getAngle2 ()
     {
         return angle2;
     }
 
     /**
-     * Angle of vertex 2 (degrees). This is the angle from line2 to line3. Opposite l3. This is at
+     * Angle of vertex 3 (degrees). This is the angle from line1 to line2. Opposite l3. This is at
      * the same corner as vertex v3.
      */
-    public NamedVariable getAngle3 ()
+    public TriangleAngleVariable getAngle3 ()
     {
         return angle3;
     }
@@ -221,12 +221,12 @@ public class GeoTriangle extends GeoItem
     }
 
     /** Get size of all angles (degrees). */
-    public List<NamedVariable> getAngles ()
+    public List<TriangleAngleVariable> getAngles ()
     {
-        final List<NamedVariable> result = new ArrayList<> ();
+        final List<TriangleAngleVariable> result = new ArrayList<> ();
+        result.add (angle1);
         result.add (angle2);
         result.add (angle3);
-        result.add (angle1);
         return result;
     }
 
@@ -237,9 +237,9 @@ public class GeoTriangle extends GeoItem
         result.add (l1);
         result.add (l2);
         result.add (l3);
+        result.add (angle1);
         result.add (angle2);
         result.add (angle3);
-        result.add (angle1);
         return result;
     }
 
@@ -248,15 +248,17 @@ public class GeoTriangle extends GeoItem
     public List<GeoVertex> getVertices ()
     {
         final List<GeoVertex> result = new ArrayList<> ();
+        result.add (v1);
         result.add (v2);
         result.add (v3);
-        result.add (v1);
         return result;
     }
 
     /**
      * Get the length of the first leg next to a vertex. The choice of which leg is first and which
      * is second is arbitrary, but they must be different.
+     *
+     * The index of the side returned is one less (mod 3) than the index of the vertex.
      *
      * @param v The vertex to define the perspective.
      *
@@ -281,9 +283,9 @@ public class GeoTriangle extends GeoItem
 
     /**
      * Get the length of the second leg next to a vertex. The choice of which leg is first and which
-     * is second is arbitrary, but they must be different. This computation is based on assumptions
-     * about how the angles and vertices are sorted by the constructor. If that sorting changes,
-     * these implementations will fail.
+     * is second is arbitrary, but they must be different.
+     *
+     * The index of the side returned is one more (mod 3) than the index of the vertex.
      *
      * @param v The vertex to define the perspective.
      *
@@ -307,13 +309,11 @@ public class GeoTriangle extends GeoItem
     }
 
     /**
-     * Get the length of the second leg opposite to a vertex. This computation is based on
-     * assumptions about how the angles and vertices are sorted by the constructor. If that sorting
-     * changes, these implementations will fail.
+     * Get the length of the side opposite to a vertex.
      *
      * @param v The vertex to define the perspective.
      *
-     * @return The leg opposite the vertex.
+     * @return The side opposite the vertex.
      */
     public NamedVariable getOpposite (GeoVertex v)
     {
@@ -333,9 +333,31 @@ public class GeoTriangle extends GeoItem
     }
 
     /**
-     * Get the vertex opposite a side. This computation is based on assumptions about how the angles
-     * and vertices are sorted by the constructor. If that sorting changes, these implementations
-     * will fail.
+     * Get the length of the side opposite to an angle.
+     *
+     * @param angle The angle to define the perspective.
+     *
+     * @return The side opposite the angle.
+     */
+    public NamedVariable getOpposite (TriangleAngleVariable angle)
+    {
+        if (angle == angle1)
+        {
+            return l1;
+        }
+        if (angle == angle2)
+        {
+            return l2;
+        }
+        if (angle == angle3)
+        {
+            return l3;
+        }
+        return null;
+    }
+
+    /**
+     * Get the vertex opposite a side.
      *
      * @param l The side to determine the perspective.
      *
@@ -359,15 +381,13 @@ public class GeoTriangle extends GeoItem
     }
 
     /**
-     * Get the vertex opposite a side. This computation is based on assumptions about how the angles
-     * and vertices are sorted by the constructor. If that sorting changes, these implementations
-     * will fail.
+     * Get the vertex opposite a side.
      *
      * @param l The side to determine the perspective.
      *
      * @return The opposite vertex.
      */
-    public NamedVariable getOppositeAngle (NamedVariable l)
+    public TriangleAngleVariable getOppositeAngle (NamedVariable l)
     {
         if (l == l1)
         {
@@ -385,15 +405,13 @@ public class GeoTriangle extends GeoItem
     }
 
     /**
-     * Get the angle corresponding with a vertex. This computation is based on assumptions about how
-     * the angles and vertices are sorted by the constructor. If that sorting changes, these
-     * implementations will fail.
+     * Get the angle corresponding with a vertex.
      *
      * @param v The vertex to define the perspective.
      *
      * @return The angle corresponding to the vertex.
      */
-    public NamedVariable getAngle (GeoVertex v)
+    public TriangleAngleVariable getAngle (GeoVertex v)
     {
         if (v == v1)
         {
@@ -411,9 +429,55 @@ public class GeoTriangle extends GeoItem
     }
 
     /**
-     * Compute area of this triangle, as currently drawn on screen. This formula allows a negative
-     * result. Not sure if that is good but right now this is only being used to check if the area
-     * is zero to be sure it really is a triangle so it does not matter.
+     * Get the vertex corresponding with a angle.
+     *
+     * @param angle The angle to define the perspective.
+     *
+     * @return The vertex corresponding to the angle.
+     */
+    public GeoVertex getVertex (TriangleAngleVariable angle)
+    {
+        if (angle == angle1)
+        {
+            return v1;
+        }
+        if (angle == angle2)
+        {
+            return v2;
+        }
+        if (angle == angle3)
+        {
+            return v3;
+        }
+        return null;
+    }
+
+    /** The perimeter of a triangle is the sum of the length of the sides. */
+    public double getPerimeter ()
+    {
+        return l1.getDoubleValue () + l2.getDoubleValue () + l3.getDoubleValue ();
+    }
+
+    /**
+     * Compute area of a triangle using Heron's formula.
+     *
+     * @return The area.
+     *
+     * @see https://www.inchcalculator.com/triangle-height-calculator/
+     */
+    public double getHeronArea ()
+    {
+        final double s = getPerimeter () / 2;
+        final double area2 = s * (s - l1.getDoubleValue ()) * (s - l2.getDoubleValue ()) * (s - l3.getDoubleValue ());
+        return sqrt (area2);
+    }
+
+    /**
+     * Compute area of this triangle, as currently drawn on screen.
+     *
+     * This formula allows a negative result. Not sure if that is good but right now this is only
+     * being used to check if the area is zero to be sure it really is a triangle so it does not
+     * matter.
      */
     public double triangleArea ()
     {
@@ -432,6 +496,22 @@ public class GeoTriangle extends GeoItem
         l1.setDoubleValue (v2.distance (v3));
         l2.setDoubleValue (v3.distance (v1));
         l3.setDoubleValue (v1.distance (v2));
+    }
+
+    /**
+     * The triangle altitude (height) from a base side.
+     *
+     * @param base The perspective. The triangle is sitting with this side on the bottom. We need to
+     *            compute the distance of a line perpendicular from this side to the opposite angle.
+     *
+     * @return The triangle altitude (height).
+     *
+     * @see https://www.inchcalculator.com/triangle-height-calculator/
+     */
+    public double getAltitude (NamedVariable base)
+    {
+        final double area = getHeronArea ();
+        return 2 * area / base.getDoubleValue ();
     }
 
     /**
@@ -585,7 +665,7 @@ public class GeoTriangle extends GeoItem
     }
 
     /** Compute a triangle angle from a vertex angle. */
-    private void angleFromVertex (NamedVariable angle, GeoVertex v)
+    private void angleFromVertex (TriangleAngleVariable angle, GeoVertex v)
     {
         if (!angle.isDetermined ())
         {
@@ -633,7 +713,7 @@ public class GeoTriangle extends GeoItem
      * @param angle The triangle angle to derive the vertex angle from.
      * @param v The vertex to derive.
      */
-    private void vertexFromAngle (NamedVariable angle, GeoVertex v)
+    private void vertexFromAngle (TriangleAngleVariable angle, GeoVertex v)
     {
         if (!v.isDetermined ())
         {
@@ -709,7 +789,7 @@ public class GeoTriangle extends GeoItem
      */
     private void deriveVertexByLawOfCosines (GeoVertex v)
     {
-        final NamedVariable theta = getAngle (v);
+        final TriangleAngleVariable theta = getAngle (v);
         if (!theta.isDetermined ())
         {
             final NamedVariable a = getLeg1 (v);
@@ -749,7 +829,7 @@ public class GeoTriangle extends GeoItem
      */
     private void applyLawOfCosines (GeoVertex v)
     {
-        final NamedVariable theta = getAngle (v);
+        final TriangleAngleVariable theta = getAngle (v);
         if (theta.isDetermined ())
         {
             final NamedVariable a = getLeg1 (v);
@@ -761,7 +841,7 @@ public class GeoTriangle extends GeoItem
         }
     }
 
-    private void applyLawOfCosines (NamedVariable a, NamedVariable b, NamedVariable c, NamedVariable theta)
+    private void applyLawOfCosines (NamedVariable a, NamedVariable b, NamedVariable c, TriangleAngleVariable theta)
     {
         if (!a.isDetermined ())
         {
@@ -793,9 +873,9 @@ public class GeoTriangle extends GeoItem
         final NamedVariable a = l1;
         final NamedVariable b = l2;
         final NamedVariable c = l3;
-        final NamedVariable A = getOppositeAngle (a);
-        final NamedVariable B = getOppositeAngle (b);
-        final NamedVariable C = getOppositeAngle (c);
+        final TriangleAngleVariable A = getOppositeAngle (a);
+        final TriangleAngleVariable B = getOppositeAngle (b);
+        final TriangleAngleVariable C = getOppositeAngle (c);
         if (!a.isDetermined () && A.isDetermined ())
         {
             if (b.isDetermined () && B.isDetermined ())
@@ -843,7 +923,7 @@ public class GeoTriangle extends GeoItem
      *
      * a == (b * sin (A)) / sin (B)
      */
-    private void applyLawOfSines (NamedVariable a, NamedVariable A, NamedVariable b, NamedVariable B)
+    private void applyLawOfSines (NamedVariable a, TriangleAngleVariable A, NamedVariable b, TriangleAngleVariable B)
     {
         a.setFormula ("law of size",
                 "%s == Block({angleA=%s, sideB=%s, angleB=%s}, Return((sideB * Sin (angleA * Degree)) / Sin(angleB * Degree)))",

@@ -72,7 +72,7 @@ public class TestGeoTriangle
         assertTrue (sides.contains (t.getL3 ()));
         assertEquals (3, sides.size ());
 
-        final List<NamedVariable> angles = t.getAngles ();
+        final List<TriangleAngleVariable> angles = t.getAngles ();
         assertTrue (angles.contains (t.getAngle1 ()));
         assertTrue (angles.contains (t.getAngle2 ()));
         assertTrue (angles.contains (t.getAngle3 ()));

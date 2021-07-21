@@ -309,15 +309,16 @@ public class TestGeoPlane
         assertEquals (GeoStatus.unknown, t.getStatus ());
 
         // Two known vertices are enough to solve the triangle
+        // But not if it is just their positions
         p2.setGivenStatus (GeoStatus.known);
         assertEquals (GeoStatus.known, p1.getStatus ());
         assertEquals (GeoStatus.known, p2.getStatus ());
-        assertEquals (GeoStatus.derived, p3.getStatus ());
-        assertEquals (GeoStatus.derived, t.getStatus ());
-        assertEquals (GeoStatus.derived, line1.getStatus ());
+        assertEquals (GeoStatus.unknown, p3.getStatus ());
+        assertEquals (GeoStatus.unknown, t.getStatus ());
+        assertEquals (GeoStatus.unknown, line1.getStatus ());
         assertEquals (GeoStatus.derived, line2.getStatus ());
-        assertEquals (GeoStatus.derived, line3.getStatus ());
-        assertEquals (GeoStatus.derived, t.getStatus ());
+        assertEquals (GeoStatus.unknown, line3.getStatus ());
+        assertEquals (GeoStatus.unknown, t.getStatus ());
 
         // Make everything be known or derived
         p3.setGivenStatus (GeoStatus.known);

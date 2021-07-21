@@ -5,7 +5,7 @@ import static java.lang.Math.*;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import javax.swing.SwingConstants;
@@ -39,9 +39,6 @@ public class GeoVertex extends GeoItem
      * endpoint is first (the line direction).
      */
     private final NamedVariable angle;
-
-    /** Has this vertex been selected by a mouse click. */
-    private boolean isSelected;
 
     /** List of triangles using this vertex as a corner. A vertex can be part of many triangles. */
     private final List<GeoTriangle> triangles = new ArrayList<> ();
@@ -189,20 +186,6 @@ public class GeoVertex extends GeoItem
     // return false;
     // }
 
-    /** Has this vertex been selected by a mouse click. */
-    @Override
-    public boolean isSelected ()
-    {
-        return isSelected;
-    }
-
-    /** Has this vertex been selected by a mouse click. */
-    @Override
-    public void setSelected (boolean isSelected)
-    {
-        this.isSelected = isSelected;
-    }
-
     /** Does this vertex connect to the line. */
     public boolean hasLine (GeoLine l)
     {
@@ -278,10 +261,11 @@ public class GeoVertex extends GeoItem
     @Override
     public void solve ()
     {
-        if (vertex.isDetermined () && !isDetermined ())
-        {
-            setStatus (GeoStatus.derived, "vertex position known");
-        }
+        // Vertex position does not determine vertex angle
+        // if (vertex.isDetermined () && !isDetermined ())
+        // {
+        // setStatus (GeoStatus.derived, "vertex position known");
+        // }
         if (line1.getAngle ().isDetermined () && line2.getAngle ().isDetermined ())
         {
             if (!angle.isDetermined ())
@@ -335,6 +319,20 @@ public class GeoVertex extends GeoItem
             gg.setStroke (stroke);
             labels.add (this, getStatus ().getColor (), p, SwingConstants.SOUTH_WEST, getName (), toString ());
         }
+    }
+
+    /**
+     * Get named attributes. Used for saving to a csv file. This method should be overriden by
+     * subclasses.
+     *
+     * @param result Map to store attributes.
+     */
+    @Override
+    public void getAttributes (Map<String, Object> result)
+    {
+        result.put ("positionx", position.x);
+        result.put ("positionx", position.y);
+        result.put ("angle", angle.getDoubleValue ());
     }
 
     @Override

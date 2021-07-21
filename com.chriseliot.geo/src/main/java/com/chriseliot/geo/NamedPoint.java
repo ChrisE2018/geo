@@ -199,11 +199,11 @@ public class NamedPoint extends GeoItem
         {
             if (!x.isDetermined ())
             {
-                x.setStatus (GeoStatus.derived, "definition of point");
+                x.setFormula ("definition of point", "%s == " + x.getDoubleValue (), x);
             }
             if (!y.isDetermined ())
             {
-                y.setStatus (GeoStatus.derived, "definition of point");
+                y.setFormula ("definition of point", "%s == " + y.getDoubleValue (), y);
             }
         }
         else if (x.isDetermined () && y.isDetermined ())

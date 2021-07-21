@@ -151,7 +151,7 @@ public class NamedVariable extends GeoItem
         tu.join (builder, ", ", roots);
         builder.append ("}");
         builder.append (")");
-        logger.info ("Symbolic x: %s", builder.toString ());
+        logger.info ("Symbolic %s: %s", getName (), builder.toString ());
         final ExprEvaluator eval = new ExprEvaluator ();
         final IExpr expr = eval.parse (builder.toString ());
         logger.info ("Expression: %s", expr);
@@ -178,10 +178,10 @@ public class NamedVariable extends GeoItem
         {
             final NamedVariable ti = (NamedVariable)getPlane ().get (t);
             final String f = ti.getFormula ();
+            roots.add (t);
             if (f != null)
             {
                 chain.add (f);
-                roots.add (getName ());
                 if (ti != this)
                 {
                     ti.getDerivationChain (chain, roots);

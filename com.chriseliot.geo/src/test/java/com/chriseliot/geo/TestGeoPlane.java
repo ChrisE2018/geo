@@ -46,9 +46,10 @@ public class TestGeoPlane
         plane.addAll (items);
         assertEquals (1, plane.getItems ().size ());
         assertTrue (plane.contains (item));
+        assertEquals (item, plane.get (item.getName ()));
         plane.remove (item);
         assertEquals (0, plane.getItems ().size ());
-        assertEquals (item, plane.get (item.getName ()));
+        assertNull (plane.get (item.getName ()));
         assertNotNull (plane.getLabels ());
     }
 

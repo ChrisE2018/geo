@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.*;
+import java.util.Map.Entry;
 
 import javax.swing.SwingConstants;
 
@@ -186,5 +188,57 @@ public class TestNamedPoint
         test.setGivenStatus (GeoStatus.known);
         checkVariables (test);
         assertNotNull (test.toString ());
+    }
+
+    @Test
+    public void testCanSetValue ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
+        assertTrue (test.canSetValue ());
+        test.setValueAction (new Point2D.Double (20, 30));
+    }
+
+    @Test
+    void testSetValueAction ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
+
+        final CloseDialogThread thread = new CloseDialogThread ();
+        thread.start ();
+        test.setValueAction ();
+        thread.halt ();
+        thread.dream (10);
+        assertTrue (thread.isDialogSeen ());
+        assertFalse (thread.isRunning ());
+    }
+
+    @Test
+    public void testAttributes ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
+        final Map<String, Object> attributes = test.getAttributes ();
+        assertEquals (10.0, attributes.get ("positionx"));
+        assertEquals (20.0, attributes.get ("positiony"));
+        final Map<String, String> attributes2 = new HashMap<> ();
+        for (final Entry<String, Object> entry : attributes.entrySet ())
+        {
+            final String key = entry.getKey ();
+            final Object value = entry.getValue ();
+            if (value == null)
+            {
+                attributes2.put (key, (String)value);
+            }
+            else
+            {
+                attributes2.put (key, value.toString ());
+            }
+        }
+        test.readAttributes (attributes2);
     }
 }

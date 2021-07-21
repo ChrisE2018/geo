@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.*;
+import java.util.Map.Entry;
 
-import javax.swing.*;
+import javax.swing.SwingConstants;
 
 import org.junit.jupiter.api.Test;
 
@@ -161,6 +163,21 @@ public class TestNamedVariable
         assertEquals (v == parent.getX () || v == parent.getY (), v.canSetValue ());
     }
 
+    @Test
+    public void testSetValue ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem item = new GeoItem (plane, "t", Color.black);
+        final NamedVariable v = new NamedVariable (item, Color.red, "test1");
+        assertFalse (v.canSetValue ());
+        final NamedPoint parent =
+            new NamedPoint (item, false, Color.green, "test", new Point2D.Double (10, 10), SwingConstants.NORTH_WEST);
+        final NamedVariable v2 = new NamedVariable (parent, Color.red, "test1");
+        assertFalse (v2.canSetValue ());
+        assertTrue (parent.getX ().canSetValue ());
+        assertTrue (parent.getY ().canSetValue ());
+    }
+
     /**
      * This needs to dismiss the dialog during a unit test
      *
@@ -175,14 +192,12 @@ public class TestNamedVariable
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
         final CloseDialogThread thread = new CloseDialogThread ();
-        thread.isDialogSeen = false;
-        thread.isRunning = true;
         thread.start ();
         v.showDerivationAction ();
-        thread.isRunning = false;
+        thread.halt ();
         thread.dream (10);
         System.out.printf ("Derivation dialog returns\n");
-        assertTrue (thread.isDialogSeen);
+        assertTrue (thread.isDialogSeen ());
     }
 
     /**
@@ -199,57 +214,45 @@ public class TestNamedVariable
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
         final CloseDialogThread thread = new CloseDialogThread ();
-        thread.isDialogSeen = false;
-        thread.isRunning = true;
         thread.start ();
         v.setValueAction ();
         v.setValueAction (45);
-        thread.isRunning = false;
+        thread.halt ();
         thread.dream (10);
         System.out.printf ("Derivation dialog returns\n");
-        assertTrue (thread.isDialogSeen);
+        assertTrue (thread.isDialogSeen ());
     }
 
-    class CloseDialogThread extends Thread
+    @Test
+    public void testAttributes ()
     {
-        private boolean isDialogSeen = false;
-        private boolean isRunning = false;
 
-        @Override
-        public void run ()
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem item = new GeoItem (plane, "t", Color.black);
+        final Point2D.Double position = new Point2D.Double (10, 20);
+        final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
+        final NamedVariable test = new NamedVariable (parent, Color.red, "test1");
+        test.setDoubleValue (9.5);
+        final Map<String, Object> attributes = test.getAttributes ();
+        assertEquals (9.5, attributes.get ("value"));
+        final Map<String, String> attributes2 = new HashMap<> ();
+        for (final Entry<String, Object> entry : attributes.entrySet ())
         {
-            for (int i = 0; i < 25; i++)
+            final String key = entry.getKey ();
+            final Object value = entry.getValue ();
+            if (value == null)
             {
-                final Window[] windows = Window.getWindows ();
-                for (final Window w : windows)
-                {
-                    if (w instanceof JDialog)
-                    {
-                        final JDialog d = (JDialog)w;
-                        d.setVisible (false);
-                        isDialogSeen = true;
-                    }
-                }
-                dream (100);
+                attributes2.put (key, (String)value);
+            }
+            else
+            {
+                attributes2.put (key, value.toString ());
             }
         }
-
-        private void dream (long ms)
-        {
-            try
-            {
-                if (isRunning)
-                {
-                    Thread.sleep (ms);
-                }
-                else
-                {
-                    throw new InterruptedException ();
-                }
-            }
-            catch (final InterruptedException e)
-            {
-            }
-        }
+        test.readAttributes (attributes2);
+        test.setLocation (parent, parent);
+        assertNotNull (test.getAttributes ());
+        test.setLocation (null);
+        assertNotNull (test.getAttributes ());
     }
 }

@@ -328,7 +328,6 @@ public class NamedVariable extends GeoItem
     @Override
     public boolean canSetValue ()
     {
-
         final GeoItem parent = getParent ();
         if (parent instanceof NamedPoint)
         {

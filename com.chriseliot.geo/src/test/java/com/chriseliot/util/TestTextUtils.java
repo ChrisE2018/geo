@@ -37,6 +37,21 @@ public class TestTextUtils
         assertEquals ("", builder.toString ());
         test.join (builder, punctuation, new LinkedHashSet<> (haystack));
         assertEquals ("alpha-beta-gamma", builder.toString ());
+        final String[] array = {"alpha", "beta", "gamma"};
+        assertEquals ("alpha-beta-gamma", test.join (punctuation, array));
+        assertEquals ("", test.join (punctuation, new String[] {}));
+    }
+
+    @Test
+    public void testSplit ()
+    {
+        final TextUtils test = new TextUtils ();
+        final String punctuation = "-";
+        final List<String> result = test.split ("alpha-beta-gamma", punctuation);
+        assertEquals (3, result.size ());
+        assertEquals ("alpha", result.get (0));
+        assertEquals ("beta", result.get (1));
+        assertEquals ("gamma", result.get (2));
     }
 
     @Test

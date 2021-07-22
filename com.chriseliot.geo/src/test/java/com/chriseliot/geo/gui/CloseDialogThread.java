@@ -1,5 +1,5 @@
 
-package com.chriseliot.geo;
+package com.chriseliot.geo.gui;
 
 import java.awt.Window;
 
@@ -36,9 +36,9 @@ public class CloseDialogThread extends Thread
             {
                 if (w instanceof JDialog)
                 {
+                    isDialogSeen = true;
                     final JDialog d = (JDialog)w;
                     d.setVisible (false);
-                    isDialogSeen = true;
                 }
             }
             dream (100);

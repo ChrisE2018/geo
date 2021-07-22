@@ -84,12 +84,39 @@ public class GeoClick
      *
      * @see https://www.codejava.net/java-se/swing/show-save-file-dialog-using-jfilechooser
      * @see https://stackoverflow.com/questions/2885173/how-do-i-create-a-file-and-write-to-it
+     * @see https://stackoverflow.com/questions/3651494/jfilechooser-with-confirmation-dialog
      */
     public void save () throws UnsupportedEncodingException, FileNotFoundException, IOException
     {
         final File currentDir = new File ("").getAbsoluteFile ();
         logger.info ("Current dir %s", currentDir);
-        final JFileChooser fileChooser = new JFileChooser (currentDir);
+        final JFileChooser fileChooser = new JFileChooser (currentDir)
+        {
+            @Override
+            public void approveSelection ()
+            {
+                final File f = getSelectedFile ();
+                if (f.exists () && getDialogType () == SAVE_DIALOG)
+                {
+                    final int result = JOptionPane.showConfirmDialog (this, "The file exists, overwrite?", "Existing file",
+                            JOptionPane.YES_NO_CANCEL_OPTION);
+                    switch (result)
+                    {
+                        case JOptionPane.YES_OPTION:
+                            super.approveSelection ();
+                            return;
+                        case JOptionPane.NO_OPTION:
+                            return;
+                        case JOptionPane.CLOSED_OPTION:
+                            return;
+                        case JOptionPane.CANCEL_OPTION:
+                            cancelSelection ();
+                            return;
+                    }
+                }
+                super.approveSelection ();
+            }
+        };
         fileChooser.setDialogTitle ("Save geometry to file");
 
         final int userSelection = fileChooser.showSaveDialog (geo);

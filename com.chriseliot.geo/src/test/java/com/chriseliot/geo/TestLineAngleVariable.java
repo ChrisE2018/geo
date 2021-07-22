@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 
 import org.junit.jupiter.api.Test;
 
+import com.chriseliot.geo.gui.CloseDialogThread;
+
 class TestLineAngleVariable
 {
     @Test

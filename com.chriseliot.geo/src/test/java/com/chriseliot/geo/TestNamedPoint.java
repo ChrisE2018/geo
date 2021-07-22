@@ -13,6 +13,7 @@ import javax.swing.SwingConstants;
 
 import org.junit.jupiter.api.Test;
 
+import com.chriseliot.geo.gui.CloseDialogThread;
 import com.chriseliot.util.Labels;
 
 public class TestNamedPoint

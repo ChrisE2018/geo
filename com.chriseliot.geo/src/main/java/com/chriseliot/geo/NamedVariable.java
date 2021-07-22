@@ -379,12 +379,21 @@ public class NamedVariable extends GeoItem
         final String formula = getFormulaInstance ();
         if (formula == null)
         {
-            builder.append (String.format ("%s == %.3f\n", getName (), getDoubleValue ()));
+            builder.append (String.format ("%s == %.3f", getName (), getDoubleValue ()));
         }
         else
         {
-            builder.append (String.format ("%s\n", formula));
+            builder.append (formula);
         }
+        if (getStatus () == GeoStatus.known)
+        {
+            builder.append (" given");
+        }
+        else if (getStatus () == GeoStatus.fixed)
+        {
+            builder.append (" fixed");
+        }
+        builder.append ("\n");
     }
 
     /** Should a popup menu on this item include a set value item. */

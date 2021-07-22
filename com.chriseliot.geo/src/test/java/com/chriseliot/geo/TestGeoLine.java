@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.matheclipse.core.eval.ExprEvaluator;
 import org.matheclipse.core.interfaces.IExpr;
 
-import com.chriseliot.util.Labels;
+import com.chriseliot.util.*;
 
 public class TestGeoLine
 {
@@ -395,9 +395,11 @@ public class TestGeoLine
     @Test
     public void testSolve1 ()
     {
+        Namer.reset ();
         final GeoPlane plane = new GeoPlane ();
         final GeoLine test = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
-        test.setGivenStatus (GeoStatus.known);
+        test.getFrom ().getX ().setGivenStatus (GeoStatus.known);
+        test.getTo ().getX ().setGivenStatus (GeoStatus.known);
         final NamedVariable mx = test.getMidpoint ().getX ();
         final String formula = mx.getFormulaInstance ();
         final String[] terms = mx.getTermNames ();
@@ -406,11 +408,13 @@ public class TestGeoLine
         for (int i = 1; i < terms.length; i++)
         {
             final String var = terms[i];
+            System.out.printf ("%s = %s\n", var, i);
             eval.defineVariable (var, i);
         }
+        assertEquals ("l001$M$x == l001$A$x + (l001$dx / 2)", formula);
         final IExpr expr = eval.parse (formula);
         final IExpr f = expr.getAt (2);
-        assertEquals (1.5, eval.evalf (f), TestSupport.epsilon);
+        assertEquals (2.0, eval.evalf (f), TestSupport.epsilon);
     }
 
     /** Check all child values. */

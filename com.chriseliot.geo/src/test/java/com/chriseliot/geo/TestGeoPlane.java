@@ -321,8 +321,9 @@ public class TestGeoPlane
         assertEquals (GeoStatus.unknown, line3.getStatus ());
         assertEquals (GeoStatus.unknown, t.getStatus ());
 
-        // Make everything be known or derived
+        // Make triangle be known or derived
         p3.setGivenStatus (GeoStatus.known);
+
         assertEquals (GeoStatus.known, p1.getStatus ());
         assertEquals (GeoStatus.known, p2.getStatus ());
         assertEquals (GeoStatus.known, p3.getStatus ());
@@ -330,19 +331,31 @@ public class TestGeoPlane
         assertEquals (GeoStatus.derived, line2.getStatus ());
         assertEquals (GeoStatus.derived, line3.getStatus ());
         assertEquals (GeoStatus.derived, t.getStatus ());
+
+        // Make everything be known or derived
+        v1.setGivenStatus (GeoStatus.known);
+        v2.setGivenStatus (GeoStatus.known);
+        v3.setGivenStatus (GeoStatus.known);
         for (final GeoItem item : plane.getItems ())
         {
-            if (item == p1 || item == p2 || item == p3)
+            if (item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3)
             {
                 assertEquals (GeoStatus.known, item.getStatus ());
             }
             else
             {
+                if (item.getStatus () != GeoStatus.derived)
+                {
+                    System.out.printf ("Invalid %s status\n", item);
+                }
                 assertEquals (GeoStatus.derived, item.getStatus ());
             }
         }
 
         // Retract assertions
+        v1.setDefaultFormula ();
+        v2.setDefaultFormula ();
+        v3.setDefaultFormula ();
         p1.setDefaultFormula ();
         p2.setDefaultFormula ();
         plane.resetDerived ();

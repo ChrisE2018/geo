@@ -597,24 +597,6 @@ public class GeoTriangle extends GeoItem
                 }
             }
         }
-
-        // If the triangle is fully known, all its parts are known
-        if (isDetermined ())
-        {
-            // Replace all of this with correct computations
-            if (!v2.isDetermined ())
-            {
-                v2.setStatus (GeoStatus.derived, "triangle vertices");
-            }
-            if (!v3.isDetermined ())
-            {
-                v3.setStatus (GeoStatus.derived, "triangle vertices");
-            }
-            if (!v1.isDetermined ())
-            {
-                v1.setStatus (GeoStatus.derived, "triangle vertices");
-            }
-        }
     }
 
     /**

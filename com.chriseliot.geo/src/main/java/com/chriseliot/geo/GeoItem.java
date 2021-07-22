@@ -325,6 +325,18 @@ public class GeoItem
         setGivenStatus (GeoStatus.fixed);
     }
 
+    /** Can this item support a rename option. */
+    public boolean canRenameVariable ()
+    {
+        return false;
+    }
+
+    /** Implement the rename option. */
+    public void renameVariableAction ()
+    {
+
+    }
+
     /** Should a popup menu on this item include a show derivation item. */
     public boolean canShowDerivation ()
     {
@@ -333,6 +345,17 @@ public class GeoItem
 
     /** Action to perform for a show derivation action. */
     public void showDerivationAction ()
+    {
+    }
+
+    /** Should a popup menu on this item include a show solution item. */
+    public boolean canShowSolution ()
+    {
+        return false;
+    }
+
+    /** Action to perform for a show derivation action. */
+    public void showSolutionAction ()
     {
     }
 

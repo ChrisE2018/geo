@@ -187,11 +187,13 @@ public class GeoControls extends JPanel implements ActionListener
         }
         else if (source == save)
         {
-            geo.save ();
+            final GeoClick gc = new GeoClick (geo);
+            gc.save ();
         }
         else if (source == read)
         {
-            geo.read ();
+            final GeoClick gc = new GeoClick (geo);
+            gc.read ();
         }
         else if (source == quit)
         {

@@ -371,6 +371,39 @@ public class NamedVariable extends GeoItem
         }
     }
 
+    /** Can this item support a rename option. */
+    @Override
+    public boolean canRenameVariable ()
+    {
+        return true;
+    }
+
+    /** Implement the rename option. */
+    @Override
+    public void renameVariableAction ()
+    {
+        final String message = String.format ("Enter new name for %s", getName ());
+        final String result = JOptionPane.showInputDialog (null, message, "Input Name", JOptionPane.QUESTION_MESSAGE);
+        if (result != null)
+        {
+            renameVariableAction (result);
+        }
+    }
+
+    /** Implement the rename option. */
+    public void renameVariableAction (String name)
+    {
+        logger.info ("Rename from %s to %s", getName (), name);
+        final GeoPlane plane = getPlane ();
+        if (plane.get (name) == null)
+        {
+            plane.remove (this);
+            setName (name);
+            plane.addItem (this);
+            plane.fireChangeListeners (this);
+        }
+    }
+
     /**
      * Get named attributes. Used for saving to a csv file. This method should be overriden by
      * subclasses.

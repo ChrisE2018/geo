@@ -261,11 +261,6 @@ public class GeoVertex extends GeoItem
     @Override
     public void solve ()
     {
-        // Vertex position does not determine vertex angle
-        // if (vertex.isDetermined () && !isDetermined ())
-        // {
-        // setStatus (GeoStatus.derived, "vertex position known");
-        // }
         if (line1.getAngle ().isDetermined () && line2.getAngle ().isDetermined ())
         {
             if (!angle.isDetermined ())
@@ -282,6 +277,16 @@ public class GeoVertex extends GeoItem
             if (!angle.isDetermined ())
             {
                 angle.setStatus (GeoStatus.derived, "vertex known");
+            }
+        }
+        if (!isDetermined ())
+        {
+            if (angle.isDetermined ())
+            {
+                if (vertex.isDetermined ())
+                {
+                    setStatus (GeoStatus.derived, "vertex determined");
+                }
             }
         }
     }

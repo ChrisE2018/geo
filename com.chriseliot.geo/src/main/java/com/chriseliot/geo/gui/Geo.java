@@ -126,7 +126,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
                 if (item instanceof NamedVariable)
                 {
                     final NamedVariable var = (NamedVariable)item;
-                    final String[] terms = var.getTerms ();
+                    final NamedVariable[] terms = var.getTerms ();
                     if (terms != null)
                     {
                         final StringBuilder builder = new StringBuilder ();
@@ -136,7 +136,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
                             {
                                 builder.append (", ");
                             }
-                            builder.append (terms[i]);
+                            builder.append (terms[i].getName ());
                         }
                         logger.info ("Terms: %s", builder);
                     }

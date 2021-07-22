@@ -399,8 +399,8 @@ public class TestGeoLine
         final GeoLine test = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
         test.setGivenStatus (GeoStatus.known);
         final NamedVariable mx = test.getMidpoint ().getX ();
-        final String formula = mx.getFormula ();
-        final String[] terms = mx.getTerms ();
+        final String formula = mx.getFormulaInstance ();
+        final String[] terms = mx.getTermNames ();
 
         final ExprEvaluator eval = new ExprEvaluator ();
         for (int i = 1; i < terms.length; i++)

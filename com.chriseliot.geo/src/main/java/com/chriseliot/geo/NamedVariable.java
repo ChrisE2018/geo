@@ -29,9 +29,10 @@ public class NamedVariable extends GeoItem
 
     /**
      * Formula for the true value. If this term has not been constrained, this will be null.
-     * Otherwise it relates the variables in terms to the value of this variable.
+     * Otherwise it relates the variables in terms to the value of this variable. To make the actual
+     * formula requires instantiating this expression with the names of the terms.
      */
-    private String formula;
+    private String formulaExpression;
 
     /**
      * A list of variables used in the formula. Will be null if the formula has not been set. When
@@ -40,7 +41,7 @@ public class NamedVariable extends GeoItem
      * values of all terms. These values can be plugged into the formula to compute a value of this
      * variable.
      */
-    private String[] terms = null;
+    private NamedVariable[] terms = null;
 
     /** Location on screen to draw label for this variable. */
     private NamedPoint location;
@@ -107,9 +108,9 @@ public class NamedVariable extends GeoItem
      * Formula for the true value. If this term has not been constrained, this will be null.
      * Otherwise it relates the variables in terms to the value of this variable.
      */
-    public String getFormula ()
+    public String getFormulaExpression ()
     {
-        return formula;
+        return formulaExpression;
     }
 
     /**
@@ -119,9 +120,55 @@ public class NamedVariable extends GeoItem
      * values of all terms. These values can be plugged into the formula to compute a value of this
      * variable.
      */
-    public String[] getTerms ()
+    public NamedVariable[] getTerms ()
     {
         return terms;
+    }
+
+    public String[] getTermNames ()
+    {
+        final String[] names = new String[terms.length];
+        for (int i = 0; i < terms.length; i++)
+        {
+            names[i] = terms[i].getName ();
+        }
+        return names;
+    }
+
+    public String getFormulaInstance ()
+    {
+        if (formulaExpression == null)
+        {
+            return null;
+        }
+        final Object[] names = getTermNames ();
+        return String.format (formulaExpression, names);
+    }
+
+    /** Set the status to unknown. Reset the formula and terms to the corrct default state. */
+    @Override
+    public void setDefaultFormula ()
+    {
+        super.setDefaultFormula ();
+        formulaExpression = null;
+        terms = new NamedVariable[] {};
+    }
+
+    /**
+     * Shorthand function to set the formula and save the names of the variables involved.
+     *
+     * @param reason A string giving the reason for this derivation.
+     * @param formulaExpression A Java format template to create the derivation formula.
+     * @param variables Variables to substitute into the template string to create the derivation
+     *            formula.
+     */
+    public void setFormula (String reason, String formulaExpression, NamedVariable... variables)
+    {
+        final NamedVariable[] terms = new NamedVariable[variables.length];
+        System.arraycopy (variables, 0, terms, 0, variables.length);
+        this.formulaExpression = formulaExpression;
+        this.terms = terms;
+        setStatus (GeoStatus.derived, reason);
     }
 
     /**
@@ -174,11 +221,10 @@ public class NamedVariable extends GeoItem
      */
     private void getDerivationChain (Set<String> chain, Set<String> roots)
     {
-        for (final String t : terms)
+        for (final NamedVariable ti : terms)
         {
-            final NamedVariable ti = (NamedVariable)getPlane ().get (t);
-            final String f = ti.getFormula ();
-            roots.add (t);
+            final String f = ti.getFormulaInstance ();
+            roots.add (ti.getName ());
             if (f != null)
             {
                 chain.add (f);
@@ -188,35 +234,6 @@ public class NamedVariable extends GeoItem
                 }
             }
         }
-    }
-
-    /** Set the status to unknown. Reset the formula and terms to the corrct default state. */
-    @Override
-    public void setDefaultFormula ()
-    {
-        super.setDefaultFormula ();
-        formula = null;
-        terms = new String[] {};
-    }
-
-    /**
-     * Shorthand function to set the formula and save the names of the variables involved.
-     *
-     * @param reason A string giving the reason for this derivation.
-     * @param formulaExpression A Java format template to create the derivation formula.
-     * @param variables Variables to substitute into the template string to create the derivation
-     *            formula.
-     */
-    public void setFormula (String reason, String formulaExpression, NamedVariable... variables)
-    {
-        final String[] terms = new String[variables.length];
-        for (int i = 0; i < variables.length; i++)
-        {
-            terms[i] = variables[i].getName ();
-        }
-        formula = String.format (formulaExpression, (Object[])terms);
-        this.terms = terms;
-        setStatus (GeoStatus.derived, reason);
     }
 
     /** Derive consequential formulas around this variable. */
@@ -284,13 +301,13 @@ public class NamedVariable extends GeoItem
             final Color color = getStatus ().getColor ();
             final String text = String.format ("%s = %.1f", getName (), value);
             final String tooltip;
-            if (formula == null)
+            if (formulaExpression == null)
             {
                 tooltip = text;
             }
             else
             {
-                tooltip = String.format ("%.1f = %s", value, formula);
+                tooltip = String.format ("%.1f = %s", value, getFormulaInstance ());
             }
             final NamedPoint location2 = getLocation2 ();
             if (location2 != null)
@@ -307,6 +324,23 @@ public class NamedVariable extends GeoItem
         }
     }
 
+    /** Should a popup menu on this item include a show solution item. */
+    @Override
+    public boolean canShowSolution ()
+    {
+        return getStatus () == GeoStatus.derived;
+    }
+
+    /** Action to perform for a show derivation action. */
+    @Override
+    public void showSolutionAction ()
+    {
+        final String rawFormula = getFormulaInstance ();
+        final String derivedFormula = getDerivedFormula ();
+        final String message = String.format ("Raw: %s\nDerived: %s", rawFormula, derivedFormula);
+        JOptionPane.showMessageDialog (null, message, "Derivation", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     /** Should a popup menu on this item include a show derivation item. */
     @Override
     public boolean canShowDerivation ()
@@ -318,10 +352,39 @@ public class NamedVariable extends GeoItem
     @Override
     public void showDerivationAction ()
     {
-        final String rawFormula = getFormula ();
-        final String derivedFormula = getDerivedFormula ();
-        final String message = String.format ("Raw: %s\nDerived: %s", rawFormula, derivedFormula);
-        JOptionPane.showMessageDialog (null, message, "Derivation", JOptionPane.INFORMATION_MESSAGE);
+        final StringBuilder builder = new StringBuilder ();
+        final String formula = getFormulaInstance ();
+        builder.append (String.format ("Derivation: %s\n\n", formula));
+        getDerivation (builder, 0);
+        getFormulaLine (builder, 0);
+        JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void getDerivation (StringBuilder builder, int level)
+    {
+        for (int i = 1; i < terms.length; i++)
+        {
+            final NamedVariable ti = terms[i];
+            ti.getDerivation (builder, level + 1);
+            ti.getFormulaLine (builder, level);
+        }
+    }
+
+    private void getFormulaLine (StringBuilder builder, int level)
+    {
+        for (int i = 0; i < level; i++)
+        {
+            builder.append ("|  ");
+        }
+        final String formula = getFormulaInstance ();
+        if (formula == null)
+        {
+            builder.append (String.format ("%s == %.3f\n", getName (), getDoubleValue ()));
+        }
+        else
+        {
+            builder.append (String.format ("%s\n", formula));
+        }
     }
 
     /** Should a popup menu on this item include a set value item. */
@@ -400,6 +463,7 @@ public class NamedVariable extends GeoItem
             plane.remove (this);
             setName (name);
             plane.addItem (this);
+            assert (this == plane.get (name));
             plane.fireChangeListeners (this);
         }
     }
@@ -414,8 +478,8 @@ public class NamedVariable extends GeoItem
     public void getAttributes (Map<String, Object> result)
     {
         result.put ("value", value);
-        result.put ("formula", formula);
-        result.put ("terms", tu.join ("+", terms));
+        result.put ("formula", formulaExpression);
+        result.put ("terms", tu.join ("+", getTermNames ()));
         result.put ("location", location == null ? "" : location.getName ());
         result.put ("location2", location2 == null ? "" : location2.getName ());
     }
@@ -425,11 +489,16 @@ public class NamedVariable extends GeoItem
     {
         super.readAttributes (attributes);
         value = Double.parseDouble (attributes.get ("value"));
-        formula = attributes.get ("formula");
+        formulaExpression = attributes.get ("formula");
         final String termsAttribute = attributes.get ("terms");
+        final GeoPlane plane = getPlane ();
         final List<String> termList = tu.split (termsAttribute, "+");
-        terms = new String[termList.size ()];
-        termList.toArray (terms);
+        terms = new NamedVariable[termList.size ()];
+        for (int i = 0; i < terms.length; i++)
+        {
+            final String name = termList.get (i);
+            terms[i] = (NamedVariable)plane.get (name);
+        }
         final String locationName = attributes.get ("location");
         final String location2Name = attributes.get ("location2");
         if (!locationName.isEmpty ())
@@ -465,12 +534,12 @@ public class NamedVariable extends GeoItem
             buffer.append (getReason ());
             buffer.append ("'");
         }
-        final String formula = getFormula ();
+        final String formula = getFormulaInstance ();
         if (formula != null)
         {
             buffer.append (" ");
             buffer.append ("{");
-            buffer.append (getFormula ());
+            buffer.append (formula);
             buffer.append ("}");
         }
         buffer.append (">");

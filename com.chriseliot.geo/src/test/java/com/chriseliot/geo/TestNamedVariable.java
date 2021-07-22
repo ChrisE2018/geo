@@ -84,7 +84,7 @@ public class TestNamedVariable
         final String name = "test1";
         final NamedVariable test = new NamedVariable (parent, color, name, 43.0);
         test.setFormula ("test", "1 + 1 = 2");
-        assertEquals ("1 + 1 = 2", test.getFormula ());
+        assertEquals ("1 + 1 = 2", test.getFormulaInstance ());
         assertEquals ("test", test.getReason ());
         plane.solve ();
     }
@@ -143,7 +143,7 @@ public class TestNamedVariable
         v.setLocation (parent, p2);
         v.paint (g, labels);
         v.setFormula ("test", "2 == 1 + 1");
-        assertNotNull (v.getFormula ());
+        assertNotNull (v.getFormulaInstance ());
         v.paint (g, labels);
         v.setLocation (null);
         v.paint (g, labels);

@@ -33,28 +33,25 @@ public class TestSupport
 
     public void checkExpression (NamedVariable named, double expected, String trace)
     {
-        final GeoPlane plane = named.getPlane ();
-        final String formula = named.getFormula ();
+        final String formula = named.getFormulaInstance ();
         if (formula != null)
         {
             if (trace != null)
             {
                 logger.info ("[%s] checkExpression testing if %s == %.2f", trace, named.getName (), expected);
             }
-            final String[] terms = named.getTerms ();
+            final NamedVariable[] terms = named.getTerms ();
 
             final ExprEvaluator eval = new ExprEvaluator ();
             for (int i = 1; i < terms.length; i++)
             {
-                final String var = terms[i];
-                final GeoItem item = plane.get (var);
-                assertNotNull (item);
-                assertTrue (item instanceof NamedVariable);
-                final NamedVariable nn = (NamedVariable)item;
-                eval.defineVariable (var, nn.getDoubleValue ());
+                final NamedVariable var = terms[i];
+                assertNotNull (var);
+                final String name = var.getName ();
+                eval.defineVariable (name, var.getDoubleValue ());
                 if (trace != null)
                 {
-                    logger.info ("[%s] Var %s = %.2f", trace, var, nn.getDoubleValue ());
+                    logger.info ("[%s] Var %s = %.2f", trace, name, var.getDoubleValue ());
                 }
             }
             final IExpr expr = eval.parse (formula);
@@ -89,7 +86,7 @@ public class TestSupport
         alpha.setFormula ("test", "alpha == 5");
         checkExpression (alpha, 5);
         test.setFormula ("test", "test == alpha", test, alpha);
-        final String[] terms = test.getTerms ();
+        final String[] terms = test.getTermNames ();
         assertEquals (2, terms.length);
         assertEquals ("alpha", terms[1]);
         checkExpression (test, 5, "testCheckExpression");

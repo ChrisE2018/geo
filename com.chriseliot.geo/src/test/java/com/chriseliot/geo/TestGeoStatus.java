@@ -34,4 +34,13 @@ public class TestGeoStatus
         assertEquals (Color.green, GeoStatus.derived.getColor ());
         assertEquals (Color.red, GeoStatus.unknown.getColor ());
     }
+
+    @Test
+    public void testColorName ()
+    {
+        assertEquals ("cyan", GeoStatus.known.getColorName ());
+        assertEquals ("green", GeoStatus.fixed.getColorName ());
+        assertEquals ("green", GeoStatus.derived.getColorName ());
+        assertEquals ("red", GeoStatus.unknown.getColorName ());
+    }
 }

@@ -36,7 +36,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         geo.open ();
     }
 
-    private final TextUtils tu = new TextUtils ();
+    private final FileUtils fu = new FileUtils ();
     /** Storage for all geometry items. */
     private final GeoPlane plane = new GeoPlane ();
     private final GeoSolution solution = new GeoSolution (plane);
@@ -479,11 +479,10 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
 
         if (userSelection == JFileChooser.APPROVE_OPTION)
         {
-            final File file = fileChooser.getSelectedFile ();
+            final File file = fu.setExtension (fileChooser.getSelectedFile (), ".csv");
             logger.info ("Saving to %s", file.getAbsolutePath ());
             try (CSVWriter stream = new CSVWriter (new OutputStreamWriter (new FileOutputStream (file), "utf-8")))
             {
-
                 final Set<String> keys = new TreeSet<> ();
                 for (final GeoItem item : plane.getItems ())
                 {
@@ -515,6 +514,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
                     stream.writeNext (data);
                 }
             }
+            frame.setTitle (file.getAbsolutePath ());
         }
     }
 
@@ -530,7 +530,6 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         {
             final File file = fileChooser.getSelectedFile ();
             System.out.println ("Selected file: " + file.getAbsolutePath ());
-
             final Map<String, Map<String, String>> objects = new HashMap<> ();
             // parsing a CSV file into CSVReader class constructor
             try (final CSVReader reader = new CSVReader (new FileReader (file)))
@@ -557,6 +556,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
                         objects.put (name, attributes);
                     }
                 }
+                frame.setTitle (file.getAbsolutePath ());
             }
             catch (final Exception e)
             {

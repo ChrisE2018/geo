@@ -434,10 +434,14 @@ public class NamedVariable extends GeoItem
             final NamedPoint p = (NamedPoint)parent;
             if (this == p.getX ())
             {
+                setDoubleValue (result);
+                setGivenStatus (GeoStatus.fixed);
                 p.setValueAction (new Point2D.Double (result, p.getY ().getDoubleValue ()));
             }
             else
             {
+                setDoubleValue (result);
+                setGivenStatus (GeoStatus.fixed);
                 p.setValueAction (new Point2D.Double (p.getX ().getDoubleValue (), result));
             }
         }

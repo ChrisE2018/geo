@@ -38,9 +38,8 @@ public class GeoClick
         final JMenuItem showDerivation = new JMenuItem ("Show Derivation");
         final JMenuItem showSolution = new JMenuItem ("Show Solution");
         known.addActionListener (evt -> item.setKnownAction ());
-        unknown.addActionListener (evt -> item.setUnknownAction ());
         fixed.addActionListener (evt -> item.setFixedAction ());
-        setValue.addActionListener (evt -> item.setValueAction ());
+        unknown.addActionListener (evt -> item.setUnknownAction ());
         setValue.addActionListener (evt -> item.setValueAction ());
         renameVariable.addActionListener (evt -> item.renameVariableAction ());
         showDerivation.addActionListener (evt -> item.showDerivationAction ());

@@ -6,6 +6,7 @@ import static java.lang.Math.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -331,9 +332,20 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         if (click != null)
         {
             logger.info ("Click on %s", click);
-            clickPoint = click.getPosition ();
+            final Point2D.Double position = click.getPosition ();
+            final List<NamedPoint> dragPoints = plane.getDragPoints (position);
+            for (final NamedPoint np : dragPoints)
+            {
+                if (np.getX ().getStatus () == GeoStatus.fixed || np.getY ().getStatus () == GeoStatus.fixed)
+                {
+                    // Don't allow dragging of fixed positions
+                    clickPoint = null;
+                    return;
+                }
+            }
+            clickPoint = position;
+            plane.selectAll (dragPoints);
         }
-        plane.selectAll (plane.getDragPoints (clickPoint));
     }
 
     /**

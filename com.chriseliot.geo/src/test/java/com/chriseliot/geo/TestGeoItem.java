@@ -99,6 +99,15 @@ public class TestGeoItem
         item.setStatus (GeoStatus.unknown, "test");
         assertEquals (GeoStatus.unknown, item.getStatus ());
 
+        assertEquals (1, item.getCategories ().size ());
+        final Set<String> filter = new HashSet<> ();
+        assertFalse (item.among (filter));
+        filter.add ("test");
+        assertFalse (item.among (filter));
+        item.addCategory ("test");
+        assertTrue (item.among (filter));
+        assertEquals (2, item.getCategories ().size ());
+
         // Should do better testing of snap points
         assertTrue (item.getSnapPoints ().isEmpty ());
         // Should do better testing of drag points

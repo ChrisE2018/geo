@@ -6,9 +6,9 @@ import static java.lang.Math.round;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Map;
+import java.util.function.Consumer;
 
-import javax.swing.*;
-
+import com.chriseliot.geo.gui.NamedPointActions;
 import com.chriseliot.util.Labels;
 
 public class NamedPoint extends GeoItem
@@ -252,32 +252,18 @@ public class NamedPoint extends GeoItem
         labels.add (this, color, position, anchor, text, tooltip);
     }
 
-    /** Should a popup menu on this item include a set value item. */
-    @Override
-    public boolean canSetValue ()
-    {
-        return true;
-    }
-
     /**
-     * Action to perform for a set value action.
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
      *
-     * @see https://stackoverflow.com/questions/6555040/multiple-input-in-joptionpane-showinputdialog/6555051
+     * @param result
      */
     @Override
-    public void setValueAction ()
+    public void popup (Map<String, Consumer<GeoItem>> result)
     {
-        final JTextField xField = new JTextField (String.format ("%.3f", x.getDoubleValue ()));
-        final JTextField yField = new JTextField (String.format ("%.3f", y.getDoubleValue ()));
-        final Object[] message = {"X:", xField, "Y:", yField};
-
-        final int option = JOptionPane.showConfirmDialog (null, message, "Set Position", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION)
-        {
-            final double resultX = Double.parseDouble (xField.getText ());
-            final double resultY = Double.parseDouble (yField.getText ());
-            setValueAction (new Point2D.Double (resultX, resultY));
-        }
+        super.popup (result);
+        final NamedPointActions actions = new NamedPointActions ();
+        result.put ("Set Value", evt -> actions.setValueAction (this));
     }
 
     public void setValueAction (Point2D.Double result)

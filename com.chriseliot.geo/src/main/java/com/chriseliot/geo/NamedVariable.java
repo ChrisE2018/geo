@@ -5,13 +5,13 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-
-import javax.swing.JOptionPane;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.*;
 import org.matheclipse.core.eval.ExprEvaluator;
 import org.matheclipse.core.interfaces.IExpr;
 
+import com.chriseliot.geo.gui.NamedVariableActions;
 import com.chriseliot.util.*;
 
 /** A variable representing a single real value. */
@@ -304,42 +304,6 @@ public class NamedVariable extends GeoItem
         }
     }
 
-    /** Should a popup menu on this item include a show solution item. */
-    @Override
-    public boolean canShowSolution ()
-    {
-        return getStatus () == GeoStatus.derived;
-    }
-
-    /** Action to perform for a show derivation action. */
-    @Override
-    public void showSolutionAction ()
-    {
-        final String rawFormula = getFormulaInstance ();
-        final String derivedFormula = getDerivedFormula ();
-        final String message = String.format ("Raw: %s\nDerived: %s", rawFormula, derivedFormula);
-        JOptionPane.showMessageDialog (null, message, "Derivation", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    /** Should a popup menu on this item include a show derivation item. */
-    @Override
-    public boolean canShowDerivation ()
-    {
-        return getStatus () == GeoStatus.derived;
-    }
-
-    /** Action to perform for a show derivation action. */
-    @Override
-    public void showDerivationAction ()
-    {
-        final StringBuilder builder = new StringBuilder ();
-        final String formula = getFormulaInstance ();
-        builder.append (String.format ("Derivation: %s\n\n", formula));
-        getDerivation (builder, 0);
-        getFormulaLine (builder, 0);
-        JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
-    }
-
     public void getDerivation (StringBuilder builder, int level)
     {
         for (int i = 1; i < terms.length; i++)
@@ -350,7 +314,7 @@ public class NamedVariable extends GeoItem
         }
     }
 
-    private void getFormulaLine (StringBuilder builder, int level)
+    public void getFormulaLine (StringBuilder builder, int level)
     {
         for (int i = 0; i < level; i++)
         {
@@ -376,29 +340,32 @@ public class NamedVariable extends GeoItem
         builder.append ("\n");
     }
 
-    /** Should a popup menu on this item include a set value item. */
+    /**
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
+     *
+     * @param result
+     */
     @Override
-    public boolean canSetValue ()
+    public void popup (Map<String, Consumer<GeoItem>> result)
     {
+        super.popup (result);
+        final NamedVariableActions actions = new NamedVariableActions ();
         final GeoItem parent = getParent ();
         if (parent instanceof NamedPoint)
         {
             final NamedPoint p = (NamedPoint)parent;
-            return this == p.getX () || this == p.getY ();
-        }
-        return false;
-    }
+            if (this == p.getX () || this == p.getY ())
+            {
 
-    /** Action to perform for a set value action. */
-    @Override
-    public void setValueAction ()
-    {
-        final String message = (value == null) ? String.format ("Enter new value for %s", getName ())
-                                               : String.format ("Enter new value for %s (%s)", getName (), value);
-        final String result = JOptionPane.showInputDialog (null, message, "Input Value", JOptionPane.QUESTION_MESSAGE);
-        if (result != null)
+                result.put ("Set Value", item -> actions.setValueAction (this));
+            }
+        }
+        result.put ("Rename Variable", item -> actions.renameVariableAction (this));
+        if (getStatus () == GeoStatus.derived)
         {
-            setValueAction (Double.parseDouble (result));
+            result.put ("Show Solution", item -> actions.showSolutionAction (this));
+            result.put ("Show Derivation", item -> actions.showDerivationAction (this));
         }
     }
 
@@ -425,25 +392,6 @@ public class NamedVariable extends GeoItem
         }
     }
 
-    /** Can this item support a rename option. */
-    @Override
-    public boolean canRenameVariable ()
-    {
-        return true;
-    }
-
-    /** Implement the rename option. */
-    @Override
-    public void renameVariableAction ()
-    {
-        final String message = String.format ("Enter new name for %s", getName ());
-        final String result = JOptionPane.showInputDialog (null, message, "Input Name", JOptionPane.QUESTION_MESSAGE);
-        if (result != null)
-        {
-            renameVariableAction (result);
-        }
-    }
-
     /** Implement the rename option. */
     public void renameVariableAction (String name)
     {
@@ -459,7 +407,7 @@ public class NamedVariable extends GeoItem
     }
 
     /**
-     * Get named attributes. Used for saving to a csv file. This method should be overriden by
+     * Get named attributes. Used for saving to a csv file. This method should be overridden by
      * subclasses.
      *
      * @param result Map to store attributes.

@@ -4,8 +4,10 @@ package com.chriseliot.geo;
 import static java.lang.Math.*;
 
 import java.awt.Color;
+import java.util.Map;
+import java.util.function.Consumer;
 
-import javax.swing.*;
+import com.chriseliot.geo.gui.NamedVariableActions;
 
 public class TriangleAngleVariable extends NamedVariable
 {
@@ -19,32 +21,19 @@ public class TriangleAngleVariable extends NamedVariable
         super (parent, color, name);
     }
 
-    /** Should a popup menu on this item include a set value item. */
+    /**
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
+     *
+     * @param result
+     */
     @Override
-    public boolean canSetValue ()
+    public void popup (Map<String, Consumer<GeoItem>> result)
     {
-        return true;
-    }
-
-    /** Action to perform for a set value action. */
-    @Override
-    public void setValueAction ()
-    {
-        final JTextField angleField = new JTextField (String.format ("%.3f", getDoubleValue ()));
-        final JCheckBox cornerField = new JCheckBox ("Right Angle", getDoubleValue () == 90);
-        final Object[] message = {"Angle:", angleField, cornerField};
-        final String result = JOptionPane.showInputDialog (null, message, "Set angle", JOptionPane.QUESTION_MESSAGE);
-        if (result != null)
-        {
-            if (cornerField.isSelected ())
-            {
-                setValueAction (90);
-            }
-            else
-            {
-                setValueAction (Double.parseDouble (result));
-            }
-        }
+        super.popup (result);
+        result.remove ("Set Value");
+        final NamedVariableActions actions = new NamedVariableActions ();
+        result.put ("Set Value", evt -> actions.setValueAction (this));
     }
 
     /**

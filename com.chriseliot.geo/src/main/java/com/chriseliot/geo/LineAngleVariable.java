@@ -5,8 +5,10 @@ import static java.lang.Math.*;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.util.Map;
+import java.util.function.Consumer;
 
-import javax.swing.JOptionPane;
+import com.chriseliot.geo.gui.NamedVariableActions;
 
 public class LineAngleVariable extends NamedVariable
 {
@@ -20,25 +22,26 @@ public class LineAngleVariable extends NamedVariable
         super (parent, color, name);
     }
 
-    /** Should a popup menu on this item include a set value item. */
-    @Override
-    public boolean canSetValue ()
-    {
-        return true;
-    }
+    // /** Should a popup menu on this item include a set value item. */
+    // @Override
+    // public boolean canSetValue ()
+    // {
+    // return true;
+    // }
 
-    /** Action to perform for a set value action. */
+    /**
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
+     *
+     * @param result
+     */
     @Override
-    public void setValueAction ()
+    public void popup (Map<String, Consumer<GeoItem>> result)
     {
-        final Double value = getDoubleValue ();
-        final String message = (value == null) ? String.format ("Enter new angle %s degrees", getName ())
-                                               : String.format ("Enter new angle %s (%s) degrees", getName (), value);
-        final String result = JOptionPane.showInputDialog (null, message, "Input Value", JOptionPane.QUESTION_MESSAGE);
-        if (result != null)
-        {
-            setValueAction (Double.parseDouble (result));
-        }
+        super.popup (result);
+        result.remove ("Set Value");
+        final NamedVariableActions actions = new NamedVariableActions ();
+        result.put ("Set Value", item -> actions.setValueAction (this));
     }
 
     /**

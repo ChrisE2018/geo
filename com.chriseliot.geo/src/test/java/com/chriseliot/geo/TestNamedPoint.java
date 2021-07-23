@@ -13,7 +13,6 @@ import javax.swing.SwingConstants;
 
 import org.junit.jupiter.api.Test;
 
-import com.chriseliot.geo.gui.CloseDialogThread;
 import com.chriseliot.util.Labels;
 
 public class TestNamedPoint
@@ -197,24 +196,7 @@ public class TestNamedPoint
         final GeoPlane plane = new GeoPlane ();
         final GeoItem parent = new GeoItem (plane, "t", Color.black);
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
-        assertTrue (test.canSetValue ());
         test.setValueAction (new Point2D.Double (20, 30));
-    }
-
-    @Test
-    void testSetValueAction ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoItem parent = new GeoItem (plane, "t", Color.black);
-        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
-
-        final CloseDialogThread thread = new CloseDialogThread ();
-        thread.start ();
-        test.setValueAction ();
-        thread.halt ();
-        thread.dream (10);
-        assertTrue (thread.isDialogSeen ());
-        assertFalse (thread.isRunning ());
     }
 
     @Test

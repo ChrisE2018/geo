@@ -13,7 +13,6 @@ import javax.swing.SwingConstants;
 
 import org.junit.jupiter.api.Test;
 
-import com.chriseliot.geo.gui.CloseDialogThread;
 import com.chriseliot.util.Labels;
 
 public class TestNamedVariable
@@ -153,22 +152,12 @@ public class TestNamedVariable
         final Point2D.Double position = new Point2D.Double (10, 20);
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
-        assertFalse (item.canShowDerivation ());
-        assertFalse (parent.canShowDerivation ());
         assertNotEquals (GeoStatus.derived, v.getStatus ());
-        assertFalse (v.canShowDerivation ());
-        assertFalse (v.canShowSolution ());
-        assertFalse (v.canShowDerivation ());
         assertNotEquals (v, parent.getX ());
         assertNotEquals (v, parent.getY ());
-        assertFalse (v.canSetValue ());
 
         v.setFormula ("test", "%s == 55", v);
         assertEquals (GeoStatus.derived, v.getStatus ());
-        assertTrue (v.canShowDerivation ());
-        assertTrue (v.canShowSolution ());
-        assertTrue (v.canShowDerivation ());
-        assertTrue (v.canRenameVariable ());
 
         // Try to change to a conflicting name
         final String oldName = v.getName ();
@@ -179,21 +168,6 @@ public class TestNamedVariable
         v.renameVariableAction ("change");
         assertEquals ("change", v.getName ());
         assertEquals (v, plane.get ("change"));
-    }
-
-    @Test
-    public void testSetValue ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoItem item = new GeoItem (plane, "t", Color.black);
-        final NamedVariable v = new NamedVariable (item, Color.red, "test1");
-        assertFalse (v.canSetValue ());
-        final NamedPoint parent =
-            new NamedPoint (item, false, Color.green, "test", new Point2D.Double (10, 10), SwingConstants.NORTH_WEST);
-        final NamedVariable v2 = new NamedVariable (parent, Color.red, "test1");
-        assertFalse (v2.canSetValue ());
-        assertTrue (parent.getX ().canSetValue ());
-        assertTrue (parent.getY ().canSetValue ());
     }
 
     /**
@@ -209,13 +183,13 @@ public class TestNamedVariable
         final Point2D.Double position = new Point2D.Double (10, 20);
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
-        final CloseDialogThread thread = new CloseDialogThread ();
-        thread.start ();
-        v.showDerivationAction ();
-        thread.halt ();
-        thread.dream (10);
-        System.out.printf ("Derivation dialog returns\n");
-        assertTrue (thread.isDialogSeen ());
+        // final CloseDialogThread thread = new CloseDialogThread ();
+        // thread.start ();
+        // v.showDerivationAction ();
+        // thread.halt ();
+        // thread.dream (10);
+        // System.out.printf ("Derivation dialog returns\n");
+        // assertTrue (thread.isDialogSeen ());
 
         final NamedVariable x = parent.getX ();
         final NamedVariable y = parent.getY ();
@@ -224,29 +198,6 @@ public class TestNamedVariable
         x.setFormula ("test", "%s == %s + %s", x, y, v);
         final StringBuilder builder = new StringBuilder ();
         x.getDerivation (builder, 3);
-    }
-
-    /**
-     * This needs to dismiss the dialog during a unit test
-     *
-     * @see https://www.eclipse.org/lists/swtbot-dev/msg00817.html
-     */
-    @Test
-    public void testSetValueAction ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoItem item = new GeoItem (plane, "t", Color.black);
-        final Point2D.Double position = new Point2D.Double (10, 20);
-        final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
-        final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
-        final CloseDialogThread thread = new CloseDialogThread ();
-        thread.start ();
-        v.setValueAction ();
-        v.setValueAction (45);
-        thread.halt ();
-        thread.dream (10);
-        System.out.printf ("Derivation dialog returns\n");
-        assertTrue (thread.isDialogSeen ());
     }
 
     @Test

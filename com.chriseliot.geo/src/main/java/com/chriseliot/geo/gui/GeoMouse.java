@@ -4,9 +4,12 @@ package com.chriseliot.geo.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.util.*;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
-import javax.swing.JTable;
+import javax.swing.*;
 
 import org.apache.logging.log4j.*;
 
@@ -17,7 +20,6 @@ public class GeoMouse implements MouseListener, MouseMotionListener
 {
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
 
-    private final GeoClick gc;
     private final Geo geo;
 
     /** Square of the maximum distance to snap a point. */
@@ -44,7 +46,6 @@ public class GeoMouse implements MouseListener, MouseMotionListener
     public GeoMouse (Geo geo)
     {
         this.geo = geo;
-        gc = new GeoClick (geo);
     }
 
     public Color getCreateColor ()
@@ -107,7 +108,7 @@ public class GeoMouse implements MouseListener, MouseMotionListener
             if (source instanceof GeoItem)
             {
                 final GeoItem item = (GeoItem)source;
-                if (gc.handleClick (p, item))
+                if (handleClick (p, item))
                 {
                     return;
                 }
@@ -230,5 +231,30 @@ public class GeoMouse implements MouseListener, MouseMotionListener
                 geo.repaint ();
             }
         }
+    }
+
+    /** Handler for popup menu driven by click on an item. */
+    public boolean handleClick (Point p, GeoItem item)
+    {
+        final Map<String, Consumer<GeoItem>> menuItems = new HashMap<> ();
+        item.popup (menuItems);
+        final JPopupMenu popup = new JPopupMenu ();
+        for (final Entry<String, Consumer<GeoItem>> entry : menuItems.entrySet ())
+        {
+            final String key = entry.getKey ();
+            final Consumer<GeoItem> action = entry.getValue ();
+            final JMenuItem menuItem = new JMenuItem (key);
+            if (action == null)
+            {
+                menuItem.setEnabled (false);
+            }
+            else
+            {
+                menuItem.addActionListener (evt -> action.accept (item));
+            }
+            popup.add (menuItem);
+        }
+        popup.show (geo, p.x, p.y);
+        return true;
     }
 }

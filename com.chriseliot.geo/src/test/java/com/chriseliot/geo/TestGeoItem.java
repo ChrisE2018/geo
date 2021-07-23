@@ -198,31 +198,31 @@ public class TestGeoItem
         assertNotNull (parent.toString ());
     }
 
-    @Test
-    public void testPopupSupport ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoItem item = new GeoItem (plane, "t", Color.black);
-        assertTrue (item.canSetKnown ());
-        assertTrue (item.canSetUnknown ());
-        assertFalse (item.canSetFixed ());
-        assertFalse (item.canSetValue ());
-        assertFalse (item.canShowDerivation ());
-        assertFalse (item.canRenameVariable ());
-        assertFalse (item.canShowSolution ());
-        assertEquals (GeoStatus.unknown, item.getStatus ());
-        item.setKnownAction ();
-        assertEquals (GeoStatus.known, item.getStatus ());
-        item.setFixedAction ();
-        assertEquals (GeoStatus.fixed, item.getStatus ());
-        item.setUnknownAction ();
-        assertEquals (GeoStatus.unknown, item.getStatus ());
-        item.setValueAction ();
-        assertEquals (GeoStatus.fixed, item.getStatus ());
-        item.showDerivationAction ();
-        item.renameVariableAction ();
-        item.showSolutionAction ();
-    }
+    // @Test
+    // public void testPopupSupport ()
+    // {
+    // final GeoPlane plane = new GeoPlane ();
+    // final GeoItem item = new GeoItem (plane, "t", Color.black);
+    // assertTrue (item.canSetKnown ());
+    // assertTrue (item.canSetUnknown ());
+    // assertFalse (item.canSetFixed ());
+    // assertFalse (item.canSetValue ());
+    // assertFalse (item.canShowDerivation ());
+    // assertFalse (item.canRenameVariable ());
+    // assertFalse (item.canShowSolution ());
+    // assertEquals (GeoStatus.unknown, item.getStatus ());
+    // item.setKnownAction ();
+    // assertEquals (GeoStatus.known, item.getStatus ());
+    // item.setFixedAction ();
+    // assertEquals (GeoStatus.fixed, item.getStatus ());
+    // item.setUnknownAction ();
+    // assertEquals (GeoStatus.unknown, item.getStatus ());
+    // item.setValueAction ();
+    // assertEquals (GeoStatus.fixed, item.getStatus ());
+    // item.showDerivationAction ();
+    // item.renameVariableAction ();
+    // item.showSolutionAction ();
+    // }
 
     @Test
     public void testAttributes ()

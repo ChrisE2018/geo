@@ -649,12 +649,15 @@ public class GeoPlane
     }
 
     /** Paint and label all items in this geometry. */
-    public void paintItems (Graphics g)
+    public void paintItems (Graphics g, Set<String> categories)
     {
         final Labels labels = new Labels ();
         for (final GeoItem item : items)
         {
-            item.paint (g, labels);
+            if (item.among (categories))
+            {
+                item.paint (g, labels);
+            }
         }
         labels.paint (g);
         this.labels = labels;

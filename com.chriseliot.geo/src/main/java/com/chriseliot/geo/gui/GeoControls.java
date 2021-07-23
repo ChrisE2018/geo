@@ -4,6 +4,7 @@ package com.chriseliot.geo.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -20,6 +21,9 @@ public class GeoControls extends JPanel implements ActionListener
     private final JCheckBox line = new JCheckBox ("Line", true);
     private final JCheckBox rectangle = new JCheckBox ("Rectangle", false);
     private final JCheckBox oval = new JCheckBox ("Oval", false);
+    private final JCheckBox simpleCategory = new JCheckBox ("Simple", false);
+    private final JCheckBox standardCategory = new JCheckBox ("Standard", true);
+    private final JCheckBox detailCategory = new JCheckBox ("Detail", false);
     private final JButton color = new JButton ("Color");
     private final JButton backColor = new JButton ("Background");
     private final JButton clear = new JButton ("Clear");
@@ -40,11 +44,11 @@ public class GeoControls extends JPanel implements ActionListener
     {
         this.geo = geo;
         setPreferredSize (new Dimension (700, 75));
-        final ButtonGroup group = new ButtonGroup ();
-        group.add (select);
-        group.add (line);
-        group.add (rectangle);
-        group.add (oval);
+        final ButtonGroup toolGroup = new ButtonGroup ();
+        toolGroup.add (select);
+        toolGroup.add (line);
+        toolGroup.add (rectangle);
+        toolGroup.add (oval);
         add (select);
         add (line);
         if (preview)
@@ -56,14 +60,26 @@ public class GeoControls extends JPanel implements ActionListener
             add (debug);
         }
 
-        add (clear);
+        final ButtonGroup categoryGroup = new ButtonGroup ();
+        categoryGroup.add (simpleCategory);
+        categoryGroup.add (standardCategory);
+        categoryGroup.add (detailCategory);
+
+        add (simpleCategory);
+        add (standardCategory);
+        add (detailCategory);
         add (expandAll);
         add (unknownAll);
+        add (clear);
         add (save);
         add (read);
         add (quit);
         color.addActionListener (this);
         backColor.addActionListener (this);
+        simpleCategory.addActionListener (this);
+        standardCategory.addActionListener (this);
+        detailCategory.addActionListener (this);
+
         clear.addActionListener (this);
         expandAll.addActionListener (this);
         unknownAll.addActionListener (this);
@@ -114,6 +130,24 @@ public class GeoControls extends JPanel implements ActionListener
         return oval.isSelected ();
     }
 
+    public Set<String> getCategories ()
+    {
+        final Set<String> result = new TreeSet<> ();
+        if (simpleCategory.isSelected ())
+        {
+            result.add ("simple");
+        }
+        if (standardCategory.isSelected ())
+        {
+            result.add ("standard");
+        }
+        if (detailCategory.isSelected ())
+        {
+            result.add ("detail");
+        }
+        return result;
+    }
+
     @Override
     public void paintComponent (Graphics g)
     {
@@ -136,6 +170,7 @@ public class GeoControls extends JPanel implements ActionListener
         {
             ex.printStackTrace ();
         }
+        geo.repaint ();
     }
 
     private void doAction (Object source) throws UnsupportedEncodingException, FileNotFoundException, IOException
@@ -199,7 +234,6 @@ public class GeoControls extends JPanel implements ActionListener
         {
             System.exit (0);
         }
-        geo.repaint ();
     }
 
     @Override

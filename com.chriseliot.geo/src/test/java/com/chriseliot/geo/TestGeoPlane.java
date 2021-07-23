@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import javax.swing.SwingConstants;
@@ -378,7 +378,11 @@ public class TestGeoPlane
         assertEquals (item, child.getParent ());
         final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
         final Graphics g = image.getGraphics ();
-        plane.paintItems (g);
+        final Set<String> categories = new HashSet<> ();
+        categories.add ("simple");
+        categories.add ("standard");
+        categories.add ("detail");
+        plane.paintItems (g, categories);
         assertNotNull (plane.getLabels ());
     }
 
@@ -401,13 +405,17 @@ public class TestGeoPlane
 
         final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
         final Graphics g = image.getGraphics ();
-        plane.paintItems (g);
+        final Set<String> categories = new HashSet<> ();
+        categories.add ("simple");
+        categories.add ("standard");
+        categories.add ("detail");
+        plane.paintItems (g, categories);
         // Be sure to call Namer.reset before generating images for compare.
         ts.compare (image, ts.getTestPngFile (this, "p1"));
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         v2.getVertex ().setGivenStatus (GeoStatus.known);
         v3.getVertex ().setGivenStatus (GeoStatus.known);
-        plane.paintItems (g);
+        plane.paintItems (g, categories);
         ts.compare (image, ts.getTestPngFile (this, "p2"));
 
         // Get coverage of missing file case inside TestSupport

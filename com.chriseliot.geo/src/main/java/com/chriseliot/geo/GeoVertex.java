@@ -67,6 +67,8 @@ public class GeoVertex extends GeoItem
         final double theta1 = line1.angle (line2);
         // Make the vertex point be the parent of the angle so the NamedVariable has a location.
         angle = new NamedVariable (vertex, color, name + SEP + "v", theta1);
+        addCategory ("simple");
+        addCategory ("standard");
     }
 
     /** The first intersecting line. Which is first and which is second is arbitrary. */

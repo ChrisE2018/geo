@@ -60,6 +60,10 @@ public class GeoLine extends GeoItem
         dy = new NamedVariable (midpoint, color, name + SEP + "dy");
         length = new NamedVariable (midpoint, color, name + SEP + "length");
         recalculate ();
+        addCategory ("simple");
+        addCategory ("standard");
+        this.from.addCategory ("standard");
+        this.to.addCategory ("standard");
     }
 
     /** Starting point of this line segment. */

@@ -24,6 +24,9 @@ public class GeoOval extends GeoItem
         this.to = new NamedPoint (this, true, color, name + SEP + "B", to, SwingConstants.NORTH_EAST);
         center = new TransposePoint (this, true, color, name + SEP + "C", (from.x + to.x) * 0.5, (from.y + to.y) * 0.5,
                 SwingConstants.CENTER);
+        addCategory ("simple");
+        addCategory ("standard");
+        center.addCategory ("standard");
     }
 
     /** Recalculate values derived from screen positions after a something moves. */

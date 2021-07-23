@@ -54,6 +54,7 @@ public class GeoItem
         name = namer.getname (nameRoot);
         this.color = color;
         plane.addItem (this);
+        addCategory ("detail");
     }
 
     /** Make a child item with the given parent. */
@@ -65,6 +66,7 @@ public class GeoItem
         this.name = name;
         this.color = color;
         plane.addItem (this);
+        addCategory ("detail");
     }
 
     /** The geometry plane. */
@@ -131,6 +133,18 @@ public class GeoItem
     public void addCategory (String category)
     {
         categories.add (category);
+    }
+
+    public boolean among (Set<String> filter)
+    {
+        for (final String c : filter)
+        {
+            if (categories.contains (c))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Has this item been selected by a mouse click. */

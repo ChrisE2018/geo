@@ -191,7 +191,7 @@ public class Geo extends JPanel
         final int height = getHeight ();
         g.setColor (getBackground ());
         g.fillRect (0, 0, width, height);
-        plane.paintItems (g);
+        plane.paintItems (g, controls.getCategories ());
         final Point2D.Double c = geoMouse.getClickPoint ();
         final Point2D.Double d = geoMouse.getDragPoint ();
         if (c != null && d != null)

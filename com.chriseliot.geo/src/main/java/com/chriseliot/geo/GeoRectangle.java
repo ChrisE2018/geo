@@ -47,6 +47,13 @@ public class GeoRectangle extends GeoItem
         height = new NamedVariable (this, color, name + SEP + "h");
         center = new TransposePoint (this, true, color, name + SEP + "C", (from.x + to.x) * 0.5, (from.y + to.y) * 0.5,
                 SwingConstants.CENTER);
+        addCategory ("simple");
+        addCategory ("standard");
+        center.addCategory ("standard");
+        tl.addCategory ("standard");
+        tr.addCategory ("standard");
+        bl.addCategory ("standard");
+        br.addCategory ("standard");
     }
 
     public NamedPoint getTopLeft ()

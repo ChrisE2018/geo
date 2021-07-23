@@ -106,6 +106,14 @@ public class GeoTriangle extends GeoItem
         angle3.setLocation (v3.getVertex ());
 
         centroid = new NamedPoint (this, true, color, name + SEP + "C", centroid (), SwingConstants.SOUTH_WEST);
+        addCategory ("simple");
+        addCategory ("standard");
+        l1.addCategory ("standard");
+        l2.addCategory ("standard");
+        l3.addCategory ("standard");
+        angle1.addCategory ("standard");
+        angle2.addCategory ("standard");
+        angle3.addCategory ("standard");
     }
 
     /**
@@ -634,6 +642,33 @@ public class GeoTriangle extends GeoItem
             if (v1.isDetermined () && v2.isDetermined () && v3.isDetermined ())
             {
                 setStatus (GeoStatus.derived, "triangle vertices");
+            }
+        }
+        if (isDetermined ())
+        {
+            if (!l1.isDetermined ())
+            {
+                l1.setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!l2.isDetermined ())
+            {
+                l2.setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!l3.isDetermined ())
+            {
+                l3.setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!angle1.isDetermined ())
+            {
+                angle1.setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!angle2.isDetermined ())
+            {
+                angle2.setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!angle3.isDetermined ())
+            {
+                angle3.setStatus (GeoStatus.derived, "determined triangle");
             }
         }
     }

@@ -288,6 +288,12 @@ public class GeoItem
      */
     public void remove ()
     {
+        final GeoPlane plane = getPlane ();
+        plane.remove (this);
+        for (final GeoItem child : new ArrayList<> (children))
+        {
+            child.remove ();
+        }
     }
 
     /** Derive inferences from this item. */

@@ -300,6 +300,7 @@ public class GeoVertex extends GeoItem
     @Override
     public void remove ()
     {
+        super.remove ();
         line1.remove (this);
         line2.remove (this);
         for (final GeoTriangle t : triangles)

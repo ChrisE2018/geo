@@ -5,6 +5,8 @@ import static java.lang.Math.*;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 
@@ -100,6 +102,18 @@ public class GeoRectangle extends GeoItem
         g.drawRect ((int)round (from.x), (int)round (from.y), w, h);
         gg.setStroke (stroke);
         labels.add (this, getStatus ().getColor (), center.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
+    }
+
+    /**
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
+     *
+     * @param result
+     */
+    @Override
+    public void popup (Map<String, Consumer<GeoItem>> result)
+    {
+        result.put ("Delete", item -> item.remove ());
     }
 
     @Override

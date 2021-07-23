@@ -151,7 +151,6 @@ public class GeoPlane
      */
     public void remove (GeoItem item)
     {
-        item.remove ();
         items.remove (item);
         vertices.remove (item);
         triangles.remove (item);

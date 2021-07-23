@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 
@@ -233,7 +234,8 @@ public class GeoLine extends GeoItem
     @Override
     public void remove ()
     {
-        for (final GeoVertex v : vertices)
+        super.remove ();
+        for (final GeoVertex v : new ArrayList<> (vertices))
         {
             v.remove ();
         }
@@ -629,6 +631,18 @@ public class GeoLine extends GeoItem
         g.drawLine (a.x, a.y, b.x, b.y);
         gg.setStroke (stroke);
         labels.add (this, getStatus ().getColor (), midpoint.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
+    }
+
+    /**
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
+     *
+     * @param result
+     */
+    @Override
+    public void popup (Map<String, Consumer<GeoItem>> result)
+    {
+        result.put ("Delete", item -> item.remove ());
     }
 
     /**

@@ -345,8 +345,7 @@ public class TestGeoLine
         final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new Point2D.Double (50, 55));
 
         line1.remove ();
-        // Remove does not remove any vertices, just their children
-        assertFalse (line1.getVertices ().isEmpty ());
+        assertTrue (line1.getVertices ().isEmpty ());
         assertFalse (line2.getVertices ().isEmpty ());
         assertFalse (line3.getVertices ().isEmpty ());
     }

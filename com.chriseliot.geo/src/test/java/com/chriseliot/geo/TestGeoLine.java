@@ -559,7 +559,7 @@ public class TestGeoLine
         }
 
         assertEquals (256, total);
-        assertEquals (84, count);
+        assertEquals (116, count);
     }
 
     @Test

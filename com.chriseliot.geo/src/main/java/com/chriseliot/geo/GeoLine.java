@@ -468,6 +468,14 @@ public class GeoLine extends GeoItem
                 dx.setFormula ("dx from endpoints", "%s == %s - %s", dx, to.getX (), from.getX ());
             }
         }
+        if (!dx.isDetermined ())
+        {
+            // dx^2 == l^2 - dy^2
+            if (length.isDetermined () && dy.isDetermined ())
+            {
+                dx.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dx, length, dy);
+            }
+        }
         // Determine dy
         if (!dy.isDetermined ())
         {
@@ -495,6 +503,14 @@ public class GeoLine extends GeoItem
             if (from.getY ().isDetermined () && to.getY ().isDetermined ())
             {
                 dy.setFormula ("dy from endpoints", "%s == %s - %s", dy, to.getY (), from.getY ());
+            }
+        }
+        if (!dy.isDetermined ())
+        {
+            // dy^2 == l^2 - dx^2
+            if (length.isDetermined () && dx.isDetermined ())
+            {
+                dy.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dy, length, dx);
             }
         }
         // Determine to.x
@@ -567,6 +583,22 @@ public class GeoLine extends GeoItem
             if (dx.isDetermined () && dy.isDetermined ())
             {
                 length.setFormula ("length = sqrt(dx^2 + dy^2)", "%s == sqrt(%s^2 + %s^2)", length, dx, dy);
+            }
+        }
+        if (!length.isDetermined ())
+        {
+            if (dx.isDetermined () && angle.isDetermined ())
+            {
+                // dx = l*sin(theta) so l = dx / sin(theta)
+                length.setFormula ("length = dx / sin(theta)", "%s == %s / sin(%s * Degree)", length, dx, angle);
+            }
+        }
+        if (!length.isDetermined ())
+        {
+            if (dy.isDetermined () && angle.isDetermined ())
+            {
+                // dy = l*cos(theta) so l = dy / cos(theta)
+                length.setFormula ("length = dy / cos(theta)", "%s == %s / cos(%s * Degree)", length, dy, angle);
             }
         }
         // Determine angle

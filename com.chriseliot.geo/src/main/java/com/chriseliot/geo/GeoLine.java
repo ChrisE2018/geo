@@ -428,6 +428,17 @@ public class GeoLine extends GeoItem
                 setStatus (GeoStatus.derived, "known endpoints");
             }
         }
+        else
+        {
+            if (!from.isDetermined ())
+            {
+                from.setStatus (GeoStatus.derived, "known line");
+            }
+            if (!to.isDetermined ())
+            {
+                to.setStatus (GeoStatus.derived, "known line");
+            }
+        }
         // Determine dx
         if (!dx.isDetermined ())
         {
@@ -581,6 +592,7 @@ public class GeoLine extends GeoItem
         gg.setStroke (new BasicStroke (size));
         g.drawLine (a.x, a.y, b.x, b.y);
         gg.setStroke (stroke);
+        labels.add (this, getStatus ().getColor (), midpoint.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
     }
 
     /**

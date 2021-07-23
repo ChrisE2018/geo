@@ -64,17 +64,11 @@ public class TestNamedVariable
         final GeoItem item = new GeoItem (plane, "t", Color.black);
         final Point2D.Double position = new Point2D.Double (10, 20);
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
-        final NamedPoint p2 =
-            new NamedPoint (item, false, Color.green, "test", new Point2D.Double (20, 40), SwingConstants.NORTH_WEST);
         final NamedVariable v1 = new NamedVariable (parent, Color.red, "test1");
         final NamedVariable v2 = new NamedVariable (parent, Color.red, "test1", 43.0);
         assertEquals (parent, v1.getLocation ());
         assertEquals (parent, v2.getLocation ());
         v1.setLocation (parent);
-        assertNull (v1.getLocation2 ());
-        v1.setLocation (parent, p2);
-        assertNotNull (v1.getLocation2 ());
-        assertEquals (p2, v1.getLocation2 ());
     }
 
     @Test
@@ -135,18 +129,18 @@ public class TestNamedVariable
         final GeoItem item = new GeoItem (plane, "t", Color.black);
         final Point2D.Double position = new Point2D.Double (10, 20);
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
-        final NamedPoint p2 =
-            new NamedPoint (item, false, Color.green, "test", new Point2D.Double (20, 40), SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
         final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
         final Graphics g = image.getGraphics ();
         final Labels labels = new Labels ();
         v.paint (g, labels);
-        v.setLocation (parent, p2);
-        v.paint (g, labels);
         v.setFormula ("test", "2 == 1 + 1");
         assertNotNull (v.getFormulaInstance ());
         v.paint (g, labels);
+        v.setDoubleValue (12.0);
+        v.paint (g, labels);
+
+        // Set location to null to get other branch
         v.setLocation (null);
         v.paint (g, labels);
     }
@@ -282,7 +276,6 @@ public class TestNamedVariable
             }
         }
         test.readAttributes (attributes2);
-        test.setLocation (parent, parent);
         assertNotNull (test.getAttributes ());
         test.setLocation (null);
         assertNotNull (test.getAttributes ());

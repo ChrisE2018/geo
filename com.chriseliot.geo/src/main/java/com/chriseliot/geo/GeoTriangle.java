@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
+import javax.swing.SwingConstants;
+
 import org.apache.logging.log4j.*;
 
 import com.chriseliot.util.Labels;
@@ -36,13 +38,13 @@ public class GeoTriangle extends GeoItem
     private final GeoVertex v3;
 
     /** Length from vertex 2 to vertex 3. This is the length of the side opposite v1. */
-    private final NamedVariable l1;
+    private final CentroidVariable l1;
 
     /** Length from vertex 3 to vertex 1. This is the length of the side opposite v2. */
-    private final NamedVariable l2;
+    private final CentroidVariable l2;
 
     /** Length from vertex 1 to vertex 2. This is the length of the side opposite v3. */
-    private final NamedVariable l3;
+    private final CentroidVariable l3;
 
     /**
      * Angle of vertex 3 (degrees). This is the angle from line3 to line1. Opposite l1. This is at
@@ -61,6 +63,8 @@ public class GeoTriangle extends GeoItem
      * the same corner as vertex v3.
      */
     private final TriangleAngleVariable angle3;
+
+    private final NamedPoint centroid;
 
     public GeoTriangle (GeoPlane plane, Color color, GeoVertex iv1, GeoVertex iv2, GeoVertex iv3)
     {
@@ -81,9 +85,9 @@ public class GeoTriangle extends GeoItem
         v3.addTriangle (this);
         final String name = getName ();
         // Compute length of sides opposite each vertex
-        l1 = new NamedVariable (this, color, name + SEP + "l1", v2.distance (v3));
-        l2 = new NamedVariable (this, color, name + SEP + "l2", v3.distance (v1));
-        l3 = new NamedVariable (this, color, name + SEP + "l3", v1.distance (v2));
+        l1 = new CentroidVariable (this, color, name + SEP + "l1", v2.distance (v3));
+        l2 = new CentroidVariable (this, color, name + SEP + "l2", v3.distance (v1));
+        l3 = new CentroidVariable (this, color, name + SEP + "l3", v1.distance (v2));
         l1.setLocation (v2.getVertex (), v3.getVertex ());
         l2.setLocation (v3.getVertex (), v1.getVertex ());
         l3.setLocation (v1.getVertex (), v2.getVertex ());
@@ -100,6 +104,8 @@ public class GeoTriangle extends GeoItem
         angle1.setLocation (v1.getVertex ());
         angle2.setLocation (v2.getVertex ());
         angle3.setLocation (v3.getVertex ());
+
+        centroid = new NamedPoint (this, true, color, name + SEP + "C", centroid (), SwingConstants.SOUTH_WEST);
     }
 
     /**
@@ -134,6 +140,11 @@ public class GeoTriangle extends GeoItem
         return new Point2D.Double (tx / 3.0, ty / 3.0);
     }
 
+    public NamedPoint getCentroid ()
+    {
+        return centroid;
+    }
+
     /**
      * Vertex between line3 and line1. Opposite l1. V1 is the first vertex clockwise starting north
      * of the triangle centroid.
@@ -166,19 +177,19 @@ public class GeoTriangle extends GeoItem
     }
 
     /** Length from vertex 2 to vertex 3. This is the length of the side opposite v1. */
-    public NamedVariable getL1 ()
+    public CentroidVariable getL1 ()
     {
         return l1;
     }
 
     /** Length from vertex 3 to vertex 1. This is the length of the side opposite v2. */
-    public NamedVariable getL2 ()
+    public CentroidVariable getL2 ()
     {
         return l2;
     }
 
     /** Length from vertex 1 to vertex 2. This is the length of the side opposite v3. */
-    public NamedVariable getL3 ()
+    public CentroidVariable getL3 ()
     {
         return l3;
     }
@@ -498,6 +509,7 @@ public class GeoTriangle extends GeoItem
         l1.setDoubleValue (v2.distance (v3));
         l2.setDoubleValue (v3.distance (v1));
         l3.setDoubleValue (v1.distance (v2));
+        centroid.setPosition (centroid ());
     }
 
     /**
@@ -588,10 +600,38 @@ public class GeoTriangle extends GeoItem
         lawOfSines ();
         // If two angles are known the third is derived from 180 = a + b + c.
 
+        // Location of centroid
+        if (!centroid.getX ().isDetermined ())
+        {
+            final NamedVariable x1 = v1.getVertex ().getX ();
+            final NamedVariable x2 = v2.getVertex ().getX ();
+            final NamedVariable x3 = v3.getVertex ().getX ();
+            if (x1.isDetermined () && x2.isDetermined () && x3.isDetermined ())
+            {
+                centroid.getX ().setFormula ("centroid", "%s == (%s + %s + %s) / 3", centroid.getX (), x1, x2, x3);
+            }
+        }
+        if (!centroid.getY ().isDetermined ())
+        {
+            final NamedVariable y1 = v1.getVertex ().getY ();
+            final NamedVariable y2 = v2.getVertex ().getY ();
+            final NamedVariable y3 = v3.getVertex ().getY ();
+            if (y1.isDetermined () && y2.isDetermined () && y3.isDetermined ())
+            {
+                centroid.getY ().setFormula ("centroid", "%s == (%s + %s + %s) / 3", centroid.getY (), y1, y2, y3);
+            }
+        }
         // If all angles and sides are known, the triangle is fully known
         if (!isDetermined ())
         {
             if (l1.isDetermined () && l2.isDetermined () && l3.isDetermined ())
+            {
+                setStatus (GeoStatus.derived, "triangle sides");
+            }
+        }
+        if (!isDetermined ())
+        {
+            if (v1.isDetermined () && v2.isDetermined () && v3.isDetermined ())
             {
                 setStatus (GeoStatus.derived, "triangle vertices");
             }
@@ -972,6 +1012,7 @@ public class GeoTriangle extends GeoItem
             gg.setStroke (new BasicStroke (size));
             g.drawPolygon (x, y, 3);
             gg.setStroke (stroke);
+            labels.add (this, getStatus ().getColor (), centroid.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
         }
     }
 

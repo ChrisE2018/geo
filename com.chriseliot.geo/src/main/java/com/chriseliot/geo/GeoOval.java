@@ -53,6 +53,7 @@ public class GeoOval extends GeoItem
         gg.setStroke (new BasicStroke (size));
         g.drawOval ((int)round (a.x), (int)round (a.y), w, h);
         gg.setStroke (stroke);
+        labels.add (this, getStatus ().getColor (), center.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 import org.apache.logging.log4j.*;
 import org.matheclipse.core.eval.ExprEvaluator;
@@ -271,21 +271,6 @@ public class NamedVariable extends GeoItem
     }
 
     /**
-     * Location on screen to draw label for this variable. If location2 is not null, draw the label
-     * half way between location and location2.
-     */
-    public NamedPoint getLocation2 ()
-    {
-        return location2;
-    }
-
-    public void setLocation (NamedPoint p1, NamedPoint p2)
-    {
-        location = p1;
-        location2 = p2;
-    }
-
-    /**
      * Paint this item in its current state. The Graphics object is normally the window component,
      * but could be a printer or BufferedImage.
      *
@@ -299,7 +284,12 @@ public class NamedVariable extends GeoItem
         {
             final Point position = location.getIntPosition ();
             final Color color = getStatus ().getColor ();
-            final String text = String.format ("%s = %.1f", getName (), value);
+            final String name = getName ();
+            String text = name;
+            if (value != null)
+            {
+                text = String.format ("%s = %.1f", getName (), value);
+            }
             final String tooltip;
             if (formulaExpression == null)
             {
@@ -309,18 +299,8 @@ public class NamedVariable extends GeoItem
             {
                 tooltip = String.format ("%.1f = %s", value, getFormulaInstance ());
             }
-            final NamedPoint location2 = getLocation2 ();
-            if (location2 != null)
-            {
-                final Point position2 = location2.getIntPosition ();
-                final Point pos = new Point ((position.x + position2.x) / 2, (position.y + position2.y) / 2);
-                labels.add (this, color, pos, SwingConstants.SOUTH_WEST, text, tooltip);
-            }
-            else
-            {
-                final int anchor = location.getAnchor ();
-                labels.add (this, color, position, anchor, text, tooltip);
-            }
+            final int anchor = location.getAnchor ();
+            labels.add (this, color, position, anchor, text, tooltip);
         }
     }
 

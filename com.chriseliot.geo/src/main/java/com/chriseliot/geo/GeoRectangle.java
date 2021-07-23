@@ -14,8 +14,14 @@ public class GeoRectangle extends GeoItem
 {
     private final Point2D.Double from;
     private final Point2D.Double to;
+    private final NamedPoint tl;
+    private final NamedPoint tr;
+    private final NamedPoint bl;
+    private final NamedPoint br;
+    private final NamedPoint center;
+    private final NamedVariable width;
+    private final NamedVariable height;
 
-    @SuppressWarnings ("unused")
     public GeoRectangle (GeoPlane plane, Color color, Point2D.Double from, Point2D.Double to)
     {
         super (plane, "R", color);
@@ -27,18 +33,50 @@ public class GeoRectangle extends GeoItem
         this.to = new Point2D.Double (this.from.x + dx, this.from.y + dy);
         final String name = getName ();
         // Top left
-        new NamedPoint (this, true, color, name + SEP + "tl", from, SwingConstants.SOUTH_WEST);
+        tl = new NamedPoint (this, true, color, name + SEP + "tl", from, SwingConstants.SOUTH_WEST);
         // Top right
-        new NamedPoint (this, true, color, name + SEP + "tr", to.x, from.y, SwingConstants.SOUTH_EAST);
+        tr = new NamedPoint (this, true, color, name + SEP + "tr", to.x, from.y, SwingConstants.SOUTH_EAST);
         // Bottom left
-        new NamedPoint (this, true, color, name + SEP + "bl", from.x, to.y, SwingConstants.NORTH_WEST);
+        bl = new NamedPoint (this, true, color, name + SEP + "bl", from.x, to.y, SwingConstants.NORTH_WEST);
         // Bottom right
-        new NamedPoint (this, true, color, name + SEP + "br", to, SwingConstants.NORTH_EAST);
+        br = new NamedPoint (this, true, color, name + SEP + "br", to, SwingConstants.NORTH_EAST);
 
         // = abs(bottom_right.x - top_left.x)
-        new NamedVariable (this, color, name + SEP + "w");
+        width = new NamedVariable (this, color, name + SEP + "w");
         // = abs(bottom_right.y - top_left.y)
-        new NamedVariable (this, color, name + SEP + "h");
+        height = new NamedVariable (this, color, name + SEP + "h");
+        center = new TransposePoint (this, true, color, name + SEP + "C", (from.x + to.x) * 0.5, (from.y + to.y) * 0.5,
+                SwingConstants.CENTER);
+    }
+
+    public NamedPoint getTopLeft ()
+    {
+        return tl;
+    }
+
+    public NamedPoint getTopRight ()
+    {
+        return tr;
+    }
+
+    public NamedPoint getBottomLeft ()
+    {
+        return bl;
+    }
+
+    public NamedPoint getBottomRight ()
+    {
+        return br;
+    }
+
+    public NamedVariable getWidth ()
+    {
+        return width;
+    }
+
+    public NamedVariable getHeight ()
+    {
+        return height;
     }
 
     @Override
@@ -54,6 +92,7 @@ public class GeoRectangle extends GeoItem
         gg.setStroke (new BasicStroke (size));
         g.drawRect ((int)round (from.x), (int)round (from.y), w, h);
         gg.setStroke (stroke);
+        labels.add (this, getStatus ().getColor (), center.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
     }
 
     @Override

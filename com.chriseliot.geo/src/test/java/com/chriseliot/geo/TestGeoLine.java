@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Date;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 import org.matheclipse.core.eval.ExprEvaluator;
@@ -389,6 +389,19 @@ public class TestGeoLine
         ts.checkExpression (test.getMidpoint ().getY (), 30, trace);
         ts.checkExpression (test.getAngle (), 45, trace);
         ts.checkExpression (test.getLength (), sqrt (800), trace);
+    }
+
+    @Test
+    public void testAttributes ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final Map<String, Object> attributes = line.getAttributes ();
+        assertFalse (attributes.isEmpty ());
+        assertTrue (attributes.containsKey ("angle"));
+        assertTrue (attributes.containsKey ("length"));
+        assertTrue (attributes.containsKey ("dx"));
+        assertTrue (attributes.containsKey ("dy"));
     }
 
     /** Check the computation of midpoint. */

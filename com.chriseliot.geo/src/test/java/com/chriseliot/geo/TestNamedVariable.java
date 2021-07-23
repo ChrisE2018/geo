@@ -203,7 +203,6 @@ public class TestNamedVariable
     @Test
     public void testAttributes ()
     {
-
         final GeoPlane plane = new GeoPlane ();
         final GeoItem item = new GeoItem (plane, "t", Color.black);
         final Point2D.Double position = new Point2D.Double (10, 20);
@@ -230,5 +229,22 @@ public class TestNamedVariable
         assertNotNull (test.getAttributes ());
         test.setLocation (null);
         assertNotNull (test.getAttributes ());
+    }
+
+    @Test
+    public void testSetValueAction ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem item = new GeoItem (plane, "t", Color.black);
+        final Point2D.Double position = new Point2D.Double (10, 20);
+        final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
+        final NamedVariable x = parent.getX ();
+        x.setValueAction (45.5);
+        assertEquals (GeoStatus.fixed, x.getStatus ());
+        final NamedVariable test = new NamedVariable (parent, Color.green, "testing");
+        test.setValueAction (17.0);
+        parent.getX ().setValueAction (22.6);
+        final NamedVariable child = new NamedVariable (test, Color.green, "testing");
+        child.setValueAction (17.0);
     }
 }

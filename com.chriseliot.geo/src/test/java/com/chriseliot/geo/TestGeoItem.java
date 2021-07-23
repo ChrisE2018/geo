@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 
@@ -182,6 +183,22 @@ public class TestGeoItem
         assertTrue (points3.contains (new Point2D.Double (10, 20)));
         assertTrue (points3.contains (new Point2D.Double (30, 40)));
         assertEquals (parent, child3.getParent ());
+    }
+
+    @Test
+    public void testPopup ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem test = new GeoItem (plane, "t", Color.black);
+        final Map<String, Consumer<GeoItem>> result = new HashMap<> ();
+        test.popup (result);
+        assertEquals (2, result.size ());
+        assertTrue (result.containsKey ("known"));
+        assertTrue (result.containsKey ("unknown"));
+        result.get ("known").accept (test);
+        assertEquals (GeoStatus.known, test.getStatus ());
+        result.get ("unknown").accept (test);
+        assertEquals (GeoStatus.unknown, test.getStatus ());
     }
 
     @Test

@@ -22,13 +22,6 @@ public class LineAngleVariable extends NamedVariable
         super (parent, color, name);
     }
 
-    // /** Should a popup menu on this item include a set value item. */
-    // @Override
-    // public boolean canSetValue ()
-    // {
-    // return true;
-    // }
-
     /**
      * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
      * to call the super method.

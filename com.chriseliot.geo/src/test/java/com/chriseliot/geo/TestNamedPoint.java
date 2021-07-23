@@ -1,6 +1,7 @@
 
 package com.chriseliot.geo;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.*;
@@ -8,11 +9,13 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 
 import org.junit.jupiter.api.Test;
 
+import com.chriseliot.geo.gui.CloseDialogThread;
 import com.chriseliot.util.Labels;
 
 public class TestNamedPoint
@@ -188,6 +191,29 @@ public class TestNamedPoint
         test.setGivenStatus (GeoStatus.known);
         checkVariables (test);
         assertNotNull (test.toString ());
+    }
+
+    @Test
+    public void testPopup ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
+
+        final Map<String, Consumer<GeoItem>> result = new HashMap<> ();
+        test.popup (result);
+        assertEquals (3, result.size ());
+        assertTrue (result.containsKey ("known"));
+        assertTrue (result.containsKey ("unknown"));
+        assertTrue (result.containsKey ("Set Value"));
+
+        final CloseDialogThread thread = new CloseDialogThread ();
+        thread.start ();
+        result.get ("Set Value").accept (test);
+        thread.halt ();
+        thread.dream (10);
+        System.out.printf ("Set Value dialog returns\n");
+        assertTrue (thread.isDialogSeen ());
     }
 
     @Test

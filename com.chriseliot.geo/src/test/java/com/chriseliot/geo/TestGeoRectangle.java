@@ -25,6 +25,22 @@ public class TestGeoRectangle
     }
 
     @Test
+    public void testGetters ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final Color color = Color.red;
+        final Point2D.Double from = new Point2D.Double (10, 20);
+        final Point2D.Double to = new Point2D.Double (30, 40);
+        final GeoRectangle test = new GeoRectangle (plane, color, from, to);
+        assertNotNull (test.getTopLeft ());
+        assertNotNull (test.getTopRight ());
+        assertNotNull (test.getBottomLeft ());
+        assertNotNull (test.getBottomRight ());
+        assertNotNull (test.getWidth ());
+        assertNotNull (test.getHeight ());
+    }
+
+    @Test
     public void testPaint ()
     {
         final GeoPlane plane = new GeoPlane ();

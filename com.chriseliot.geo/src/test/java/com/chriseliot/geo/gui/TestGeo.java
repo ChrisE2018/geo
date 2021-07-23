@@ -38,8 +38,6 @@ class TestGeo
     {
         final Geo test = new Geo ();
         test.clear ();
-        test.mouseClicked (null);
-        test.mouseEntered (null);
         test.setCreateColor (Color.blue);
         assertEquals (Color.blue, test.getCreateColor ());
         test.setCreateColor (Color.red);

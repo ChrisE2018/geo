@@ -6,7 +6,6 @@ import static java.lang.Math.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -14,14 +13,14 @@ import javax.swing.table.*;
 import org.apache.logging.log4j.*;
 
 import com.chriseliot.geo.*;
-import com.chriseliot.util.*;
+import com.chriseliot.util.LabelItem;
 
 /**
  * Toplevel Geometry calculator.
  *
  * @author cre
  */
-public class Geo extends JPanel implements MouseListener, MouseMotionListener
+public class Geo extends JPanel
 {
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
 
@@ -33,38 +32,19 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         geo.open ();
     }
 
-    private final GeoClick gc = new GeoClick (this);
-
     /** Storage for all geometry items. */
     private final GeoPlane plane = new GeoPlane ();
     private final GeoSolution solution = new GeoSolution (plane);
 
     private final JFrame frame = new JFrame ("Geometry Solver");
+
+    /** Panel for user controls. */
     private final GeoControls controls = new GeoControls (this, false);
     private final JTable solutionTable = new JTable (solution);
     private final JScrollPane solutionScroll =
         new JScrollPane (solutionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-    /**
-     * The nearby shape handle if the mouse is near something. This is what will be selected if the
-     * mouse button is pressed.
-     */
-    private Point2D.Double mousePoint = null;
-
-    /** The point that was clicked on. This may be snapped to a shape. */
-    private Point2D.Double clickPoint = null;
-
-    /** The current mouse drag point. This only has a value when the mouse is pressed. */
-    private Point2D.Double dragPoint = null;
-
-    /** The item the mouse is over. The tooltip should be painted from this. */
-    private LabelItem hoverItem = null;
-
-    /** Square of the maximum distance to snap a point. */
-    private final int snapLimit = 30 * 30;
-
-    /** Color to create new items with. */
-    private Color createColor = Color.orange;
+    private final GeoMouse geoMouse = new GeoMouse (this);
 
     /** Construct the window and initialize the frame. */
     public Geo ()
@@ -167,6 +147,12 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         repaint ();
     }
 
+    /** Panel for user controls. */
+    public GeoControls getControls ()
+    {
+        return controls;
+    }
+
     /** Storage for all geometry items. */
     public GeoPlane getPlane ()
     {
@@ -190,12 +176,12 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
 
     public Color getCreateColor ()
     {
-        return createColor;
+        return geoMouse.getCreateColor ();
     }
 
     public void setCreateColor (Color color)
     {
-        createColor = color;
+        geoMouse.setCreateColor (color);
     }
 
     @Override
@@ -206,8 +192,8 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
         g.setColor (getBackground ());
         g.fillRect (0, 0, width, height);
         plane.paintItems (g);
-        final Point2D.Double c = clickPoint;
-        final Point2D.Double d = dragPoint;
+        final Point2D.Double c = geoMouse.getClickPoint ();
+        final Point2D.Double d = geoMouse.getDragPoint ();
         if (c != null && d != null)
         {
             final int cx = (int)round (c.x);
@@ -252,12 +238,14 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
             }
         }
         g.setColor (Color.yellow);
+        final Point2D.Double mousePoint = geoMouse.getMousePoint ();
         if (mousePoint != null)
         {
             final int mx = (int)round (mousePoint.x);
             final int my = (int)round (mousePoint.y);
             g.drawRect (mx - 2, my - 2, 5, 5);
         }
+        final LabelItem hoverItem = geoMouse.getHoverItem ();
         if (hoverItem != null)
         {
             final String tooltip = hoverItem.getTooltip ();
@@ -293,152 +281,7 @@ public class Geo extends JPanel implements MouseListener, MouseMotionListener
 
     private void addListeners ()
     {
-        addMouseListener (this);
-        addMouseMotionListener (this);
-    }
-
-    @Override
-    public void mouseClicked (MouseEvent e)
-    {
-    }
-
-    /**
-     * Handle mouse pressed events. Determine the shape we are going to draw and prepare to drag
-     * selection points. Implement snap points.
-     */
-    @Override
-    public void mousePressed (MouseEvent e)
-    {
-        hoverItem = null;
-        mousePoint = null;
-        plane.deselectAll ();
-        final Point p = e.getPoint ();
-        final LabelItem label = plane.getLabels ().find (p);
-        if (label != null)
-        {
-            final Object source = label.getSource ();
-            logger.info ("Click on label %s: %s", label, source);
-            if (source instanceof GeoItem)
-            {
-                final GeoItem item = (GeoItem)source;
-                if (gc.handleClick (p, item))
-                {
-                    return;
-                }
-            }
-        }
-        clickPoint = new Point2D.Double (p.x, p.y);
-        final NamedPoint click = plane.getClickObject (clickPoint, snapLimit);
-        if (click != null)
-        {
-            logger.info ("Click on %s", click);
-            final Point2D.Double position = click.getPosition ();
-            final List<NamedPoint> dragPoints = plane.getDragPoints (position);
-            for (final NamedPoint np : dragPoints)
-            {
-                if (np.getX ().getStatus () == GeoStatus.fixed || np.getY ().getStatus () == GeoStatus.fixed)
-                {
-                    // Don't allow dragging of fixed positions
-                    clickPoint = null;
-                    return;
-                }
-            }
-            clickPoint = position;
-            plane.selectAll (dragPoints);
-        }
-    }
-
-    /**
-     * Handle mouse released events. Remove the mouse motion listener and create the new geometry
-     * item.
-     */
-    @Override
-    public void mouseReleased (MouseEvent e)
-    {
-        final Point2D.Double c = clickPoint;
-        final Point2D.Double d = dragPoint;
-        clickPoint = null;
-        dragPoint = null;
-        final GeoShape geoShape = controls.getSelected ();
-        if (c != null && d != null)
-        {
-            // This could be a switch but it is more compact as an if-then-else chain.
-            if (geoShape == GeoShape.select)
-            {
-                plane.drag (c, d);
-            }
-            else if (geoShape == GeoShape.line)
-            {
-                plane.addItem (new GeoLine (plane, createColor, c, d));
-            }
-            else if (geoShape == GeoShape.rectangle)
-            {
-                plane.addItem (new GeoRectangle (plane, createColor, c, d));
-            }
-            else if (geoShape == GeoShape.oval)
-            {
-                plane.addItem (new GeoOval (plane, createColor, c, d));
-            }
-        }
-        solution.update ();
-        solutionTable.doLayout ();
-        solutionTable.invalidate ();
-        solutionTable.setShowGrid (true);
-        repaint ();
-    }
-
-    @Override
-    public void mouseEntered (MouseEvent e)
-    {
-    }
-
-    @Override
-    public void mouseExited (MouseEvent e)
-    {
-        hoverItem = null;
-        repaint ();
-    }
-
-    @Override
-    public void mouseDragged (MouseEvent e)
-    {
-        final Point p = e.getPoint ();
-        dragPoint = new Point2D.Double (p.x, p.y);
-        final Point2D.Double s = plane.getSnapPoint (dragPoint, snapLimit);
-        if (s != null)
-        {
-            dragPoint = s;
-        }
-        repaint ();
-    }
-
-    @Override
-    public void mouseMoved (MouseEvent e)
-    {
-        hoverItem = null;
-        if (clickPoint == null)
-        {
-            Point2D.Double result = null;
-            boolean refresh = (mousePoint != null);
-            final Point p = e.getPoint ();
-            final Point2D.Double s = plane.getSnapPoint (p, snapLimit);
-            if (s != null)
-            {
-                result = s;
-                refresh = true;
-            }
-            mousePoint = result;
-            final Labels labels = plane.getLabels ();
-            final LabelItem item = labels.find (p);
-            if (item != null)
-            {
-                hoverItem = item;
-                refresh = true;
-            }
-            if (refresh)
-            {
-                repaint ();
-            }
-        }
+        addMouseListener (geoMouse);
+        addMouseMotionListener (geoMouse);
     }
 }

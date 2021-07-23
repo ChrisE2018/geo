@@ -13,6 +13,7 @@ public class GeoItem
     /** Separator between parts of a name. */
     public static char SEP = '$';
 
+    /** Support for generating unique names. */
     private static Namer namer = new Namer ();
 
     /** The geometry plane. */
@@ -29,6 +30,9 @@ public class GeoItem
 
     /** Display color. */
     private Color color;
+
+    /** Categories for display filtering. */
+    private final Set<String> categories = new TreeSet<> ();
 
     /** Has this item been selected by a mouse click. */
     private boolean isSelected;
@@ -115,6 +119,18 @@ public class GeoItem
     public void setColor (Color color)
     {
         this.color = color;
+    }
+
+    /** Categories for display filtering. */
+    public Set<String> getCategories ()
+    {
+        return categories;
+    }
+
+    /** Categories for display filtering. */
+    public void addCategory (String category)
+    {
+        categories.add (category);
     }
 
     /** Has this item been selected by a mouse click. */

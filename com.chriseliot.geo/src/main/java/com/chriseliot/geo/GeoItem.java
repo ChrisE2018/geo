@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.chriseliot.util.*;
 
@@ -306,87 +307,16 @@ public class GeoItem
 
     }
 
-    /** Should a popup menu on this item include a set known item. */
-    public boolean canSetKnown ()
+    /**
+     * Populate a popup menu with required items. This should be overridden by subclasses. Be sure
+     * to call the super method.
+     *
+     * @param result
+     */
+    public void popup (Map<String, Consumer<GeoItem>> result)
     {
-        return true;
-    }
-
-    /** Action to perform for a set known item. */
-    public void setKnownAction ()
-    {
-        setGivenStatus (GeoStatus.known);
-    }
-
-    /** Should a popup menu on this item include a set unknown item. */
-    public boolean canSetUnknown ()
-    {
-        return true;
-    }
-
-    /** Action to perform for a set unknown item. */
-    public void setUnknownAction ()
-    {
-        setDefaultFormula ();
-        getPlane ().resetDerived ();
-    }
-
-    /** Should a popup menu on this item include a set fixed item. */
-    public boolean canSetFixed ()
-    {
-        return false;
-    }
-
-    /** Action to perform for a set fixed item. */
-    public void setFixedAction ()
-    {
-        setGivenStatus (GeoStatus.fixed);
-    }
-
-    /** Should a popup menu on this item include a set value item. */
-    public boolean canSetValue ()
-    {
-        return false;
-    }
-
-    /** Action to perform for a set value action. */
-    public void setValueAction ()
-    {
-        setGivenStatus (GeoStatus.fixed);
-    }
-
-    /** Can this item support a rename option. */
-    public boolean canRenameVariable ()
-    {
-        return false;
-    }
-
-    /** Implement the rename option. */
-    public void renameVariableAction ()
-    {
-
-    }
-
-    /** Should a popup menu on this item include a show derivation item. */
-    public boolean canShowDerivation ()
-    {
-        return false;
-    }
-
-    /** Action to perform for a show derivation action. */
-    public void showDerivationAction ()
-    {
-    }
-
-    /** Should a popup menu on this item include a show solution item. */
-    public boolean canShowSolution ()
-    {
-        return false;
-    }
-
-    /** Action to perform for a show derivation action. */
-    public void showSolutionAction ()
-    {
+        result.put ("known", item -> item.setGivenStatus (GeoStatus.known));
+        result.put ("unknown", item -> item.setGivenStatus (GeoStatus.unknown));
     }
 
     /** Get named attributes. Used for saving to a csv file. */

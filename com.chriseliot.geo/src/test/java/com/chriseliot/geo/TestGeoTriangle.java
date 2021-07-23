@@ -1,6 +1,7 @@
 
 package com.chriseliot.geo;
 
+import static java.lang.Math.abs;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.*;
@@ -322,6 +323,39 @@ public class TestGeoTriangle
         assertEquals (t.getV2 (), t.getOpposite (t.getL2 ()));
         assertEquals (t.getV3 (), t.getOpposite (t.getL3 ()));
         assertNull (t.getOpposite ((NamedVariable)null));
+
+        assertEquals (t.getL1 (), t.getOpposite (t.getAngle1 ()));
+        assertEquals (t.getL2 (), t.getOpposite (t.getAngle2 ()));
+        assertEquals (t.getL3 (), t.getOpposite (t.getAngle3 ()));
+        assertNull (t.getOpposite ((TriangleAngleVariable)null));
+    }
+
+    @Test
+    public void testGetVertex ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (0, 0), new Point2D.Double (30, 0));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (0, 0), new Point2D.Double (30, 40));
+        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new Point2D.Double (30, 0));
+        assertNotNull (line1);
+        assertNotNull (line2);
+        assertNotNull (line3);
+        final GeoVertex inputAngle1 = plane.getVertex (new Point2D.Double (0, 0));
+        final GeoVertex inputAngle2 = plane.getVertex (new Point2D.Double (30, 40));
+        final GeoVertex inputAngle3 = plane.getVertex (new Point2D.Double (30, 0));
+
+        final GeoTriangle t = plane.getTriangle (inputAngle1, inputAngle2, inputAngle3);
+        assertNotNull (t.toString ());
+
+        assertEquals (t.getV1 (), t.getVertex (t.getAngle1 ()));
+        assertEquals (t.getV2 (), t.getVertex (t.getAngle2 ()));
+        assertEquals (t.getV3 (), t.getVertex (t.getAngle3 ()));
+        assertNull (t.getVertex ((TriangleAngleVariable)null));
+
+        assertEquals (30.0 + 40.0 + 50.0, t.getPerimeter ());
+        assertEquals ((30.0 * 40.0) / 2, t.getHeronArea ());
+        assertEquals (t.getHeronArea () * 2, abs (t.triangleArea ()));
+        assertEquals (40.0, t.getAltitude (t.getL1 ()));
     }
 
     @Test

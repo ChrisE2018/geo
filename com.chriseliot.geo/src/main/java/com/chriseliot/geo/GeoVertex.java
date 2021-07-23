@@ -336,7 +336,7 @@ public class GeoVertex extends GeoItem
     public void getAttributes (Map<String, Object> result)
     {
         result.put ("positionx", position.x);
-        result.put ("positionx", position.y);
+        result.put ("positiony", position.y);
         result.put ("angle", angle.getDoubleValue ());
     }
 

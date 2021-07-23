@@ -360,7 +360,7 @@ public class NamedVariable extends GeoItem
         JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void getDerivation (StringBuilder builder, int level)
+    public void getDerivation (StringBuilder builder, int level)
     {
         for (int i = 1; i < terms.length; i++)
         {
@@ -474,7 +474,6 @@ public class NamedVariable extends GeoItem
             plane.remove (this);
             setName (name);
             plane.addItem (this);
-            assert (this == plane.get (name));
             plane.fireChangeListeners (this);
         }
     }

@@ -478,6 +478,8 @@ public class GeoTriangle extends GeoItem
      * This formula allows a negative result. Not sure if that is good but right now this is only
      * being used to check if the area is zero to be sure it really is a triangle so it does not
      * matter.
+     *
+     * This returns double the true area and may be negative.
      */
     public double triangleArea ()
     {
@@ -589,12 +591,9 @@ public class GeoTriangle extends GeoItem
         // If all angles and sides are known, the triangle is fully known
         if (!isDetermined ())
         {
-            if (angle2.isDetermined () && angle3.isDetermined () && angle1.isDetermined ())
+            if (l1.isDetermined () && l2.isDetermined () && l3.isDetermined ())
             {
-                if (l1.isDetermined () && l2.isDetermined () && l3.isDetermined ())
-                {
-                    setStatus (GeoStatus.derived, "triangle vertices");
-                }
+                setStatus (GeoStatus.derived, "triangle vertices");
             }
         }
     }

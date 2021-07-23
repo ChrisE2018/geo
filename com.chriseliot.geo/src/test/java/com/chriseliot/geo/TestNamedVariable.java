@@ -54,6 +54,7 @@ public class TestNamedVariable
         test.setDoubleValue (17.0);
         assertEquals (17.0, test.getDoubleValue ());
         assertEquals (0, test.getTerms ().length);
+        assertNull (test.getFormulaExpression ());
     }
 
     @Test
@@ -160,8 +161,30 @@ public class TestNamedVariable
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
         assertFalse (item.canShowDerivation ());
         assertFalse (parent.canShowDerivation ());
-        assertEquals (v.getStatus () == GeoStatus.derived, v.canShowDerivation ());
-        assertEquals (v == parent.getX () || v == parent.getY (), v.canSetValue ());
+        assertNotEquals (GeoStatus.derived, v.getStatus ());
+        assertFalse (v.canShowDerivation ());
+        assertFalse (v.canShowSolution ());
+        assertFalse (v.canShowDerivation ());
+        assertNotEquals (v, parent.getX ());
+        assertNotEquals (v, parent.getY ());
+        assertFalse (v.canSetValue ());
+
+        v.setFormula ("test", "%s == 55", v);
+        assertEquals (GeoStatus.derived, v.getStatus ());
+        assertTrue (v.canShowDerivation ());
+        assertTrue (v.canShowSolution ());
+        assertTrue (v.canShowDerivation ());
+        assertTrue (v.canRenameVariable ());
+
+        // Try to change to a conflicting name
+        final String oldName = v.getName ();
+        v.renameVariableAction ("test");
+        assertEquals (oldName, v.getName ());
+
+        // Now pick a new name that won't conflict
+        v.renameVariableAction ("change");
+        assertEquals ("change", v.getName ());
+        assertEquals (v, plane.get ("change"));
     }
 
     @Test
@@ -199,6 +222,14 @@ public class TestNamedVariable
         thread.dream (10);
         System.out.printf ("Derivation dialog returns\n");
         assertTrue (thread.isDialogSeen ());
+
+        final NamedVariable x = parent.getX ();
+        final NamedVariable y = parent.getY ();
+        v.setGivenStatus (GeoStatus.known);
+        y.setGivenStatus (GeoStatus.fixed);
+        x.setFormula ("test", "%s == %s + %s", x, y, v);
+        final StringBuilder builder = new StringBuilder ();
+        x.getDerivation (builder, 3);
     }
 
     /**

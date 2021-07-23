@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -192,6 +193,27 @@ public class TestGeoVertex
         assertFalse (v2.getLine1 ().getVertices ().contains (v2));
         assertFalse (v3.getLine1 ().getVertices ().contains (v3));
         assertFalse (t.getPlane ().contains (t));
+    }
+
+    @Test
+    public void testAttributes ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 55));
+
+        final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (10, 20));
+        final Map<String, Object> attributes = v1.getAttributes ();
+        assertEquals (v1.getPosition ().x, attributes.get ("positionx"));
+        assertEquals (v1.getPosition ().y, attributes.get ("positiony"));
+        assertEquals (v1.getAngle ().getDoubleValue (), attributes.get ("angle"));
+
+        attributes.clear ();
+        v1.getAttributes (attributes);
+        assertEquals (3, attributes.size ());
+        assertEquals (v1.getPosition ().x, attributes.get ("positionx"));
+        assertEquals (v1.getPosition ().y, attributes.get ("positiony"));
+        assertEquals (v1.getAngle ().getDoubleValue (), attributes.get ("angle"));
     }
 
     @Test

@@ -273,6 +273,8 @@ public class GeoControls extends JPanel implements ActionListener
         final Document doc = builder.newDocument ();
         final Element root = doc.createElement ("geometry");
         doc.appendChild (root);
+        // Save namer state
+        // Save window state
         final GeoPlane plane = geo.getPlane ();
         for (final GeoItem item : plane.getRoots ())
         {

@@ -350,9 +350,12 @@ public class GeoVertex extends GeoItem
     public void getAttributes (Element element)
     {
         super.getAttributes (element);
-        element.setAttribute ("positionx", String.valueOf (position.x));
-        element.setAttribute ("positiony", String.valueOf (position.y));
-        element.setAttribute ("angle", String.valueOf (angle.getDoubleValue ()));
+        element.setAttribute ("line1", line1.getName ());
+        element.setAttribute ("line2", line2.getName ());
+        element.setAttribute ("x", String.valueOf (position.x));
+        element.setAttribute ("y", String.valueOf (position.y));
+        element.setAttribute ("vertex", vertex.getName ());
+        element.setAttribute ("angle", angle.getName ());
     }
 
     @Override

@@ -456,7 +456,6 @@ public class NamedVariable extends GeoItem
         {
             element.setAttribute ("formula", String.valueOf (formulaExpression));
         }
-        // [TODO] Make nested elements for terms
         element.setAttribute ("terms", tu.join ("+", getTermNames ()));
         if (location != null)
         {

@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import javax.swing.SwingConstants;
 
 import org.apache.logging.log4j.*;
+import org.w3c.dom.Element;
 
 import com.chriseliot.util.Labels;
 
@@ -657,6 +658,16 @@ public class GeoLine extends GeoItem
         result.put ("length", length.getDoubleValue ());
         result.put ("dx", dx.getDoubleValue ());
         result.put ("dy", dy.getDoubleValue ());
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        element.setAttribute ("angle", angle.getName ());
+        element.setAttribute ("length", length.getName ());
+        element.setAttribute ("dx", dx.getName ());
+        element.setAttribute ("dy", dy.getName ());
     }
 
     @Override

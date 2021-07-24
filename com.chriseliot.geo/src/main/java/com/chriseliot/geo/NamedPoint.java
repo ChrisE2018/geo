@@ -298,8 +298,8 @@ public class NamedPoint extends GeoItem
     public void getAttributes (Element element)
     {
         super.getAttributes (element);
-        element.setAttribute ("positionx", String.valueOf (position.x));
-        element.setAttribute ("positiony", String.valueOf (position.y));
+        element.setAttribute ("x", x.getName ());
+        element.setAttribute ("y", y.getName ());
     }
 
     @Override

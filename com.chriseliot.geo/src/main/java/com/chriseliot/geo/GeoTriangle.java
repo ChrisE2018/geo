@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import javax.swing.SwingConstants;
 
 import org.apache.logging.log4j.*;
+import org.w3c.dom.Element;
 
 import com.chriseliot.util.Labels;
 
@@ -1108,6 +1109,22 @@ public class GeoTriangle extends GeoItem
     {
         super.popup (result);
         result.put ("Delete", item -> item.remove ());
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        element.setAttribute ("v1", v1.getName ());
+        element.setAttribute ("v2", v2.getName ());
+        element.setAttribute ("v3", v3.getName ());
+        element.setAttribute ("l1", l1.getName ());
+        element.setAttribute ("l2", l2.getName ());
+        element.setAttribute ("l3", l3.getName ());
+        element.setAttribute ("angle1", angle1.getName ());
+        element.setAttribute ("angle2", angle2.getName ());
+        element.setAttribute ("angle3", angle3.getName ());
+        element.setAttribute ("centroid", centroid.getName ());
     }
 
     @Override

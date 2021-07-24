@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.SwingConstants;
 
 import org.apache.logging.log4j.*;
+import org.w3c.dom.Element;
 
 import com.chriseliot.util.Labels;
 
@@ -343,6 +344,15 @@ public class GeoVertex extends GeoItem
         result.put ("positionx", position.x);
         result.put ("positiony", position.y);
         result.put ("angle", angle.getDoubleValue ());
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        element.setAttribute ("positionx", String.valueOf (position.x));
+        element.setAttribute ("positiony", String.valueOf (position.y));
+        element.setAttribute ("angle", String.valueOf (angle.getDoubleValue ()));
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.*;
 import org.matheclipse.core.eval.ExprEvaluator;
 import org.matheclipse.core.interfaces.IExpr;
+import org.w3c.dom.Element;
 
 import com.chriseliot.geo.gui.NamedVariableActions;
 import com.chriseliot.util.*;
@@ -46,11 +47,12 @@ public class NamedVariable extends GeoItem
     /** Location on screen to draw label for this variable. */
     private NamedPoint location;
 
-    /**
-     * Location on screen to draw label for this variable. If location2 is not null, draw the label
-     * half way between location and location2.
-     */
-    private NamedPoint location2;
+    // /**
+    // * Location on screen to draw label for this variable. If location2 is not null, draw the
+    // label
+    // * half way between location and location2.
+    // */
+    // private NamedPoint location2;
 
     /** A variable representing a single real value. */
     public NamedVariable (GeoItem parent, Color color, String name, Double value)
@@ -267,7 +269,6 @@ public class NamedVariable extends GeoItem
     public void setLocation (NamedPoint location)
     {
         this.location = location;
-        location2 = null;
     }
 
     /**
@@ -419,7 +420,6 @@ public class NamedVariable extends GeoItem
         result.put ("formula", formulaExpression);
         result.put ("terms", tu.join ("+", getTermNames ()));
         result.put ("location", location == null ? "" : location.getName ());
-        result.put ("location2", location2 == null ? "" : location2.getName ());
     }
 
     @Override
@@ -438,14 +438,29 @@ public class NamedVariable extends GeoItem
             terms[i] = (NamedVariable)plane.get (name);
         }
         final String locationName = attributes.get ("location");
-        final String location2Name = attributes.get ("location2");
         if (!locationName.isEmpty ())
         {
             location = (NamedPoint)getPlane ().get (locationName);
         }
-        if (!location2Name.isEmpty ())
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        if (value != null)
         {
-            location2 = (NamedPoint)getPlane ().get (location2Name);
+            element.setAttribute ("value", String.valueOf (value));
+        }
+        if (formulaExpression != null)
+        {
+            element.setAttribute ("formula", String.valueOf (formulaExpression));
+        }
+        // [TODO] Make nested elements for terms
+        element.setAttribute ("terms", tu.join ("+", getTermNames ()));
+        if (location != null)
+        {
+            element.setAttribute ("location", String.valueOf (location.getName ()));
         }
     }
 

@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.w3c.dom.Element;
+
 import com.chriseliot.geo.gui.NamedPointActions;
 import com.chriseliot.util.Labels;
 
@@ -290,6 +292,14 @@ public class NamedPoint extends GeoItem
         super.readAttributes (attributes);
         position.x = Double.parseDouble (attributes.get ("positionx"));
         position.y = Double.parseDouble (attributes.get ("positiony"));
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        element.setAttribute ("positionx", String.valueOf (position.x));
+        element.setAttribute ("positiony", String.valueOf (position.y));
     }
 
     @Override

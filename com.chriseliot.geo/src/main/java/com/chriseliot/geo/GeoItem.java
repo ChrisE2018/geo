@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.w3c.dom.*;
+
 import com.chriseliot.util.*;
 
 public class GeoItem
@@ -376,6 +378,32 @@ public class GeoItem
         // Update binding map
         plane.remove (this);
         plane.addItem (this);
+    }
+
+    public void getElement (Element root)
+    {
+        final Document doc = root.getOwnerDocument ();
+        final Element result = doc.createElement (getClass ().getSimpleName ());
+        root.appendChild (result);
+        for (final GeoItem child : children)
+        {
+            child.getElement (result);
+        }
+        getAttributes (result);
+    }
+
+    public void getAttributes (Element element)
+    {
+        element.setAttribute ("name", name);
+        if (parent != null)
+        {
+            element.setAttribute ("parent", parent.getName ());
+        }
+        element.setAttribute ("color", String.valueOf (color.getRGB ()));
+        element.setAttribute ("selected", String.valueOf (isSelected));
+        element.setAttribute ("open", String.valueOf (isOpen));
+        element.setAttribute ("status", String.valueOf (status));
+        element.setAttribute ("reason", reason);
     }
 
     @Override

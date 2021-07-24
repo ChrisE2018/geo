@@ -30,12 +30,6 @@ public class GeoPlane
     /** Variables defined. */
     private final Map<String, GeoItem> bindings = new HashMap<> ();
 
-    // /** All geometry vertices. */
-    // private final List<GeoVertex> vertices = new ArrayList<> ();
-    //
-    // /** All geometry triangles. */
-    // private final List<GeoTriangle> triangles = new ArrayList<> ();
-
     private final List<ChangeListener> changeListeners = new ArrayList<> ();
 
     /** Set when any status changes to indicate that deduction should continue. */
@@ -72,7 +66,7 @@ public class GeoPlane
     }
 
     /**
-     * All geometry vertices. This may be obsolete.
+     * All geometry vertices.
      */
     public List<GeoVertex> getVertices ()
     {
@@ -82,6 +76,22 @@ public class GeoPlane
             if (item instanceof GeoVertex)
             {
                 result.add ((GeoVertex)item);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * All toplevel items.
+     */
+    public List<GeoItem> getRoots ()
+    {
+        final List<GeoItem> result = new ArrayList<> ();
+        for (final GeoItem item : items)
+        {
+            if (item.getParent () == null)
+            {
+                result.add (item);
             }
         }
         return result;

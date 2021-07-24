@@ -1,7 +1,10 @@
 
 package com.chriseliot.util;
 
+import java.awt.Component;
 import java.io.File;
+
+import javax.swing.*;
 
 public class FileUtils
 {
@@ -97,5 +100,62 @@ public class FileUtils
         final String filename = file.getName ();
         final File parent = file.getParentFile ();
         return new File (parent, setExtension (filename, extension));
+    }
+
+    /** Choose a file to save to. */
+    public File getSaveFile (Component parent, String title, File currentDir, String extension)
+    {
+        final JFileChooser fileChooser = new JFileChooser (currentDir)
+        {
+            @Override
+            public void approveSelection ()
+            {
+                final File f = setExtension (getSelectedFile (), extension);
+                if (f.exists () && getDialogType () == SAVE_DIALOG)
+                {
+                    final int result = JOptionPane.showConfirmDialog (this, "The file exists, overwrite?", "Existing file",
+                            JOptionPane.YES_NO_CANCEL_OPTION);
+                    switch (result)
+                    {
+                        case JOptionPane.YES_OPTION:
+                            super.approveSelection ();
+                            return;
+                        case JOptionPane.NO_OPTION:
+                            return;
+                        case JOptionPane.CLOSED_OPTION:
+                            return;
+                        case JOptionPane.CANCEL_OPTION:
+                            cancelSelection ();
+                            return;
+                    }
+                }
+                super.approveSelection ();
+            }
+        };
+        fileChooser.setDialogTitle (title);
+
+        final int userSelection = fileChooser.showSaveDialog (parent);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION)
+        {
+            final File file = fileChooser.getSelectedFile ();
+            return setExtension (file, extension);
+        }
+        return null;
+    }
+
+    public File getReadFile (Component parent, String title, File currentDir, String extension)
+    {
+        // Should use a file filter here.
+        final JFileChooser fileChooser = new JFileChooser (currentDir);
+        fileChooser.setDialogTitle (title);
+        final int result = fileChooser.showOpenDialog (parent);
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            final File file = fileChooser.getSelectedFile ();
+            System.out.println ("Selected file: " + file.getAbsolutePath ());
+            return setExtension (file, extension);
+        }
+        return null;
     }
 }

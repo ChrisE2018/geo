@@ -519,6 +519,17 @@ public class GeoTriangle extends GeoItem
         l2.setDoubleValue (v3.distance (v1));
         l3.setDoubleValue (v1.distance (v2));
         centroid.setPosition (centroid ());
+
+        l1.setDoubleValue (v2.distance (v3));
+        l2.setDoubleValue (v3.distance (v1));
+        l3.setDoubleValue (v1.distance (v2));
+
+        // Angle opposite vertex 1 is angle between side l3 and l2.
+        angle1.setDoubleValue (theta (l3.getDoubleValue (), l2.getDoubleValue (), l1.getDoubleValue ()));
+        // Angle opposite vertex 2 is angle between side l1 and l3.
+        angle2.setDoubleValue (theta (l1.getDoubleValue (), l3.getDoubleValue (), l2.getDoubleValue ()));
+        // Angle opposite vertex 3 is angle between side l1 and l2.
+        angle3.setDoubleValue (theta (l1.getDoubleValue (), l2.getDoubleValue (), l3.getDoubleValue ()));
     }
 
     /**
@@ -1022,8 +1033,68 @@ public class GeoTriangle extends GeoItem
             gg.setStroke (new BasicStroke (size));
             g.drawPolygon (x, y, 3);
             gg.setStroke (stroke);
+            markRightAngle (g, angle1, v1, v2, v3);
+            markRightAngle (g, angle2, v2, v1, v3);
+            markRightAngle (g, angle3, v3, v1, v2);
             labels.add (this, getStatus ().getColor (), centroid.getIntPosition (), SwingConstants.SOUTH_WEST, getName ());
         }
+    }
+
+    private void markRightAngle (Graphics g, NamedVariable angle, GeoVertex v, GeoVertex va, GeoVertex vb)
+    {
+        if (abs (angle.getDoubleValue () - 90.0) < 1.0)
+        {
+            // logger.info ("Right angle %s", angle);
+            markRightAngle (g, v.getVertex ().getPosition (), va.getVertex ().getPosition (), vb.getVertex ().getPosition ());
+        }
+    }
+
+    /**
+     * @see https://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
+     *
+     * @param g
+     * @param v
+     * @param va
+     * @param vb
+     */
+    private void markRightAngle (Graphics g, Point2D.Double v, Point2D.Double va, Point2D.Double vb)
+    {
+        // logger.info ("v = %.2f %.2f", v.x, v.y);
+        // logger.info ("va = %.2f %.2f", va.x, va.y);
+        // logger.info ("vb = %.2f %.2f", vb.x, vb.y);
+        // Length of square
+        final double len = 20;
+
+        // We need the point 20 pixels in the direction of va
+        final double dx1 = va.x - v.x;
+        final double dy1 = va.y - v.y;
+        // logger.info ("d1 = %.2f %.2f", dx1, dy1);
+        final double l1 = sqrt (dx1 * dx1 + dy1 * dy1);
+        // logger.info ("length to p1 %.2f", l1);
+        final double dx1n = len * dx1 / l1;
+        final double dy1n = len * dy1 / l1;
+        // logger.info ("d1n = %.2f %.2f", dx1n, dy1n);
+        // logger.info ("normal1 length = %.2f", sqrt ((dx1n - v.x) * (dx1n - v.x) + (dy1n - v.y) *
+        // (dy1n - v.y)));
+        // We need the point 20 pixels in the direction of vb
+        final double dx2 = vb.x - v.x;
+        final double dy2 = vb.y - v.y;
+        final double l2 = sqrt (dx2 * dx2 + dy2 * dy2);
+        final double dx2n = len * dx2 / l2;
+        final double dy2n = len * dy2 / l2;
+        // end point1
+        final double p1x = v.x + dx1n;
+        final double p1y = v.y + dy1n;
+        // end point2
+        final int p2x = (int)round (v.x + dx2n);
+        final int p2y = (int)round (v.y + dy2n);
+        // Corner point
+        final int cx = (int)round (p1x + dx2n);
+        final int cy = (int)round (p1y + dy2n);
+        // g.drawRect ((int)v.x - 25, (int)v.y - 25, 50, 50);
+        g.setColor (Color.red);
+        g.drawLine (cx, cy, (int)round (p1x), (int)round (p1y));
+        g.drawLine (cx, cy, p2x, p2y);
     }
 
     /**
@@ -1035,6 +1106,7 @@ public class GeoTriangle extends GeoItem
     @Override
     public void popup (Map<String, Consumer<GeoItem>> result)
     {
+        super.popup (result);
         result.put ("Delete", item -> item.remove ());
     }
 

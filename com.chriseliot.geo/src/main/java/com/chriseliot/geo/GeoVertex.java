@@ -256,6 +256,10 @@ public class GeoVertex extends GeoItem
             vertex.setPosition (position);
             final double theta1 = line1.angle (line2);
             angle.setDoubleValue (theta1);
+            for (final GeoTriangle t : new ArrayList<> (triangles))
+            {
+                t.recalculate ();
+            }
         }
     }
 

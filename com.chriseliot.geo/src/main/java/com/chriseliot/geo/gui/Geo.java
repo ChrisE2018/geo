@@ -32,38 +32,37 @@ public class Geo extends JPanel
         geo.open ();
     }
 
+    private final JFrame frame = new JFrame ("Geometry Solver");
     /** Storage for all geometry items. */
     private final GeoPlane plane = new GeoPlane ();
     private final GeoSolution solution = new GeoSolution (plane);
-
-    private final JFrame frame = new JFrame ("Geometry Solver");
 
     /** Panel for user controls. */
     private final GeoControls controls = new GeoControls (this, false);
     private final JTable solutionTable = new JTable (solution);
     private final JScrollPane solutionScroll =
         new JScrollPane (solutionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
+    private final JScrollPane geoScroll =
+        new JScrollPane (this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    private final JSplitPane splitPane = new JSplitPane (JSplitPane.HORIZONTAL_SPLIT, solutionScroll, geoScroll);
     private final GeoMouse geoMouse = new GeoMouse (this);
 
     /** Construct the window and initialize the frame. */
     public Geo ()
     {
-        final JSplitPane splitPane = new JSplitPane (JSplitPane.HORIZONTAL_SPLIT, solutionScroll, this);
         splitPane.setOneTouchExpandable (true);
         splitPane.setDividerLocation (150);
-        splitPane.setPreferredSize (new Dimension (1000, 1000));
         frame.setDefaultCloseOperation (JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout (new BorderLayout ());
         frame.add (controls, BorderLayout.NORTH);
         frame.add (splitPane, BorderLayout.CENTER);
-        frame.pack ();
     }
 
     /** Setup this panel. */
     public void setup ()
     {
-        setPreferredSize (new Dimension (1000, 1000));
+        splitPane.setPreferredSize (new Dimension (1000, 1000));
+        setPreferredSize (new Dimension (3000, 3000));
         setBackground (Color.black);
         addListeners ();
         solutionScroll.setPreferredSize (new Dimension (700, 1500));
@@ -136,6 +135,7 @@ public class Geo extends JPanel
 
     public void open ()
     {
+        frame.pack ();
         frame.setVisible (true);
     }
 

@@ -146,8 +146,8 @@ public class GeoPlane
     }
 
     /**
-     * Remove an item from the plane. Give the item a chance to remove its children too. This does
-     * not assume the bindings use the correct name for this item.
+     * Remove an item from the plane. This does not assume the bindings use the correct name for
+     * this item. The children must be removed separately.
      */
     public void remove (GeoItem item)
     {

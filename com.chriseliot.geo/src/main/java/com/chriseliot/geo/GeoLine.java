@@ -129,9 +129,7 @@ public class GeoLine extends GeoItem
         dy.setDoubleValue (b.y - a.y);
         length.setDoubleValue (calculateLength ());
         // Lots of extra work here to avoid ConcurrentModificationException
-        final List<GeoVertex> open = new ArrayList<> ();
-        open.addAll (vertices);
-        for (final GeoVertex v : open)
+        for (final GeoVertex v : new ArrayList<> (vertices))
         {
             // This needs to iterate over a copy of the vertices list because the vertex might
             // delete itself and cause a ConcurrentModificationException

@@ -248,15 +248,30 @@ public class GeoVertex extends GeoItem
         if (position == null)
         {
             logger.info ("Removing %s", this);
+            remove ();
             getPlane ().remove (this);
-            line1.remove (this);
-            line2.remove (this);
         }
         else
         {
             vertex.setPosition (position);
             final double theta1 = line1.angle (line2);
             angle.setDoubleValue (theta1);
+        }
+    }
+
+    /**
+     * Remove the children of this item.
+     */
+    @Override
+    public void remove ()
+    {
+        super.remove ();
+        line1.remove (this);
+        line2.remove (this);
+        for (final GeoTriangle t : new ArrayList<> (triangles))
+        {
+            logger.info ("Removing triangle %s", t);
+            getPlane ().remove (t);
         }
     }
 
@@ -290,23 +305,6 @@ public class GeoVertex extends GeoItem
                     setStatus (GeoStatus.derived, "vertex determined");
                 }
             }
-        }
-    }
-
-    /**
-     * Remove the children of this item. This is called by the GeoPlane so this method should not
-     * try to remove itself from the GeoPlane.
-     */
-    @Override
-    public void remove ()
-    {
-        super.remove ();
-        line1.remove (this);
-        line2.remove (this);
-        for (final GeoTriangle t : triangles)
-        {
-            logger.info ("Removing triangle %s", t);
-            getPlane ().remove (t);
         }
     }
 

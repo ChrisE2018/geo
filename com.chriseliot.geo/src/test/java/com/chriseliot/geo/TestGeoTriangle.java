@@ -529,10 +529,18 @@ public class TestGeoTriangle
             if (t.isDetermined ())
             {
                 count++;
+                for (final GeoItem item : plane.getItems ())
+                {
+                    if (item instanceof NamedVariable)
+                    {
+                        final NamedVariable v = (NamedVariable)item;
+                        ts.checkExpression (v, v.getDoubleValue (), "testCombinations");
+                    }
+                }
             }
         }
         assertEquals (64, total);
-        assertEquals (41, count);
+        assertEquals (35, count);
     }
 
     /**

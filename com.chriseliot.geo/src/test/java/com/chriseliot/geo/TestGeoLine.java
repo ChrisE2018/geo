@@ -567,6 +567,14 @@ public class TestGeoLine
             {
                 count++;
                 checkLineVariables (test);
+                for (final GeoItem item : plane.getItems ())
+                {
+                    if (item instanceof NamedVariable)
+                    {
+                        final NamedVariable v = (NamedVariable)item;
+                        ts.checkExpression (v, v.getDoubleValue (), null);
+                    }
+                }
             }
         }
 

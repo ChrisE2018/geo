@@ -825,13 +825,13 @@ public class GeoTriangle extends GeoItem
         if (count == 3)
         {
             // Determine all angles
+            deriveVertexByLawOfCosines (v1);
             deriveVertexByLawOfCosines (v2);
             deriveVertexByLawOfCosines (v3);
-            deriveVertexByLawOfCosines (v1);
         }
+        applyLawOfCosines (v1);
         applyLawOfCosines (v2);
         applyLawOfCosines (v3);
-        applyLawOfCosines (v1);
     }
 
     /**
@@ -860,25 +860,6 @@ public class GeoTriangle extends GeoItem
         }
     }
 
-    // /** This has been verified but is replaced by more general version below. */
-    // @SuppressWarnings ("unused")
-    // private void deriveBaseByLawOfCosines (GeoVertex v)
-    // {
-    // final NamedVariable c = getOpposite (v);
-    // if (!c.isDetermined ())
-    // {
-    // final NamedVariable theta = getAngle (v);
-    // final NamedVariable a = getLeg1 (v);
-    // final NamedVariable b = getLeg2 (v);
-    //
-    // c.setFormula ("law of cosines",
-    // "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta))))", c,
-    // a, b, theta);
-    //
-    // logger.info ("Base %s: %s", c.getName (), c.getFormula ());
-    // }
-    // }
-
     /**
      * Apply law of cosines when a vertex is known.
      *
@@ -887,30 +868,23 @@ public class GeoTriangle extends GeoItem
     private void applyLawOfCosines (GeoVertex v)
     {
         final TriangleAngleVariable theta = getAngle (v);
-        if (theta.isDetermined ())
+        final NamedVariable c = getOpposite (v);
+        if (!c.isDetermined ())
         {
-            final NamedVariable a = getLeg1 (v);
-            final NamedVariable b = getLeg2 (v);
-            final NamedVariable c = getOpposite (v);
-            applyLawOfCosines (a, b, c, theta);
-            applyLawOfCosines (b, a, c, theta);
-            applyLawOfCosines (c, a, b, theta);
-        }
-    }
-
-    private void applyLawOfCosines (NamedVariable a, NamedVariable b, NamedVariable c, TriangleAngleVariable theta)
-    {
-        if (!a.isDetermined ())
-        {
-            if (b.isDetermined ())
+            if (theta.isDetermined ())
             {
-                if (c.isDetermined ())
+                final NamedVariable a = getLeg1 (v);
+                final NamedVariable b = getLeg2 (v);
+                if (a.isDetermined ())
                 {
-                    a.setFormula ("law of cosines",
-                            "%s == Block({$b=%s, $c=%s, $theta=%s}, Return(sqrt($b^2 + $c^2 - 2*$b*$c*cos($theta * Degree))))", a,
-                            b, c, theta);
+                    if (b.isDetermined ())
+                    {
+                        c.setFormula ("law of cosines",
+                                "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta * Degree))))",
+                                c, a, b, theta);
 
-                    logger.info ("Calculate %s: %s", a.getName (), a.getFormulaInstance ());
+                        logger.info ("Calculate %s: %s", c.getName (), c.getFormulaInstance ());
+                    }
                 }
             }
         }

@@ -23,6 +23,6 @@ public class Namer
         }
         index++;
         counters.put (root, index);
-        return String.format ("%s%03d", root, index);
+        return String.format ("%s%02d", root, index);
     }
 }

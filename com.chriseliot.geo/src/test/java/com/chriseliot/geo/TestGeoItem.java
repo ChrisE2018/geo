@@ -42,7 +42,7 @@ public class TestGeoItem
         final GeoItem child = new GeoItem (item, "tt", Color.blue);
 
         assertEquals (plane, item.getPlane ());
-        assertEquals ("t001", item.getName ());
+        assertEquals ("t01", item.getName ());
         assertNull (item.getParent ());
         assertEquals (item, child.getParent ());
         final List<GeoItem> children = item.getChildren ();

@@ -423,7 +423,7 @@ public class TestGeoLine
             System.out.printf ("%s = %s\n", var, i);
             eval.defineVariable (var, i);
         }
-        assertEquals ("l001$M$x == l001$A$x + (l001$dx / 2)", formula);
+        assertEquals ("l01$M$x == l01$A$x + (l01$dx / 2)", formula);
         final IExpr expr = eval.parse (formula);
         final IExpr f = expr.getAt (2);
         assertEquals (2.0, eval.evalf (f), TestSupport.epsilon);

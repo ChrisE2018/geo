@@ -30,11 +30,11 @@ public class GeoPlane
     /** Variables defined. */
     private final Map<String, GeoItem> bindings = new HashMap<> ();
 
-    /** All geometry vertices. */
-    private final List<GeoVertex> vertices = new ArrayList<> ();
-
-    /** All geometry triangles. */
-    private final List<GeoTriangle> triangles = new ArrayList<> ();
+    // /** All geometry vertices. */
+    // private final List<GeoVertex> vertices = new ArrayList<> ();
+    //
+    // /** All geometry triangles. */
+    // private final List<GeoTriangle> triangles = new ArrayList<> ();
 
     private final List<ChangeListener> changeListeners = new ArrayList<> ();
 
@@ -76,15 +76,15 @@ public class GeoPlane
      */
     public List<GeoVertex> getVertices ()
     {
-        return vertices;
-    }
-
-    /**
-     * All geometry triangles. This may be obsolete.
-     */
-    public List<GeoTriangle> getTriangles ()
-    {
-        return triangles;
+        final List<GeoVertex> result = new ArrayList<> ();
+        for (final GeoItem item : items)
+        {
+            if (item instanceof GeoVertex)
+            {
+                result.add ((GeoVertex)item);
+            }
+        }
+        return result;
     }
 
     /** Clear the geometry plane. */
@@ -92,8 +92,6 @@ public class GeoPlane
     {
         items.clear ();
         bindings.clear ();
-        vertices.clear ();
-        triangles.clear ();
     }
 
     /**
@@ -114,20 +112,6 @@ public class GeoPlane
             bindings.remove (key);
         }
         bindings.put (item.getName (), item);
-        if (item instanceof GeoVertex)
-        {
-            if (!vertices.contains (item))
-            {
-                vertices.add ((GeoVertex)item);
-            }
-        }
-        if (item instanceof GeoTriangle)
-        {
-            if (!triangles.contains (item))
-            {
-                triangles.add ((GeoTriangle)item);
-            }
-        }
     }
 
     /** Add many items all at once. */
@@ -152,8 +136,6 @@ public class GeoPlane
     public void remove (GeoItem item)
     {
         items.remove (item);
-        vertices.remove (item);
-        triangles.remove (item);
         final String key = getBindingKey (item);
         if (key != null)
         {
@@ -224,6 +206,7 @@ public class GeoPlane
      */
     public void findTriangles ()
     {
+        final List<GeoVertex> vertices = getVertices ();
         final int count = vertices.size ();
         for (int i1 = 0; i1 < count; i1++)
         {
@@ -243,7 +226,6 @@ public class GeoPlane
                         {
                             logger.debug ("Found triangle %s %s %s", v1, v2, v3);
                             final GeoTriangle t = new GeoTriangle (this, Color.red, v1, v2, v3);
-                            triangles.add (t);
                             addItem (t);
                         }
                     }
@@ -260,15 +242,19 @@ public class GeoPlane
      */
     public boolean hasTriangle (GeoVertex v1, GeoVertex v2, GeoVertex v3)
     {
-        for (final GeoTriangle t : triangles)
+        for (final GeoItem item : items)
         {
-            if (t.hasVertex (v1))
+            if (item instanceof GeoTriangle)
             {
-                if (t.hasVertex (v2))
+                final GeoTriangle t = (GeoTriangle)item;
+                if (t.hasVertex (v1))
                 {
-                    if (t.hasVertex (v3))
+                    if (t.hasVertex (v2))
                     {
-                        return true;
+                        if (t.hasVertex (v3))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -284,15 +270,19 @@ public class GeoPlane
      */
     public GeoTriangle getTriangle (GeoVertex v1, GeoVertex v2, GeoVertex v3)
     {
-        for (final GeoTriangle t : triangles)
+        for (final GeoItem item : items)
         {
-            if (t.hasVertex (v1))
+            if (item instanceof GeoTriangle)
             {
-                if (t.hasVertex (v2))
+                final GeoTriangle t = (GeoTriangle)item;
+                if (t.hasVertex (v1))
                 {
-                    if (t.hasVertex (v3))
+                    if (t.hasVertex (v2))
                     {
-                        return t;
+                        if (t.hasVertex (v3))
+                        {
+                            return t;
+                        }
                     }
                 }
             }

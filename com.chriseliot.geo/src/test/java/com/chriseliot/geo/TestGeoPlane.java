@@ -34,7 +34,6 @@ public class TestGeoPlane
     {
         final GeoPlane plane = new GeoPlane ();
         assertTrue (plane.getVertices ().isEmpty ());
-        assertTrue (plane.getTriangles ().isEmpty ());
         assertTrue (plane.getBindings ().isEmpty ());
         assertEquals (0, plane.getItems ().size ());
         final GeoItem item = new GeoItem (plane, "t", Color.black);

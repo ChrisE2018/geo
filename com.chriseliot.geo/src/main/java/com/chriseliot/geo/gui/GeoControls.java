@@ -249,7 +249,7 @@ public class GeoControls extends JPanel implements ActionListener
      */
     public void save () throws UnsupportedEncodingException, FileNotFoundException, IOException
     {
-        final File currentDir = new File ("").getAbsoluteFile ();
+        final File currentDir = new File ("data/").getAbsoluteFile ();
         logger.info ("Current dir %s", currentDir);
         final JFileChooser fileChooser = new JFileChooser (currentDir)
         {
@@ -329,7 +329,7 @@ public class GeoControls extends JPanel implements ActionListener
      */
     public void read ()
     {
-        final File currentDir = new File ("").getAbsoluteFile ();
+        final File currentDir = new File ("data/").getAbsoluteFile ();
         final JFileChooser fileChooser = new JFileChooser (currentDir);
         final int result = fileChooser.showOpenDialog (geo);
         if (result == JFileChooser.APPROVE_OPTION)

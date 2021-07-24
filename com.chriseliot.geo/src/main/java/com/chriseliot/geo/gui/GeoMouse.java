@@ -86,6 +86,22 @@ public class GeoMouse implements MouseListener, MouseMotionListener
     @Override
     public void mouseClicked (MouseEvent e)
     {
+        final Point p = e.getPoint ();
+        final GeoPlane plane = getPlane ();
+        final LabelItem label = plane.getLabels ().find (p);
+        if (label != null)
+        {
+            final Object source = label.getSource ();
+            if (source instanceof GeoItem)
+            {
+                logger.info ("Click on label %s: %s", label, source);
+                final GeoItem item = (GeoItem)source;
+                if (handleClick (p, item))
+                {
+                    return;
+                }
+            }
+        }
     }
 
     /**
@@ -100,20 +116,6 @@ public class GeoMouse implements MouseListener, MouseMotionListener
         final GeoPlane plane = getPlane ();
         plane.deselectAll ();
         final Point p = e.getPoint ();
-        final LabelItem label = plane.getLabels ().find (p);
-        if (label != null)
-        {
-            final Object source = label.getSource ();
-            logger.info ("Click on label %s: %s", label, source);
-            if (source instanceof GeoItem)
-            {
-                final GeoItem item = (GeoItem)source;
-                if (handleClick (p, item))
-                {
-                    return;
-                }
-            }
-        }
         clickPoint = new Point2D.Double (p.x, p.y);
         final NamedPoint click = plane.getClickObject (clickPoint, snapLimit);
         if (click != null)
@@ -236,7 +238,7 @@ public class GeoMouse implements MouseListener, MouseMotionListener
     /** Handler for popup menu driven by click on an item. */
     public boolean handleClick (Point p, GeoItem item)
     {
-        final Map<String, Consumer<GeoItem>> menuItems = new HashMap<> ();
+        final Map<String, Consumer<GeoItem>> menuItems = new LinkedHashMap<> ();
         item.popup (menuItems);
         final JPopupMenu popup = new JPopupMenu ();
         for (final Entry<String, Consumer<GeoItem>> entry : menuItems.entrySet ())

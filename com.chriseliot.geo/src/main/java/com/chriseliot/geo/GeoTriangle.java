@@ -683,6 +683,18 @@ public class GeoTriangle extends GeoItem
             {
                 angle3.setStatus (GeoStatus.derived, "determined triangle");
             }
+            if (!v1.getVertex ().isDetermined ())
+            {
+                v1.getVertex ().setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!v2.getVertex ().isDetermined ())
+            {
+                v2.getVertex ().setStatus (GeoStatus.derived, "determined triangle");
+            }
+            if (!v3.getVertex ().isDetermined ())
+            {
+                v3.getVertex ().setStatus (GeoStatus.derived, "determined triangle");
+            }
         }
     }
 

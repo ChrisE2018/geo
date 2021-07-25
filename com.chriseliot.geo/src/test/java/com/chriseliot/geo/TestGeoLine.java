@@ -10,10 +10,14 @@ import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
+
+import javax.xml.parsers.*;
 
 import org.junit.jupiter.api.Test;
 import org.matheclipse.core.eval.ExprEvaluator;
 import org.matheclipse.core.interfaces.IExpr;
+import org.w3c.dom.*;
 
 import com.chriseliot.util.*;
 
@@ -401,6 +405,39 @@ public class TestGeoLine
         assertTrue (attributes.containsKey ("length"));
         assertTrue (attributes.containsKey ("dx"));
         assertTrue (attributes.containsKey ("dy"));
+    }
+
+    @Test
+    public void testXmlAttributes () throws ParserConfigurationException
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+
+        final XMLUtil xu = new XMLUtil ();
+        final DocumentBuilder builder = xu.getDocumentBuilder ();
+        final Document doc = builder.newDocument ();
+        final Element element = doc.createElement ("test");
+        assertNotNull (element);
+        line.getAttributes (element);
+        assertEquals (line.getName (), xu.get (element, "name", "missing"));
+        assertEquals ("false", xu.get (element, "open", "missing"));
+
+        final Element root = doc.createElement ("root");
+        final String name = GeoItem.class.getSimpleName ();
+        assertNull (xu.getNthChild (root, name, 0));
+        line.getElement (root);
+    }
+
+    @Test
+    public void testPopup ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+
+        final Map<String, Consumer<GeoItem>> popup = new HashMap<> ();
+        line.popup (popup);
+        assertNotNull (popup.get ("Delete"));
+        popup.get ("Delete").accept (line);
     }
 
     /** Check the computation of midpoint. */

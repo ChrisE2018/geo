@@ -22,7 +22,7 @@ public class XMLUtil
         return factory.newDocumentBuilder ();
     }
 
-    public Document getDocument (final URL url) throws ParserConfigurationException, SAXException, IOException
+    public Document getDocument (URL url) throws ParserConfigurationException, SAXException, IOException
     {
         final InputStream stream = url.openStream ();
         final Document result = getDocument (stream);
@@ -30,19 +30,19 @@ public class XMLUtil
         return result;
     }
 
-    public Document getDocument (final InputStream stream) throws ParserConfigurationException, SAXException, IOException
+    public Document getDocument (InputStream stream) throws ParserConfigurationException, SAXException, IOException
     {
         final DocumentBuilder builder = getDocumentBuilder ();
         return builder.parse (stream);
     }
 
-    public Document getDocument (final File file) throws ParserConfigurationException, IOException, SAXException
+    public Document getDocument (File file) throws ParserConfigurationException, IOException, SAXException
     {
         final DocumentBuilder builder = getDocumentBuilder ();
         return builder.parse (file);
     }
 
-    public String getValue (final Element element, final String attribute)
+    public String getValue (Element element, String attribute)
     {
         if (element.hasAttribute (attribute))
         {
@@ -55,7 +55,7 @@ public class XMLUtil
         }
     }
 
-    public String getValue (final Element element, final String attribute, final String defaultValue)
+    public String getValue (Element element, String attribute, String defaultValue)
     {
         if (element.hasAttribute (attribute))
         {
@@ -68,7 +68,7 @@ public class XMLUtil
         }
     }
 
-    public String getText (final Element element)
+    public String getText (Element element)
     {
         final NodeList children = element.getChildNodes ();
         for (int i = 0; i < children.getLength (); i++)
@@ -83,7 +83,7 @@ public class XMLUtil
         return null;
     }
 
-    public String get (final Element element, final String attribute, final String defaultValue)
+    public String get (Element element, String attribute, String defaultValue)
     {
         if (element.hasAttribute (attribute))
         {
@@ -95,7 +95,7 @@ public class XMLUtil
         }
     }
 
-    public Boolean getBoolean (final Element element, final String attribute, final Boolean defaultValue)
+    public Boolean getBoolean (Element element, String attribute, Boolean defaultValue)
     {
         if (element.hasAttribute (attribute))
         {
@@ -107,7 +107,7 @@ public class XMLUtil
         }
     }
 
-    public Integer getInteger (final Element element, final String attribute, final Integer defaultValue)
+    public Integer getInteger (Element element, String attribute, Integer defaultValue)
     {
         if (element.hasAttribute (attribute))
         {
@@ -119,7 +119,7 @@ public class XMLUtil
         }
     }
 
-    public Double getDouble (final Element element, final String attribute, final Double defaultValue)
+    public Double getDouble (Element element, String attribute, Double defaultValue)
     {
         if (element.hasAttribute (attribute))
         {
@@ -134,38 +134,39 @@ public class XMLUtil
     /**
      * Convert an XML element into a readable string.
      *
-     * @param doc Any XML element to convert.
+     * @param element Any XML element to convert.
      *
      * @return The XML string, indented but without the xml declaration line.
      */
-    public String getXMLString (final Element doc)
-    {
-        return getXMLString (doc, false, true);
-    }
-
-    public String getXMLString (final Element doc, final boolean declaration, final boolean indent)
+    public String getXMLString (Element element)
     {
         try
         {
-            final TransformerFactory factory = TransformerFactory.newInstance ();
-            final Transformer transformer = factory.newTransformer ();
-
-            transformer.setOutputProperty (OutputKeys.OMIT_XML_DECLARATION, !declaration ? "yes" : "no");
-            transformer.setOutputProperty (OutputKeys.INDENT, indent ? "yes" : "no");
-
-            final StringWriter sw = new StringWriter ();
-            final StreamResult result = new StreamResult (sw);
-            final DOMSource source = new DOMSource (doc);
-            transformer.transform (source, result);
-            return sw.toString ();
+            return getXMLString (element, false, true);
         }
         catch (final TransformerException e)
         {
-            return "<error>" + e + "</error>";
+            e.printStackTrace ();
+            return null;
         }
     }
 
-    public String getXMLString (final Document doc, final boolean declaration, final boolean indent) throws TransformerException
+    public String getXMLString (Element element, boolean declaration, boolean indent) throws TransformerException
+    {
+        final TransformerFactory factory = TransformerFactory.newInstance ();
+        final Transformer transformer = factory.newTransformer ();
+
+        transformer.setOutputProperty (OutputKeys.OMIT_XML_DECLARATION, !declaration ? "yes" : "no");
+        transformer.setOutputProperty (OutputKeys.INDENT, indent ? "yes" : "no");
+
+        final StringWriter sw = new StringWriter ();
+        final StreamResult result = new StreamResult (sw);
+        final DOMSource source = new DOMSource (element);
+        transformer.transform (source, result);
+        return sw.toString ();
+    }
+
+    public String getXMLString (Document doc, boolean declaration, boolean indent) throws TransformerException
     {
         final TransformerFactory factory = TransformerFactory.newInstance ();
         final Transformer transformer = factory.newTransformer ();

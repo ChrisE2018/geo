@@ -90,6 +90,13 @@ public class TestGeoPlane
         assertEquals (v2, plane.getVertex (v2.getPosition ()));
         assertEquals (v3, plane.getVertex (v3.getPosition ()));
         assertNull (plane.getVertex (new Point2D.Double (-99, -99)));
+
+        for (final GeoItem root : plane.getRoots ())
+        {
+            assertNull (root.getParent ());
+        }
+        plane.remove (line3);
+        assertNull (plane.getBindingKey (line3));
     }
 
     @Test
@@ -378,6 +385,7 @@ public class TestGeoPlane
         final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
         final Graphics g = image.getGraphics ();
         final Set<String> categories = new HashSet<> ();
+        plane.paintItems (g, categories);
         categories.add ("simple");
         categories.add ("standard");
         categories.add ("detail");

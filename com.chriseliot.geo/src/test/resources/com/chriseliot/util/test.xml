@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<geometry alpha="101" beta="true" count="12" x="123.456">
+	<test beta="101">text inside</test>
+	<notext/>
+    <GeoLine angle="l001$angle" color="-14336" dx="l001$dx" dy="l001$dy" length="l001$length" name="l001" open="true" reason="" selected="false" status="unknown">
+        <NamedPoint color="-14336" name="l001$A" open="false" parent="l001" reason="" selected="false" status="unknown" x="l001$A$x" y="l001$A$y">
+            <NamedVariable color="-14336" location="l001$A" name="l001$A$x" open="false" parent="l001$A" reason="" selected="false" status="unknown" terms="" value="57.0"/>
+            <NamedVariable color="-14336" location="l001$A" name="l001$A$y" open="false" parent="l001$A" reason="" selected="false" status="unknown" terms="" value="244.0"/>
+        </NamedPoint>
+        <NamedPoint color="-14336" name="l001$B" open="false" parent="l001" reason="" selected="false" status="unknown" x="l001$B$x" y="l001$B$y">
+            <NamedVariable color="-14336" location="l001$B" name="l001$B$x" open="false" parent="l001$B" reason="" selected="false" status="unknown" terms="" value="532.0"/>
+            <NamedVariable color="-14336" location="l001$B" name="l001$B$y" open="false" parent="l001$B" reason="" selected="false" status="unknown" terms="" value="226.0"/>
+        </NamedPoint>
+        <TransposePoint color="-16776961" name="l001$M" open="false" parent="l001" reason="" selected="false" status="unknown" x="l001$M$x" y="l001$M$y">
+            <NamedVariable color="-16776961" location="l001$M" name="l001$M$x" open="false" parent="l001$M" reason="" selected="false" status="unknown" terms="" value="294.5"/>
+            <NamedVariable color="-16776961" location="l001$M" name="l001$M$y" open="false" parent="l001$M" reason="" selected="false" status="unknown" terms="" value="235.0"/>
+            <LineAngleVariable color="-14336" location="l001$M" name="l001$angle" open="false" parent="l001$M" reason="" selected="false" status="unknown" terms="" value="92.17017008820773"/>
+            <NamedVariable color="-14336" location="l001$M" name="l001$dx" open="false" parent="l001$M" reason="" selected="false" status="unknown" terms="" value="475.0"/>
+            <NamedVariable color="-14336" location="l001$M" name="l001$dy" open="false" parent="l001$M" reason="" selected="false" status="unknown" terms="" value="-18.0"/>
+            <NamedVariable color="-14336" location="l001$M" name="l001$length" open="false" parent="l001$M" reason="" selected="false" status="unknown" terms="" value="475.3409302805724"/>
+        </TransposePoint>
+    </GeoLine>
+    <GeoLine angle="l002$angle" color="-14336" dx="l002$dx" dy="l002$dy" length="l002$length" name="l002" open="true" reason="" selected="true" status="unknown">
+        <NamedPoint color="-14336" name="l002$A" open="false" parent="l002" reason="" selected="false" status="unknown" x="l002$A$x" y="l002$A$y">
+            <NamedVariable color="-14336" location="l002$A" name="l002$A$x" open="false" parent="l002$A" reason="" selected="false" status="unknown" terms="" value="57.0"/>
+            <NamedVariable color="-14336" location="l002$A" name="l002$A$y" open="false" parent="l002$A" reason="" selected="false" status="unknown" terms="" value="244.0"/>
+        </NamedPoint>
+        <NamedPoint color="-14336" name="l002$B" open="false" parent="l002" reason="" selected="false" status="unknown" x="l002$B$x" y="l002$B$y">
+            <NamedVariable color="-14336" location="l002$B" name="l002$B$x" open="false" parent="l002$B" reason="" selected="false" status="unknown" terms="" value="308.0"/>
+            <NamedVariable color="-14336" location="l002$B" name="l002$B$y" open="false" parent="l002$B" reason="" selected="false" status="unknown" terms="" value="609.0"/>
+        </NamedPoint>
+        <TransposePoint color="-16776961" name="l002$M" open="false" parent="l002" reason="" selected="false" status="unknown" x="l002$M$x" y="l002$M$y">
+            <NamedVariable color="-16776961" location="l002$M" name="l002$M$x" open="false" parent="l002$M" reason="" selected="false" status="unknown" terms="" value="182.5"/>
+            <NamedVariable color="-16776961" location="l002$M" name="l002$M$y" open="false" parent="l002$M" reason="" selected="false" status="unknown" terms="" value="426.5"/>
+            <LineAngleVariable color="-14336" location="l002$M" name="l002$angle" open="false" parent="l002$M" reason="" selected="false" status="unknown" terms="" value="34.51518451298579"/>
+            <NamedVariable color="-14336" location="l002$M" name="l002$dx" open="false" parent="l002$M" reason="" selected="false" status="unknown" terms="" value="251.0"/>
+            <NamedVariable color="-14336" location="l002$M" name="l002$dy" open="false" parent="l002$M" reason="" selected="false" status="unknown" terms="" value="365.0"/>
+            <NamedVariable color="-14336" location="l002$M" name="l002$length" open="false" parent="l002$M" reason="" selected="false" status="unknown" terms="" value="442.9740398714128"/>
+        </TransposePoint>
+    </GeoLine>
+</geometry>

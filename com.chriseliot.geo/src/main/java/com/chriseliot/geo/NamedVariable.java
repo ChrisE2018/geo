@@ -358,7 +358,6 @@ public class NamedVariable extends GeoItem
             final NamedPoint p = (NamedPoint)parent;
             if (this == p.getX () || this == p.getY ())
             {
-
                 result.put ("Set Value", item -> actions.setValueAction (this));
             }
         }

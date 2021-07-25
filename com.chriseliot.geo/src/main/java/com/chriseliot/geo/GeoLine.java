@@ -611,6 +611,9 @@ public class GeoLine extends GeoItem
         {
             if (dx.isDetermined () && dy.isDetermined ())
             {
+                // This appears to be the opposite of the numeric version
+                // See ::recalculate and ::axisYangle
+                // Possible dx and dy are reversed in some cases instead
                 angle.setFormula ("angle = atan2 (dy, dx) / Degree", "%s == arctan(%s, %s) / Degree", angle, dy, dx);
             }
         }
@@ -646,6 +649,8 @@ public class GeoLine extends GeoItem
     /**
      * Get named attributes. Used for saving to a csv file. This method should be overriden by
      * subclasses.
+     *
+     * Obsolete.
      *
      * @param result Map to store attributes.
      */

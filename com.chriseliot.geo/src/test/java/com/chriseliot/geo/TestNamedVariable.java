@@ -10,10 +10,12 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import javax.swing.SwingConstants;
+import javax.xml.parsers.*;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.*;
 
-import com.chriseliot.util.Labels;
+import com.chriseliot.util.*;
 
 public class TestNamedVariable
 {
@@ -246,5 +248,33 @@ public class TestNamedVariable
         parent.getX ().setValueAction (22.6);
         final NamedVariable child = new NamedVariable (test, Color.green, "testing");
         child.setValueAction (17.0);
+    }
+
+    @Test
+    public void testXmlAttributes () throws ParserConfigurationException
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem item = new GeoItem (plane, "t", Color.black);
+        final Point2D.Double position = new Point2D.Double (10, 20);
+        final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
+        final NamedVariable x = parent.getX ();
+
+        final XMLUtil xu = new XMLUtil ();
+        final DocumentBuilder builder = xu.getDocumentBuilder ();
+        final Document doc = builder.newDocument ();
+        final Element element = doc.createElement ("test");
+        assertNotNull (element);
+        x.getAttributes (element);
+        assertEquals (x.getName (), xu.get (element, "name", "missing"));
+        assertEquals ("false", xu.get (element, "open", "missing"));
+
+        final Element root = doc.createElement ("root");
+        final String name = GeoItem.class.getSimpleName ();
+        assertNull (xu.getNthChild (root, name, 0));
+        x.getElement (root);
+        x.setFormula ("test", "%s == 123", x);
+        x.setLocation (null);
+        x.setDoubleValue (null);
+        x.getElement (root);
     }
 }

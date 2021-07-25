@@ -10,9 +10,12 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-import org.junit.jupiter.api.Test;
+import javax.xml.parsers.*;
 
-import com.chriseliot.util.Labels;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.*;
+
+import com.chriseliot.util.*;
 
 public class TestGeoVertex
 {
@@ -214,6 +217,30 @@ public class TestGeoVertex
         assertEquals (v1.getPosition ().x, attributes.get ("positionx"));
         assertEquals (v1.getPosition ().y, attributes.get ("positiony"));
         assertEquals (v1.getAngle ().getDoubleValue (), attributes.get ("angle"));
+    }
+
+    @Test
+    public void testXmlAttributes () throws ParserConfigurationException
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 55));
+
+        final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (10, 20));
+
+        final XMLUtil xu = new XMLUtil ();
+        final DocumentBuilder builder = xu.getDocumentBuilder ();
+        final Document doc = builder.newDocument ();
+        final Element element = doc.createElement ("test");
+        assertNotNull (element);
+        v1.getAttributes (element);
+        assertEquals (v1.getName (), xu.get (element, "name", "missing"));
+        assertEquals ("false", xu.get (element, "open", "missing"));
+
+        final Element root = doc.createElement ("root");
+        final String name = GeoItem.class.getSimpleName ();
+        assertNull (xu.getNthChild (root, name, 0));
+        v1.getElement (root);
     }
 
     @Test

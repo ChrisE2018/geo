@@ -12,11 +12,13 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
+import javax.xml.parsers.*;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.*;
 
 import com.chriseliot.geo.gui.CloseDialogThread;
-import com.chriseliot.util.Labels;
+import com.chriseliot.util.*;
 
 public class TestNamedPoint
 {
@@ -249,5 +251,22 @@ public class TestNamedPoint
             }
         }
         test.readAttributes (attributes2);
+    }
+
+    @Test
+    public void testXmlAttributes () throws ParserConfigurationException
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
+
+        final XMLUtil xu = new XMLUtil ();
+        final DocumentBuilder builder = xu.getDocumentBuilder ();
+        final Document doc = builder.newDocument ();
+        final Element element = doc.createElement ("test");
+        assertNotNull (element);
+        test.getAttributes (element);
+        assertEquals (test.getX ().getName (), xu.get (element, "x", "missing"));
+        assertEquals (test.getY ().getName (), xu.get (element, "y", "missing"));
     }
 }

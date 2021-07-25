@@ -13,8 +13,10 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
+import javax.xml.parsers.*;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.*;
 
 import com.chriseliot.util.*;
 
@@ -215,32 +217,6 @@ public class TestGeoItem
         assertNotNull (parent.toString ());
     }
 
-    // @Test
-    // public void testPopupSupport ()
-    // {
-    // final GeoPlane plane = new GeoPlane ();
-    // final GeoItem item = new GeoItem (plane, "t", Color.black);
-    // assertTrue (item.canSetKnown ());
-    // assertTrue (item.canSetUnknown ());
-    // assertFalse (item.canSetFixed ());
-    // assertFalse (item.canSetValue ());
-    // assertFalse (item.canShowDerivation ());
-    // assertFalse (item.canRenameVariable ());
-    // assertFalse (item.canShowSolution ());
-    // assertEquals (GeoStatus.unknown, item.getStatus ());
-    // item.setKnownAction ();
-    // assertEquals (GeoStatus.known, item.getStatus ());
-    // item.setFixedAction ();
-    // assertEquals (GeoStatus.fixed, item.getStatus ());
-    // item.setUnknownAction ();
-    // assertEquals (GeoStatus.unknown, item.getStatus ());
-    // item.setValueAction ();
-    // assertEquals (GeoStatus.fixed, item.getStatus ());
-    // item.showDerivationAction ();
-    // item.renameVariableAction ();
-    // item.showSolutionAction ();
-    // }
-
     @Test
     public void testAttributes ()
     {
@@ -268,5 +244,29 @@ public class TestGeoItem
             }
         }
         item.readAttributes (attributes2);
+    }
+
+    @Test
+    public void testXmlAttributes () throws ParserConfigurationException
+    {
+        Namer.reset ();
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem test = new GeoItem (plane, "t", Color.black);
+        assertNotNull (new GeoItem (test, "t", Color.black));
+        final XMLUtil xu = new XMLUtil ();
+        final DocumentBuilder builder = xu.getDocumentBuilder ();
+        final Document doc = builder.newDocument ();
+        final Element element = doc.createElement ("test");
+        assertNotNull (element);
+        test.getAttributes (element);
+        assertEquals (test.getName (), xu.get (element, "name", "missing"));
+        assertEquals ("false", xu.get (element, "open", "missing"));
+
+        final Element root = doc.createElement ("root");
+        final String name = GeoItem.class.getSimpleName ();
+        assertNull (xu.getNthChild (root, name, 0));
+        test.getElement (root);
+        assertNotNull (xu.getNthChild (root, name, 0));
+        test.remove ();
     }
 }

@@ -5,7 +5,7 @@ import static java.lang.Math.*;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingConstants;
@@ -332,19 +332,19 @@ public class GeoVertex extends GeoItem
         }
     }
 
-    /**
-     * Get named attributes. Used for saving to a csv file. This method should be overriden by
-     * subclasses.
-     *
-     * @param result Map to store attributes.
-     */
-    @Override
-    public void getAttributes (Map<String, Object> result)
-    {
-        result.put ("positionx", position.x);
-        result.put ("positiony", position.y);
-        result.put ("angle", angle.getDoubleValue ());
-    }
+    // /**
+    // * Get named attributes. Used for saving to a csv file. This method should be overriden by
+    // * subclasses.
+    // *
+    // * @param result Map to store attributes.
+    // */
+    // @Override
+    // public void getAttributes (Map<String, Object> result)
+    // {
+    // result.put ("positionx", position.x);
+    // result.put ("positiony", position.y);
+    // result.put ("angle", angle.getDoubleValue ());
+    // }
 
     @Override
     public void getAttributes (Element element)

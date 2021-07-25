@@ -4,7 +4,6 @@ package com.chriseliot.geo;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.*;
@@ -406,42 +405,42 @@ public class NamedVariable extends GeoItem
         }
     }
 
-    /**
-     * Get named attributes. Used for saving to a csv file. This method should be overridden by
-     * subclasses.
-     *
-     * @param result Map to store attributes.
-     */
-    @Override
-    public void getAttributes (Map<String, Object> result)
-    {
-        result.put ("value", value);
-        result.put ("formula", formulaExpression);
-        result.put ("terms", tu.join ("+", getTermNames ()));
-        result.put ("location", location == null ? "" : location.getName ());
-    }
-
-    @Override
-    public void readAttributes (Map<String, String> attributes)
-    {
-        super.readAttributes (attributes);
-        value = Double.parseDouble (attributes.get ("value"));
-        formulaExpression = attributes.get ("formula");
-        final String termsAttribute = attributes.get ("terms");
-        final GeoPlane plane = getPlane ();
-        final List<String> termList = tu.split (termsAttribute, "+");
-        terms = new NamedVariable[termList.size ()];
-        for (int i = 0; i < terms.length; i++)
-        {
-            final String name = termList.get (i);
-            terms[i] = (NamedVariable)plane.get (name);
-        }
-        final String locationName = attributes.get ("location");
-        if (!locationName.isEmpty ())
-        {
-            location = (NamedPoint)getPlane ().get (locationName);
-        }
-    }
+    // /**
+    // * Get named attributes. Used for saving to a csv file. This method should be overridden by
+    // * subclasses.
+    // *
+    // * @param result Map to store attributes.
+    // */
+    // @Override
+    // public void getAttributes (Map<String, Object> result)
+    // {
+    // result.put ("value", value);
+    // result.put ("formula", formulaExpression);
+    // result.put ("terms", tu.join ("+", getTermNames ()));
+    // result.put ("location", location == null ? "" : location.getName ());
+    // }
+    //
+    // @Override
+    // public void readAttributes (Map<String, String> attributes)
+    // {
+    // super.readAttributes (attributes);
+    // value = Double.parseDouble (attributes.get ("value"));
+    // formulaExpression = attributes.get ("formula");
+    // final String termsAttribute = attributes.get ("terms");
+    // final GeoPlane plane = getPlane ();
+    // final List<String> termList = tu.split (termsAttribute, "+");
+    // terms = new NamedVariable[termList.size ()];
+    // for (int i = 0; i < terms.length; i++)
+    // {
+    // final String name = termList.get (i);
+    // terms[i] = (NamedVariable)plane.get (name);
+    // }
+    // final String locationName = attributes.get ("location");
+    // if (!locationName.isEmpty ())
+    // {
+    // location = (NamedPoint)getPlane ().get (locationName);
+    // }
+    // }
 
     @Override
     public void getAttributes (Element element)

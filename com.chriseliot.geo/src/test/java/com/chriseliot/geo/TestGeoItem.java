@@ -9,7 +9,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
@@ -209,7 +208,6 @@ public class TestGeoItem
         final GeoPlane plane = new GeoPlane ();
         final GeoItem parent = new GeoItem (plane, "t", Color.black);
         final NamedPoint child = new NamedPoint (parent, true, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
-        assertEquals (parent.getName (), child.getAttributes ().get ("parent"));
         parent.setStatus (GeoStatus.fixed, "test");
         assertEquals ("test", parent.getReason ());
         child.setGivenStatus (GeoStatus.known);
@@ -217,34 +215,34 @@ public class TestGeoItem
         assertNotNull (parent.toString ());
     }
 
-    @Test
-    public void testAttributes ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoItem item = new GeoItem (plane, "t", Color.black);
-        final Map<String, Object> attributes = item.getAttributes ();
-        assertEquals (item.getName (), attributes.get ("name"));
-        assertNull (attributes.get ("parent"));
-        assertEquals (Boolean.FALSE, attributes.get ("selected"));
-        assertEquals (Boolean.FALSE, attributes.get ("open"));
-        assertEquals (GeoStatus.unknown, attributes.get ("status"));
-        assertNull (attributes.get ("reason"));
-        final Map<String, String> attributes2 = new HashMap<> ();
-        for (final Entry<String, Object> entry : attributes.entrySet ())
-        {
-            final String key = entry.getKey ();
-            final Object value = entry.getValue ();
-            if (value == null)
-            {
-                attributes2.put (key, null);
-            }
-            else
-            {
-                attributes2.put (key, value.toString ());
-            }
-        }
-        item.readAttributes (attributes2);
-    }
+    // @Test
+    // public void testAttributes ()
+    // {
+    // final GeoPlane plane = new GeoPlane ();
+    // final GeoItem item = new GeoItem (plane, "t", Color.black);
+    // final Map<String, Object> attributes = item.getAttributes ();
+    // assertEquals (item.getName (), attributes.get ("name"));
+    // assertNull (attributes.get ("parent"));
+    // assertEquals (Boolean.FALSE, attributes.get ("selected"));
+    // assertEquals (Boolean.FALSE, attributes.get ("open"));
+    // assertEquals (GeoStatus.unknown, attributes.get ("status"));
+    // assertNull (attributes.get ("reason"));
+    // final Map<String, String> attributes2 = new HashMap<> ();
+    // for (final Entry<String, Object> entry : attributes.entrySet ())
+    // {
+    // final String key = entry.getKey ();
+    // final Object value = entry.getValue ();
+    // if (value == null)
+    // {
+    // attributes2.put (key, null);
+    // }
+    // else
+    // {
+    // attributes2.put (key, value.toString ());
+    // }
+    // }
+    // item.readAttributes (attributes2);
+    // }
 
     @Test
     public void testXmlAttributes () throws ParserConfigurationException

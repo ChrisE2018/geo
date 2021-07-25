@@ -646,28 +646,30 @@ public class GeoLine extends GeoItem
         result.put ("Delete", item -> item.remove ());
     }
 
-    /**
-     * Get named attributes. Used for saving to a csv file. This method should be overriden by
-     * subclasses.
-     *
-     * Obsolete.
-     *
-     * @param result Map to store attributes.
-     */
-    @Override
-    public void getAttributes (Map<String, Object> result)
-    {
-        // Must restore vertices
-        result.put ("angle", angle.getDoubleValue ());
-        result.put ("length", length.getDoubleValue ());
-        result.put ("dx", dx.getDoubleValue ());
-        result.put ("dy", dy.getDoubleValue ());
-    }
+    // /**
+    // * Get named attributes. Used for saving to a csv file. This method should be overriden by
+    // * subclasses.
+    // *
+    // * Obsolete.
+    // *
+    // * @param result Map to store attributes.
+    // */
+    // @Override
+    // public void getAttributes (Map<String, Object> result)
+    // {
+    // // Must restore vertices
+    // result.put ("angle", angle.getDoubleValue ());
+    // result.put ("length", length.getDoubleValue ());
+    // result.put ("dx", dx.getDoubleValue ());
+    // result.put ("dy", dy.getDoubleValue ());
+    // }
 
     @Override
     public void getAttributes (Element element)
     {
         super.getAttributes (element);
+        element.setAttribute ("from", from.getName ());
+        element.setAttribute ("to", to.getName ());
         element.setAttribute ("angle", angle.getName ());
         element.setAttribute ("length", length.getName ());
         element.setAttribute ("dx", dx.getName ());

@@ -394,18 +394,19 @@ public class TestGeoLine
         ts.checkExpression (test.getLength (), sqrt (800), trace);
     }
 
-    @Test
-    public void testAttributes ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoLine line = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
-        final Map<String, Object> attributes = line.getAttributes ();
-        assertFalse (attributes.isEmpty ());
-        assertTrue (attributes.containsKey ("angle"));
-        assertTrue (attributes.containsKey ("length"));
-        assertTrue (attributes.containsKey ("dx"));
-        assertTrue (attributes.containsKey ("dy"));
-    }
+    // @Test
+    // public void testAttributes ()
+    // {
+    // final GeoPlane plane = new GeoPlane ();
+    // final GeoLine line = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new
+    // Point2D.Double (30, 40));
+    // final Map<String, Object> attributes = line.getAttributes ();
+    // assertFalse (attributes.isEmpty ());
+    // assertTrue (attributes.containsKey ("angle"));
+    // assertTrue (attributes.containsKey ("length"));
+    // assertTrue (attributes.containsKey ("dx"));
+    // assertTrue (attributes.containsKey ("dy"));
+    // }
 
     @Test
     public void testXmlAttributes () throws ParserConfigurationException

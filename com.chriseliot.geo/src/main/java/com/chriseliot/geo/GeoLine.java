@@ -607,12 +607,11 @@ public class GeoLine extends GeoItem
             }
         }
         // Determine angle
-        // toDegrees (atan2 (dx, dy))
         if (!angle.isDetermined ())
         {
             if (dx.isDetermined () && dy.isDetermined ())
             {
-                angle.setFormula ("angle = atan2 (dx, dy) / Degree", "%s == arctan(%s, %s) / Degree", angle, dx, dy);
+                angle.setFormula ("angle = atan2 (dy, dx) / Degree", "%s == arctan(%s, %s) / Degree", angle, dy, dx);
             }
         }
     }

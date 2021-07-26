@@ -26,6 +26,7 @@ public class Inference
         this.owner = owner;
         this.formula = formula;
         this.terms = terms;
+        assert (owner.equals (terms[0]));
     }
 
     /** The variable that will be derived by this inference. */

@@ -78,7 +78,7 @@ public class TestNamedVariable
         final Color color = Color.red;
         final String name = "test1";
         final NamedVariable test = new NamedVariable (parent, color, name, 43.0);
-        test.setFormula ("test", "1 + 1 = 2");
+        test.setFormula ("test", "1 + 1 = 2", test);
         final Inference inference = test.getInference ();
         assertNotNull (inference);
         assertEquals ("1 + 1 = 2", inference.getInstantiation ());
@@ -101,9 +101,9 @@ public class TestNamedVariable
         assertEquals ("c==43.0", test.getDerivedFormula ());
         plane.solve ();
         x.setDefaultFormula ();
-        y.setFormula ("test", "y == 55");
-        test.setFormula ("test", "test1 == x + y", x, y);
-        assertEquals ("y==55", test.getDerivedFormula ());
+        y.setFormula ("test", "y == 55", y);
+        test.setFormula ("test", "%s == %s + 4", test, y);
+        assertEquals ("test1==59", test.getDerivedFormula ());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class TestNamedVariable
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedPoint test2 = new NamedPoint (parent, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedPoint test3 = new NamedPoint (parent, false, Color.green, "test", position2, SwingConstants.NORTH_WEST);
-        test.getX ().setFormula ("1 + 1 = 2", "test");
+        test.getX ().setFormula ("1 + 1 = 2", "test", test.getX ());
         plane.solve ();
         assertNotNull (test2);
         assertNotNull (test3);
@@ -135,7 +135,7 @@ public class TestNamedVariable
         final Graphics g = image.getGraphics ();
         final Labels labels = new Labels ();
         v.paint (g, labels);
-        v.setFormula ("test", "2 == 1 + 1");
+        v.setFormula ("test", "2 == 1 + 1", v);
         final Inference inference = v.getInference ();
         assertNotNull (inference);
         assertEquals ("2 == 1 + 1", inference.getInstantiation ());

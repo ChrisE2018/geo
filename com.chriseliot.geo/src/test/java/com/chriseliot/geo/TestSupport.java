@@ -85,7 +85,7 @@ public class TestSupport
         final NamedVariable alpha = new NamedVariable (parent, Color.red, "alpha", 5.0);
         assertNotNull (plane.get (parent.getName ()));
 
-        alpha.setFormula ("test", "alpha == 5");
+        alpha.setFormula ("test", "alpha == 5", alpha);
         checkExpression (alpha, 5);
         test.setFormula ("test", "test == alpha", test, alpha);
         final Inference inference = test.getInference ();

@@ -164,7 +164,7 @@ public class NamedVariable extends GeoItem
      *            to be removed before the elimination step because we want it to be part of the
      *            overall formula.
      */
-    public void getDerivationChain (Set<String> chain, Set<String> roots)
+    private void getDerivationChain (Set<String> chain, Set<String> roots)
     {
         for (final NamedVariable term : inference.getTerms ())
         {
@@ -179,6 +179,46 @@ public class NamedVariable extends GeoItem
                 }
             }
         }
+    }
+
+    public void getDerivation (StringBuilder builder, int level)
+    {
+        if (inference != null)
+        {
+            final NamedVariable[] terms = inference.getTerms ();
+            for (int i = 1; i < terms.length; i++)
+            {
+                final NamedVariable ti = terms[i];
+                ti.getDerivation (builder, level + 1);
+                ti.getFormulaLine (builder, level);
+            }
+        }
+    }
+
+    public void getFormulaLine (StringBuilder builder, int level)
+    {
+        for (int i = 0; i < level; i++)
+        {
+            builder.append ("|  ");
+        }
+        if (inference == null)
+        {
+            builder.append (String.format ("%s == %.3f", getName (), getDoubleValue ()));
+        }
+        else
+        {
+            final String formula = inference.getInstantiation ();
+            builder.append (formula);
+        }
+        if (getStatus () == GeoStatus.known)
+        {
+            builder.append (" given");
+        }
+        else if (getStatus () == GeoStatus.fixed)
+        {
+            builder.append (" fixed");
+        }
+        builder.append ("\n");
     }
 
     /** Derive consequential formulas around this variable. */
@@ -246,46 +286,6 @@ public class NamedVariable extends GeoItem
             final int anchor = location.getAnchor ();
             labels.add (this, color, position, anchor, text, tooltip);
         }
-    }
-
-    public void getDerivation (StringBuilder builder, int level)
-    {
-        if (inference != null)
-        {
-            final NamedVariable[] terms = inference.getTerms ();
-            for (int i = 1; i < terms.length; i++)
-            {
-                final NamedVariable ti = terms[i];
-                ti.getDerivation (builder, level + 1);
-                ti.getFormulaLine (builder, level);
-            }
-        }
-    }
-
-    public void getFormulaLine (StringBuilder builder, int level)
-    {
-        for (int i = 0; i < level; i++)
-        {
-            builder.append ("|  ");
-        }
-        if (inference == null)
-        {
-            builder.append (String.format ("%s == %.3f", getName (), getDoubleValue ()));
-        }
-        else
-        {
-            final String formula = inference.getInstantiation ();
-            builder.append (formula);
-        }
-        if (getStatus () == GeoStatus.known)
-        {
-            builder.append (" given");
-        }
-        else if (getStatus () == GeoStatus.fixed)
-        {
-            builder.append (" fixed");
-        }
-        builder.append ("\n");
     }
 
     /**

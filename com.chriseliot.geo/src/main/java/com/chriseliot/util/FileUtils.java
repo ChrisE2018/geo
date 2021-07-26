@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.io.File;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FileUtils
 {
@@ -53,6 +54,15 @@ public class FileUtils
             return pathname.substring (pos);
         }
         return null;
+    }
+
+    public String removeDot (String extension)
+    {
+        if (extension.startsWith ("."))
+        {
+            return extension.substring (1);
+        }
+        return extension;
     }
 
     /**
@@ -144,10 +154,13 @@ public class FileUtils
         return null;
     }
 
-    public File getReadFile (Component parent, String title, File currentDir, String extension)
+    public File getReadFile (Component parent, String title, File currentDir, String extensionDescription, String extension)
     {
-        // Should use a file filter here.
+
         final JFileChooser fileChooser = new JFileChooser (currentDir);
+        // Should use a file filter here.
+        final FileNameExtensionFilter filter = new FileNameExtensionFilter (extensionDescription, removeDot (extension));
+        fileChooser.setFileFilter (filter);
         fileChooser.setDialogTitle (title);
         final int result = fileChooser.showOpenDialog (parent);
         if (result == JFileChooser.APPROVE_OPTION)

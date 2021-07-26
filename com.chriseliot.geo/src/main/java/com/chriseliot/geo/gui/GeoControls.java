@@ -293,7 +293,7 @@ public class GeoControls extends JPanel implements ActionListener
     public void read () throws ParserConfigurationException, IOException, SAXException
     {
         final File currentDir = new File ("data/").getAbsoluteFile ();
-        final File file = fu.getReadFile (geo, "Select Geometry File", currentDir, ".xml");
+        final File file = fu.getReadFile (geo, "Select Geometry File", currentDir, "Select geometry xml", ".xml");
         if (file != null)
         {
             readXml (file);

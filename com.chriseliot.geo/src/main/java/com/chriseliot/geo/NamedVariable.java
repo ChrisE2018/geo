@@ -28,31 +28,10 @@ public class NamedVariable extends GeoItem
      */
     private Double value;
 
-    /**
-     * Formula for the true value. If this term has not been constrained, this will be null.
-     * Otherwise it relates the variables in terms to the value of this variable. To make the actual
-     * formula requires instantiating this expression with the names of the terms.
-     */
-    private String formulaExpression;
-
-    /**
-     * A list of variables used in the formula. Will be null if the formula has not been set. When
-     * the formula is set, the free variables are determined. The set of free variables are saved
-     * here as terms. To compute a numerical value for this variable requires knowing the exact
-     * values of all terms. These values can be plugged into the formula to compute a value of this
-     * variable.
-     */
-    private NamedVariable[] terms = null;
+    private Inference inference = null;
 
     /** Location on screen to draw label for this variable. */
     private NamedPoint location;
-
-    // /**
-    // * Location on screen to draw label for this variable. If location2 is not null, draw the
-    // label
-    // * half way between location and location2.
-    // */
-    // private NamedPoint location2;
 
     /** A variable representing a single real value. */
     public NamedVariable (GeoItem parent, Color color, String name, Double value)
@@ -112,7 +91,11 @@ public class NamedVariable extends GeoItem
      */
     public String getFormulaExpression ()
     {
-        return formulaExpression;
+        if (inference != null)
+        {
+            return inference.getFormula ();
+        }
+        return null;
     }
 
     /**
@@ -124,36 +107,41 @@ public class NamedVariable extends GeoItem
      */
     public NamedVariable[] getTerms ()
     {
-        return terms;
+        if (inference != null)
+        {
+            return inference.getTerms ();
+        }
+        return new NamedVariable[0];
     }
 
+    /** The names of the free variables. */
     public String[] getTermNames ()
     {
-        final String[] names = new String[terms.length];
-        for (int i = 0; i < terms.length; i++)
+        if (inference != null)
         {
-            names[i] = terms[i].getName ();
+            return inference.getTermNames ();
         }
-        return names;
+        return new String[0];
     }
 
+    /**
+     * The instantiated formula with variable names replacing the corresponding format variables.
+     */
     public String getFormulaInstance ()
     {
-        if (formulaExpression == null)
+        if (inference != null)
         {
-            return null;
+            return inference.getInstantiation ();
         }
-        final Object[] names = getTermNames ();
-        return String.format (formulaExpression, names);
+        return null;
     }
 
-    /** Set the status to unknown. Reset the formula and terms to the corrct default state. */
+    /** Set the status to unknown. Reset the formula and terms to the correct default state. */
     @Override
     public void setDefaultFormula ()
     {
         super.setDefaultFormula ();
-        formulaExpression = null;
-        terms = new NamedVariable[] {};
+        inference = null;
     }
 
     /**
@@ -168,8 +156,7 @@ public class NamedVariable extends GeoItem
     {
         final NamedVariable[] terms = new NamedVariable[variables.length];
         System.arraycopy (variables, 0, terms, 0, variables.length);
-        this.formulaExpression = formulaExpression;
-        this.terms = terms;
+        inference = new Inference (this, formulaExpression, terms);
         setStatus (GeoStatus.derived, reason);
     }
 
@@ -221,9 +208,9 @@ public class NamedVariable extends GeoItem
      *            to be removed before the elimination step because we want it to be part of the
      *            overall formula.
      */
-    private void getDerivationChain (Set<String> chain, Set<String> roots)
+    public void getDerivationChain (Set<String> chain, Set<String> roots)
     {
-        for (final NamedVariable ti : terms)
+        for (final NamedVariable ti : inference.getTerms ())
         {
             final String f = ti.getFormulaInstance ();
             roots.add (ti.getName ());
@@ -292,7 +279,7 @@ public class NamedVariable extends GeoItem
                 text = String.format ("%s = %.1f", getName (), value);
             }
             final String tooltip;
-            if (formulaExpression == null)
+            if (inference == null)
             {
                 tooltip = text;
             }
@@ -307,11 +294,15 @@ public class NamedVariable extends GeoItem
 
     public void getDerivation (StringBuilder builder, int level)
     {
-        for (int i = 1; i < terms.length; i++)
+        if (inference != null)
         {
-            final NamedVariable ti = terms[i];
-            ti.getDerivation (builder, level + 1);
-            ti.getFormulaLine (builder, level);
+            final NamedVariable[] terms = inference.getTerms ();
+            for (int i = 1; i < terms.length; i++)
+            {
+                final NamedVariable ti = terms[i];
+                ti.getDerivation (builder, level + 1);
+                ti.getFormulaLine (builder, level);
+            }
         }
     }
 
@@ -414,11 +405,18 @@ public class NamedVariable extends GeoItem
         {
             element.setAttribute ("value", String.valueOf (value));
         }
-        if (formulaExpression != null)
+        if (inference != null)
         {
-            element.setAttribute ("formula", String.valueOf (formulaExpression));
+            element.setAttribute ("formula", String.valueOf (inference.getFormula ()));
         }
-        element.setAttribute ("terms", tu.join ("+", getTermNames ()));
+        if (inference == null)
+        {
+            element.setAttribute ("terms", "");
+        }
+        else
+        {
+            element.setAttribute ("terms", tu.join ("+", inference.getTermNames ()));
+        }
         if (location != null)
         {
             element.setAttribute ("location", String.valueOf (location.getName ()));
@@ -431,15 +429,18 @@ public class NamedVariable extends GeoItem
         super.marshall (element);
         final GeoPlane plane = getPlane ();
         value = xu.getDouble (element, "value", null);
-        formulaExpression = xu.get (element, "formula", null);
-
-        final List<String> termList = tu.split (xu.get (element, "terms", ""), "+");
-        terms = new NamedVariable[termList.size ()];
-        for (int i = 0; i < terms.length; i++)
+        final String formulaExpression = xu.get (element, "formula", null);
+        if (formulaExpression != null)
         {
-            final String name = termList.get (i);
-            // This might have to be deferred until the end of the read
-            terms[i] = (NamedVariable)plane.get (name);
+            final List<String> termList = tu.split (xu.get (element, "terms", ""), "+");
+            final NamedVariable[] terms = new NamedVariable[termList.size ()];
+            for (int i = 0; i < terms.length; i++)
+            {
+                final String name = termList.get (i);
+                // This might have to be deferred until the end of the read
+                terms[i] = (NamedVariable)plane.get (name);
+            }
+            inference = new Inference (this, formulaExpression, terms);
         }
 
         final String locationName = xu.get (element, "location", null);

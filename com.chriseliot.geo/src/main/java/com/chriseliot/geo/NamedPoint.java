@@ -273,33 +273,22 @@ public class NamedPoint extends GeoItem
         getPlane ().drag (position, result);
     }
 
-    // /**
-    // * Get named attributes. Used for saving to a csv file. This method should be overriden by
-    // * subclasses.
-    // *
-    // * @param result Map to store attributes.
-    // */
-    // @Override
-    // public void getAttributes (Map<String, Object> result)
-    // {
-    // result.put ("positionx", position.x);
-    // result.put ("positiony", position.y);
-    // }
-    //
-    // @Override
-    // public void readAttributes (Map<String, String> attributes)
-    // {
-    // super.readAttributes (attributes);
-    // position.x = Double.parseDouble (attributes.get ("positionx"));
-    // position.y = Double.parseDouble (attributes.get ("positiony"));
-    // }
-
     @Override
     public void getAttributes (Element element)
     {
         super.getAttributes (element);
         element.setAttribute ("x", x.getName ());
         element.setAttribute ("y", y.getName ());
+    }
+
+    @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        x.marshall (xu.getNthChild (element, "name", xu.get (element, "x", null), 0));
+        y.marshall (xu.getNthChild (element, "name", xu.get (element, "y", null), 0));
+        position.x = x.getDoubleValue ();
+        position.y = y.getDoubleValue ();
     }
 
     @Override

@@ -4,6 +4,7 @@ package com.chriseliot.geo;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.*;
@@ -18,7 +19,7 @@ import com.chriseliot.util.*;
 public class NamedVariable extends GeoItem
 {
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
-    private final TextUtils tu = new TextUtils ();
+    private static TextUtils tu = new TextUtils ();
 
     /**
      * Current value determined from the screen positions. This may be more specific than can be
@@ -405,43 +406,6 @@ public class NamedVariable extends GeoItem
         }
     }
 
-    // /**
-    // * Get named attributes. Used for saving to a csv file. This method should be overridden by
-    // * subclasses.
-    // *
-    // * @param result Map to store attributes.
-    // */
-    // @Override
-    // public void getAttributes (Map<String, Object> result)
-    // {
-    // result.put ("value", value);
-    // result.put ("formula", formulaExpression);
-    // result.put ("terms", tu.join ("+", getTermNames ()));
-    // result.put ("location", location == null ? "" : location.getName ());
-    // }
-    //
-    // @Override
-    // public void readAttributes (Map<String, String> attributes)
-    // {
-    // super.readAttributes (attributes);
-    // value = Double.parseDouble (attributes.get ("value"));
-    // formulaExpression = attributes.get ("formula");
-    // final String termsAttribute = attributes.get ("terms");
-    // final GeoPlane plane = getPlane ();
-    // final List<String> termList = tu.split (termsAttribute, "+");
-    // terms = new NamedVariable[termList.size ()];
-    // for (int i = 0; i < terms.length; i++)
-    // {
-    // final String name = termList.get (i);
-    // terms[i] = (NamedVariable)plane.get (name);
-    // }
-    // final String locationName = attributes.get ("location");
-    // if (!locationName.isEmpty ())
-    // {
-    // location = (NamedPoint)getPlane ().get (locationName);
-    // }
-    // }
-
     @Override
     public void getAttributes (Element element)
     {
@@ -458,6 +422,34 @@ public class NamedVariable extends GeoItem
         if (location != null)
         {
             element.setAttribute ("location", String.valueOf (location.getName ()));
+        }
+    }
+
+    @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        final GeoPlane plane = getPlane ();
+        value = xu.getDouble (element, "value", null);
+        formulaExpression = xu.get (element, "formula", null);
+
+        final List<String> termList = tu.split (xu.get (element, "terms", ""), "+");
+        terms = new NamedVariable[termList.size ()];
+        for (int i = 0; i < terms.length; i++)
+        {
+            final String name = termList.get (i);
+            // This might have to be deferred until the end of the read
+            terms[i] = (NamedVariable)plane.get (name);
+        }
+
+        final String locationName = xu.get (element, "location", null);
+        if (locationName != null)
+        {
+            if (location == null)
+            {
+                // This might have to be deferred until the end of the read
+                location = (NamedPoint)plane.get (locationName);
+            }
         }
     }
 

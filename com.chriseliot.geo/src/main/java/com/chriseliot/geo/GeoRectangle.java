@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 
+import org.w3c.dom.Element;
+
 import com.chriseliot.util.Labels;
 
 public class GeoRectangle extends GeoItem
@@ -114,6 +116,36 @@ public class GeoRectangle extends GeoItem
     public void popup (Map<String, Consumer<GeoItem>> result)
     {
         result.put ("Delete", item -> item.remove ());
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        element.setAttribute ("tl", tl.getName ());
+        element.setAttribute ("tr", tr.getName ());
+        element.setAttribute ("bl", bl.getName ());
+        element.setAttribute ("br", br.getName ());
+        element.setAttribute ("center", center.getName ());
+        element.setAttribute ("width", width.getName ());
+        element.setAttribute ("height", height.getName ());
+    }
+
+    @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        tl.marshall (xu.getNthChild (element, "name", xu.get (element, "tl", null), 0));
+        tr.marshall (xu.getNthChild (element, "name", xu.get (element, "tr", null), 0));
+        bl.marshall (xu.getNthChild (element, "name", xu.get (element, "bl", null), 0));
+        br.marshall (xu.getNthChild (element, "name", xu.get (element, "br", null), 0));
+        center.marshall (xu.getNthChild (element, "name", xu.get (element, "center", null), 0));
+        width.marshall (xu.getNthChild (element, "name", xu.get (element, "width", null), 0));
+        height.marshall (xu.getNthChild (element, "name", xu.get (element, "height", null), 0));
+        from.x = tl.getPosition ().x;
+        from.y = tl.getPosition ().y;
+        to.x = br.getPosition ().x;
+        to.y = br.getPosition ().y;
     }
 
     @Override

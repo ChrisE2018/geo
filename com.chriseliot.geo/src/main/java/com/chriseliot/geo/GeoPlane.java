@@ -675,7 +675,7 @@ public class GeoPlane
         buffer.append ("#<");
         buffer.append (getClass ().getSimpleName ());
         buffer.append (" ");
-        buffer.append (System.identityHashCode (this));
+        buffer.append (items.size ());
         buffer.append (">");
         return buffer.toString ();
     }

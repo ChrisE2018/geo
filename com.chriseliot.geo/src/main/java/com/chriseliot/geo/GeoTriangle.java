@@ -1140,6 +1140,19 @@ public class GeoTriangle extends GeoItem
     }
 
     @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        l1.marshall (xu.getNthChild (element, "name", xu.get (element, "l1", null), 0));
+        l2.marshall (xu.getNthChild (element, "name", xu.get (element, "l2", null), 0));
+        l3.marshall (xu.getNthChild (element, "name", xu.get (element, "l3", null), 0));
+        angle1.marshall (xu.getNthChild (element, "name", xu.get (element, "angle1", null), 0));
+        angle2.marshall (xu.getNthChild (element, "name", xu.get (element, "angle2", null), 0));
+        angle3.marshall (xu.getNthChild (element, "name", xu.get (element, "angle3", null), 0));
+        centroid.marshall (xu.getNthChild (element, "name", xu.get (element, "centroid", null), 0));
+    }
+
+    @Override
     public String toString ()
     {
         final StringBuilder buffer = new StringBuilder ();

@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 
+import org.w3c.dom.Element;
+
 import com.chriseliot.util.Labels;
 
 public class GeoOval extends GeoItem
@@ -71,6 +73,24 @@ public class GeoOval extends GeoItem
     public void popup (Map<String, Consumer<GeoItem>> result)
     {
         result.put ("Delete", item -> item.remove ());
+    }
+
+    @Override
+    public void getAttributes (Element element)
+    {
+        super.getAttributes (element);
+        element.setAttribute ("from", from.getName ());
+        element.setAttribute ("to", to.getName ());
+        element.setAttribute ("center", center.getName ());
+    }
+
+    @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        from.marshall (xu.getNthChild (element, "name", xu.get (element, "from", null), 0));
+        to.marshall (xu.getNthChild (element, "name", xu.get (element, "to", null), 0));
+        center.marshall (xu.getNthChild (element, "name", xu.get (element, "center", null), 0));
     }
 
     @Override

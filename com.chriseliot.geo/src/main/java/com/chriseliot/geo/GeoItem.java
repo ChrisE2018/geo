@@ -7,12 +7,17 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.*;
 import org.w3c.dom.*;
 
 import com.chriseliot.util.*;
 
 public class GeoItem
 {
+    public static final XMLUtil xu = new XMLUtil ();
+
+    private static Logger logger = LogManager.getFormatterLogger (GeoItem.class);
+
     /** Separator between parts of a name. */
     public static char SEP = '$';
 
@@ -327,59 +332,7 @@ public class GeoItem
         result.put ("unknown", item -> item.setGivenStatus (GeoStatus.unknown));
     }
 
-    // /** Get named attributes. Used for saving to a csv file. */
-    // public Map<String, Object> getAttributes ()
-    // {
-    // final Map<String, Object> result = new LinkedHashMap<> ();
-    // result.put ("classname", getClass ().getCanonicalName ());
-    //
-    // result.put ("name", name);
-    // result.put ("parent", parent == null ? null : parent.getName ());
-    // /** Children of this item. */
-    // result.put ("color", color.getRGB ());
-    // result.put ("selected", isSelected);
-    // result.put ("open", isOpen);
-    // result.put ("status", status);
-    // result.put ("reason", reason);
-    // getAttributes (result);
-    // return result;
-    // }
-    //
-    // /**
-    // * Get named attributes. Used for saving to a csv file. This method should be overriden by
-    // * subclasses. Be sure to call the super class if there are method overrides.
-    // *
-    // * @param result Map to store attributes.
-    // */
-    // public void getAttributes (Map<String, Object> result)
-    // {
-    // }
-    //
-    // /**
-    // * Restore attributes after reading. Be sure to call super.readAttributes (attributes); from
-    // * method overrides.
-    // *
-    // * @param attributes The attributes to set for this item.
-    // */
-    // public void readAttributes (Map<String, String> attributes)
-    // {
-    // name = attributes.get ("name");
-    // // final String parentName = attributes.get ("parent");
-    // // if (!parentName.isEmpty ())
-    // // {
-    // // parent = plane.get (parentName);
-    // // }
-    // color = new Color (Integer.parseInt (attributes.get ("color"), 16));
-    // isSelected = Boolean.parseBoolean (attributes.get ("selected"));
-    // isOpen = Boolean.parseBoolean (attributes.get ("open"));
-    // status = GeoStatus.valueOf (attributes.get ("status"));
-    // reason = attributes.get ("reason");
-    //
-    // // Update binding map
-    // plane.remove (this);
-    // plane.addItem (this);
-    // }
-
+    /** Convert to an element for saving to a file. */
     public void getElement (Element root)
     {
         final Document doc = root.getOwnerDocument ();
@@ -392,18 +345,48 @@ public class GeoItem
         getAttributes (result);
     }
 
+    /** Convert to an element for saving to a file. */
     public void getAttributes (Element element)
     {
         element.setAttribute ("name", name);
-        if (parent != null)
-        {
-            element.setAttribute ("parent", parent.getName ());
-        }
         element.setAttribute ("color", String.valueOf (color.getRGB ()));
         element.setAttribute ("selected", String.valueOf (isSelected));
         element.setAttribute ("open", String.valueOf (isOpen));
         element.setAttribute ("status", String.valueOf (status));
         element.setAttribute ("reason", reason);
+    }
+
+    /** Restore from the xml. */
+    public void marshall (Element element)
+    {
+        setName (xu.get (element, "name", name));
+        color = new Color (xu.getInteger (element, "color", 0));
+        isSelected = xu.getBoolean (element, "selected", false);
+        isOpen = xu.getBoolean (element, "open", false);
+        status = GeoStatus.valueOf (xu.get (element, "status", "unknown"));
+        reason = xu.get (element, "reason", null);
+    }
+
+    /** Find an item in the plane and restore it from the xml. */
+    public void marshallReference (Element parentXml, String name)
+    {
+        final GeoItem item = getPlane ().get (name);
+        if (item == null)
+        {
+            logger.warn ("Can't locate item %s", name);
+        }
+        else
+        {
+            final Element child = xu.getNthChild (parentXml, "name", name, 0);
+            if (child == null)
+            {
+                logger.warn ("Can't locate xml name=%s in %s", name, xu.getXMLString (parentXml));
+            }
+            else
+            {
+                item.marshall (child);
+            }
+        }
     }
 
     @Override

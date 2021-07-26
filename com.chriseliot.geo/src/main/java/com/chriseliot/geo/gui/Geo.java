@@ -34,7 +34,7 @@ public class Geo extends JPanel
 
     private final JFrame frame = new JFrame ("Geometry Solver");
     /** Storage for all geometry items. */
-    private final GeoPlane plane = new GeoPlane ();
+    private GeoPlane plane = new GeoPlane ();
     private final GeoSolution solution = new GeoSolution (plane);
 
     /** Panel for user controls. */
@@ -157,6 +157,13 @@ public class Geo extends JPanel
     public GeoPlane getPlane ()
     {
         return plane;
+    }
+
+    /** Storage for all geometry items. */
+    public void setPlane (GeoPlane plane)
+    {
+        this.plane = plane;
+        repaint ();
     }
 
     public GeoSolution getSolution ()

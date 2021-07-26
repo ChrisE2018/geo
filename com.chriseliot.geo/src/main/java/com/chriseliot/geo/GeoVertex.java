@@ -332,30 +332,34 @@ public class GeoVertex extends GeoItem
         }
     }
 
-    // /**
-    // * Get named attributes. Used for saving to a csv file. This method should be overriden by
-    // * subclasses.
-    // *
-    // * @param result Map to store attributes.
-    // */
-    // @Override
-    // public void getAttributes (Map<String, Object> result)
-    // {
-    // result.put ("positionx", position.x);
-    // result.put ("positiony", position.y);
-    // result.put ("angle", angle.getDoubleValue ());
-    // }
-
     @Override
     public void getAttributes (Element element)
     {
         super.getAttributes (element);
+        // Vertex lines should exist before the vertex
         element.setAttribute ("line1", line1.getName ());
         element.setAttribute ("line2", line2.getName ());
+
+        // These are simple attributes
         element.setAttribute ("x", String.valueOf (position.x));
         element.setAttribute ("y", String.valueOf (position.y));
+
+        // This is a child item
         element.setAttribute ("vertex", vertex.getName ());
+
+        // Child of the vertex
         element.setAttribute ("angle", angle.getName ());
+    }
+
+    @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        position.x = xu.getDouble (element, "x", 0.0);
+        position.y = xu.getDouble (element, "y", 0.0);
+        final Element vertexXml = xu.getNthChild (element, "name", xu.get (element, "vertex", null), 0);
+        vertex.marshall (vertexXml);
+        marshallReference (vertexXml, xu.get (element, "angle", null));
     }
 
     @Override

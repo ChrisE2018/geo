@@ -27,7 +27,7 @@ public class GeoLine extends GeoItem
     private final NamedPoint to;
 
     /** Midpoint of this line segment. */
-    private final NamedPoint midpoint;
+    private final TransposePoint midpoint;
 
     /**
      * Angle in degrees from the y axis. The angle of this line relative to the Y axis. A line from
@@ -81,7 +81,7 @@ public class GeoLine extends GeoItem
     }
 
     /** Midpoint of this line segment. */
-    public NamedPoint getMidpoint ()
+    public TransposePoint getMidpoint ()
     {
         return midpoint;
     }
@@ -646,34 +646,34 @@ public class GeoLine extends GeoItem
         result.put ("Delete", item -> item.remove ());
     }
 
-    // /**
-    // * Get named attributes. Used for saving to a csv file. This method should be overriden by
-    // * subclasses.
-    // *
-    // * Obsolete.
-    // *
-    // * @param result Map to store attributes.
-    // */
-    // @Override
-    // public void getAttributes (Map<String, Object> result)
-    // {
-    // // Must restore vertices
-    // result.put ("angle", angle.getDoubleValue ());
-    // result.put ("length", length.getDoubleValue ());
-    // result.put ("dx", dx.getDoubleValue ());
-    // result.put ("dy", dy.getDoubleValue ());
-    // }
-
     @Override
     public void getAttributes (Element element)
     {
         super.getAttributes (element);
         element.setAttribute ("from", from.getName ());
         element.setAttribute ("to", to.getName ());
-        element.setAttribute ("angle", angle.getName ());
-        element.setAttribute ("length", length.getName ());
+        element.setAttribute ("midpoint", midpoint.getName ());
+        // These items are children of the midpoint but the references are here so the GeoLine
+        // controls the restore
         element.setAttribute ("dx", dx.getName ());
         element.setAttribute ("dy", dy.getName ());
+        element.setAttribute ("length", length.getName ());
+        element.setAttribute ("angle", angle.getName ());
+    }
+
+    @Override
+    public void marshall (Element element)
+    {
+        super.marshall (element);
+        from.marshall (xu.getNthChild (element, "name", xu.get (element, "from", null), 0));
+        to.marshall (xu.getNthChild (element, "name", xu.get (element, "to", null), 0));
+        final Element midpointXml = xu.getNthChild (element, "name", xu.get (element, "midpoint", null), 0);
+        midpoint.marshall (midpointXml);
+        // These items are children of the midpoint but we restore them here
+        marshallReference (midpointXml, xu.get (element, "dx", null));
+        marshallReference (midpointXml, xu.get (element, "dy", null));
+        marshallReference (midpointXml, xu.get (element, "length", null));
+        marshallReference (midpointXml, xu.get (element, "angle", null));
     }
 
     @Override

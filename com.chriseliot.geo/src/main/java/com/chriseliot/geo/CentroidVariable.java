@@ -93,7 +93,7 @@ public class CentroidVariable extends NamedVariable
                 text = String.format ("%s = %.1f", getName (), value);
             }
             final String tooltip;
-            if (getFormulaExpression () == null)
+            if (getFormula () == null)
             {
                 tooltip = text;
             }

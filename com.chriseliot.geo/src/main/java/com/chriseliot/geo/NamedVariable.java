@@ -89,7 +89,7 @@ public class NamedVariable extends GeoItem
      * Formula for the true value. If this term has not been constrained, this will be null.
      * Otherwise it relates the variables in terms to the value of this variable.
      */
-    public String getFormulaExpression ()
+    public String getFormula ()
     {
         if (inference != null)
         {

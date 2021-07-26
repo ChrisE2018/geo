@@ -53,7 +53,7 @@ public class TestNamedVariable
         test.setDoubleValue (17.0);
         assertEquals (17.0, test.getDoubleValue ());
         assertEquals (0, test.getTerms ().length);
-        assertNull (test.getFormulaExpression ());
+        assertNull (test.getFormula ());
     }
 
     @Test

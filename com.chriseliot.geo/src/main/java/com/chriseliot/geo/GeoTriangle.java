@@ -907,7 +907,7 @@ public class GeoTriangle extends GeoItem
                                 "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta * Degree))))",
                                 c, a, b, theta);
 
-                        logger.info ("Calculate %s: %s", c.getName (), c.getFormulaInstance ());
+                        logger.info ("Calculate %s: %s", c.getName (), c.getInference ().getInstantiation ());
                     }
                 }
             }
@@ -983,7 +983,7 @@ public class GeoTriangle extends GeoItem
         a.setFormula ("law of size",
                 "%s == Block({angleA=%s, sideB=%s, angleB=%s}, Return((sideB * Sin (angleA * Degree)) / Sin(angleB * Degree)))",
                 a, A, b, B);
-        logger.info ("Calculate %s: %s", a.getName (), a.getFormulaInstance ());
+        logger.info ("Calculate %s: %s", a.getName (), a.getInference ().getInstantiation ());
     }
 
     public int countSidesDetermined ()

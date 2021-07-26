@@ -106,9 +106,10 @@ public class Geo extends JPanel
                 if (item instanceof NamedVariable)
                 {
                     final NamedVariable var = (NamedVariable)item;
-                    final NamedVariable[] terms = var.getTerms ();
-                    if (terms != null)
+                    final Inference inference = var.getInference ();
+                    if (inference != null)
                     {
+                        final NamedVariable[] terms = inference.getTerms ();
                         final StringBuilder builder = new StringBuilder ();
                         for (int i = 0; i < terms.length; i++)
                         {

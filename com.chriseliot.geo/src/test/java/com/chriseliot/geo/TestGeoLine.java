@@ -451,8 +451,9 @@ public class TestGeoLine
         test.getFrom ().getX ().setGivenStatus (GeoStatus.known);
         test.getTo ().getX ().setGivenStatus (GeoStatus.known);
         final NamedVariable mx = test.getMidpoint ().getX ();
-        final String formula = mx.getFormulaInstance ();
-        final String[] terms = mx.getTermNames ();
+        final Inference inference = mx.getInference ();
+        final String formula = inference.getInstantiation ();
+        final String[] terms = inference.getTermNames ();
 
         final ExprEvaluator eval = new ExprEvaluator ();
         for (int i = 1; i < terms.length; i++)

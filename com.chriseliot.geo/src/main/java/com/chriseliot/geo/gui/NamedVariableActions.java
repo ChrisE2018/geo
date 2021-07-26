@@ -10,21 +10,29 @@ public class NamedVariableActions
     /** Action to perform for a show derivation action. */
     public void showSolutionAction (NamedVariable item)
     {
-        final String rawFormula = item.getFormulaInstance ();
-        final String derivedFormula = item.getDerivedFormula ();
-        final String message = String.format ("Raw: %s\nDerived: %s", rawFormula, derivedFormula);
-        JOptionPane.showMessageDialog (null, message, "Derivation", JOptionPane.INFORMATION_MESSAGE);
+        final Inference inference = item.getInference ();
+        if (inference != null)
+        {
+            final String rawFormula = inference.getInstantiation ();
+            final String derivedFormula = item.getDerivedFormula ();
+            final String message = String.format ("Raw: %s\nDerived: %s", rawFormula, derivedFormula);
+            JOptionPane.showMessageDialog (null, message, "Derivation", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /** Action to perform for a show derivation action. */
     public void showDerivationAction (NamedVariable item)
     {
-        final StringBuilder builder = new StringBuilder ();
-        final String formula = item.getFormulaInstance ();
-        builder.append (String.format ("Derivation: %s\n\n", formula));
-        item.getDerivation (builder, 0);
-        item.getFormulaLine (builder, 0);
-        JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
+        final Inference inference = item.getInference ();
+        if (inference != null)
+        {
+            final StringBuilder builder = new StringBuilder ();
+            final String formula = inference.getInstantiation ();
+            builder.append (String.format ("Derivation: %s\n\n", formula));
+            item.getDerivation (builder, 0);
+            item.getFormulaLine (builder, 0);
+            JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /** Action to perform for a set value action. */

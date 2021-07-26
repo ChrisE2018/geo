@@ -370,7 +370,11 @@ public class GeoSolution extends AbstractTableModel
             if (item instanceof NamedVariable)
             {
                 final NamedVariable variable = (NamedVariable)item;
-                return variable.getFormulaInstance ();
+                final Inference inference = variable.getInference ();
+                if (inference != null)
+                {
+                    return inference.getInstantiation ();
+                }
             }
         }
         return null;

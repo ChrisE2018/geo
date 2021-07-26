@@ -93,13 +93,13 @@ public class CentroidVariable extends NamedVariable
                 text = String.format ("%s = %.1f", getName (), value);
             }
             final String tooltip;
-            if (getFormula () == null)
+            if (getInference () == null)
             {
                 tooltip = text;
             }
             else
             {
-                tooltip = String.format ("%.1f = %s", value, getFormulaInstance ());
+                tooltip = String.format ("%.1f = %s", value, getInference ().getInstantiation ());
             }
 
             final Point p = new Point ((int)round (position.x), (int)round (position.y));

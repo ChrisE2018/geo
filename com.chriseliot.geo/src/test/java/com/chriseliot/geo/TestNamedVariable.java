@@ -52,8 +52,8 @@ public class TestNamedVariable
         assertEquals (43.0, test.getDoubleValue ());
         test.setDoubleValue (17.0);
         assertEquals (17.0, test.getDoubleValue ());
-        assertEquals (0, test.getTerms ().length);
-        assertNull (test.getFormula ());
+        final Inference inference = test.getInference ();
+        assertNull (inference);
     }
 
     @Test
@@ -79,7 +79,9 @@ public class TestNamedVariable
         final String name = "test1";
         final NamedVariable test = new NamedVariable (parent, color, name, 43.0);
         test.setFormula ("test", "1 + 1 = 2");
-        assertEquals ("1 + 1 = 2", test.getFormulaInstance ());
+        final Inference inference = test.getInference ();
+        assertNotNull (inference);
+        assertEquals ("1 + 1 = 2", inference.getInstantiation ());
         assertEquals ("test", test.getReason ());
         plane.solve ();
     }
@@ -134,7 +136,9 @@ public class TestNamedVariable
         final Labels labels = new Labels ();
         v.paint (g, labels);
         v.setFormula ("test", "2 == 1 + 1");
-        assertNotNull (v.getFormulaInstance ());
+        final Inference inference = v.getInference ();
+        assertNotNull (inference);
+        assertEquals ("2 == 1 + 1", inference.getInstantiation ());
         v.paint (g, labels);
         v.setDoubleValue (12.0);
         v.paint (g, labels);

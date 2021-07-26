@@ -28,6 +28,7 @@ public class NamedVariable extends GeoItem
      */
     private Double value;
 
+    /** Represents one derivation step. */
     private Inference inference = null;
 
     /** Location on screen to draw label for this variable. */
@@ -85,55 +86,10 @@ public class NamedVariable extends GeoItem
         this.value = value;
     }
 
-    /**
-     * Formula for the true value. If this term has not been constrained, this will be null.
-     * Otherwise it relates the variables in terms to the value of this variable.
-     */
-    public String getFormula ()
+    /** Represents one derivation step. */
+    public Inference getInference ()
     {
-        if (inference != null)
-        {
-            return inference.getFormula ();
-        }
-        return null;
-    }
-
-    /**
-     * A list of variables used in the formula. Will be null if the formula has not been set. When
-     * the formula is set, the free variables are determined. The set of free variables are saved
-     * here as terms. To compute a numerical value for this variable requires knowing the exact
-     * values of all terms. These values can be plugged into the formula to compute a value of this
-     * variable.
-     */
-    public NamedVariable[] getTerms ()
-    {
-        if (inference != null)
-        {
-            return inference.getTerms ();
-        }
-        return new NamedVariable[0];
-    }
-
-    /** The names of the free variables. */
-    public String[] getTermNames ()
-    {
-        if (inference != null)
-        {
-            return inference.getTermNames ();
-        }
-        return new String[0];
-    }
-
-    /**
-     * The instantiated formula with variable names replacing the corresponding format variables.
-     */
-    public String getFormulaInstance ()
-    {
-        if (inference != null)
-        {
-            return inference.getInstantiation ();
-        }
-        return null;
+        return inference;
     }
 
     /** Set the status to unknown. Reset the formula and terms to the correct default state. */
@@ -210,16 +166,16 @@ public class NamedVariable extends GeoItem
      */
     public void getDerivationChain (Set<String> chain, Set<String> roots)
     {
-        for (final NamedVariable ti : inference.getTerms ())
+        for (final NamedVariable term : inference.getTerms ())
         {
-            final String f = ti.getFormulaInstance ();
-            roots.add (ti.getName ());
-            if (f != null)
+            roots.add (term.getName ());
+            if (term.inference != null)
             {
-                chain.add (f);
-                if (ti != this)
+                final String termFormula = term.inference.getInstantiation ();
+                chain.add (termFormula);
+                if (term != this)
                 {
-                    ti.getDerivationChain (chain, roots);
+                    term.getDerivationChain (chain, roots);
                 }
             }
         }
@@ -285,7 +241,7 @@ public class NamedVariable extends GeoItem
             }
             else
             {
-                tooltip = String.format ("%.1f = %s", value, getFormulaInstance ());
+                tooltip = String.format ("%.1f = %s", value, inference.getInstantiation ());
             }
             final int anchor = location.getAnchor ();
             labels.add (this, color, position, anchor, text, tooltip);
@@ -312,13 +268,13 @@ public class NamedVariable extends GeoItem
         {
             builder.append ("|  ");
         }
-        final String formula = getFormulaInstance ();
-        if (formula == null)
+        if (inference == null)
         {
             builder.append (String.format ("%s == %.3f", getName (), getDoubleValue ()));
         }
         else
         {
+            final String formula = inference.getInstantiation ();
             builder.append (formula);
         }
         if (getStatus () == GeoStatus.known)
@@ -477,12 +433,11 @@ public class NamedVariable extends GeoItem
             buffer.append (getReason ());
             buffer.append ("'");
         }
-        final String formula = getFormulaInstance ();
-        if (formula != null)
+        if (inference != null)
         {
             buffer.append (" ");
             buffer.append ("{");
-            buffer.append (formula);
+            buffer.append (inference.getInstantiation ());
             buffer.append ("}");
         }
         buffer.append (">");

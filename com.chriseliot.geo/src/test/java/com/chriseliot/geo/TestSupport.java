@@ -33,14 +33,15 @@ public class TestSupport
 
     public void checkExpression (NamedVariable named, double expected, String trace)
     {
-        final String formula = named.getFormulaInstance ();
-        if (formula != null)
+        final Inference inference = named.getInference ();
+        if (inference != null)
         {
+            final String formula = inference.getInstantiation ();
             if (trace != null)
             {
                 logger.info ("[%s] checkExpression testing if %s == %.2f", trace, named.getName (), expected);
             }
-            final NamedVariable[] terms = named.getTerms ();
+            final NamedVariable[] terms = inference.getTerms ();
 
             final ExprEvaluator eval = new ExprEvaluator ();
             for (int i = 1; i < terms.length; i++)
@@ -87,7 +88,9 @@ public class TestSupport
         alpha.setFormula ("test", "alpha == 5");
         checkExpression (alpha, 5);
         test.setFormula ("test", "test == alpha", test, alpha);
-        final String[] terms = test.getTermNames ();
+        final Inference inference = test.getInference ();
+        assertNotNull (inference);
+        final String[] terms = inference.getTermNames ();
         assertEquals (2, terms.length);
         assertEquals ("alpha", terms[1]);
         checkExpression (test, 5, "testCheckExpression");

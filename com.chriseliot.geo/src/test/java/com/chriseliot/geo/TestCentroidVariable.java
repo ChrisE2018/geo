@@ -59,7 +59,9 @@ class TestCentroidVariable
         v.setLocation (parent, p2);
         v.paint (g, labels);
         v.setFormula ("test", "2 == 1 + 1");
-        assertNotNull (v.getFormulaInstance ());
+        final Inference inference = v.getInference ();
+        assertNotNull (inference);
+        assertNotNull (inference.getInstantiation ());
         v.paint (g, labels);
         v.setDoubleValue (null);
         v.paint (g, labels);

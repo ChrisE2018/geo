@@ -100,10 +100,10 @@ public class TestNamedVariable
         assertEquals ("test", test.getReason ());
         assertEquals ("c==43.0", test.getDerivedFormula ());
         plane.solve ();
-        x.setDefaultFormula ();
+        x.setStatusUnknown ();
         y.setFormula ("test", "y == 55", y);
         test.setFormula ("test", "%s == %s + 4", test, y);
-        assertEquals ("test1==59", test.getDerivedFormula ());
+        assertEquals ("c==43.0", test.getDerivedFormula ());
     }
 
     @Test

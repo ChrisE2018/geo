@@ -202,7 +202,7 @@ public class GeoPlane
         {
             if (item.getStatus () == GeoStatus.derived)
             {
-                item.setDefaultFormula ();
+                item.setStatusUnknown ();
             }
         }
         solve ();

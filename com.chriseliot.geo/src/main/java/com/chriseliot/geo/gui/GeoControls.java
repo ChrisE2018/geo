@@ -211,7 +211,7 @@ public class GeoControls extends JPanel implements ActionListener
         {
             for (final GeoItem item : geo.getPlane ().getItems ())
             {
-                item.setDefaultFormula ();
+                item.setStatusUnknown ();
             }
             geo.getPlane ().resetDerived ();
         }

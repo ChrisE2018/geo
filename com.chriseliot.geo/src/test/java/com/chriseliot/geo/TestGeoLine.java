@@ -588,7 +588,7 @@ public class TestGeoLine
             total++;
             for (final NamedVariable v : vars)
             {
-                v.setDefaultFormula ();
+                v.setStatusUnknown ();
             }
             plane.resetDerived ();
             for (int j = 0; j < vars.length; j++)
@@ -670,7 +670,7 @@ public class TestGeoLine
                 total++;
                 for (final NamedVariable v : vars)
                 {
-                    v.setDefaultFormula ();
+                    v.setStatusUnknown ();
                 }
                 plane.resetDerived ();
                 int knownCount = 0;

@@ -355,11 +355,11 @@ public class TestGeoPlane
         }
 
         // Retract assertions
-        v1.setDefaultFormula ();
-        v2.setDefaultFormula ();
-        v3.setDefaultFormula ();
-        p1.setDefaultFormula ();
-        p2.setDefaultFormula ();
+        v1.setStatusUnknown ();
+        v2.setStatusUnknown ();
+        v3.setStatusUnknown ();
+        p1.setStatusUnknown ();
+        p2.setStatusUnknown ();
         plane.resetDerived ();
 
         assertEquals (GeoStatus.unknown, p1.getStatus ());

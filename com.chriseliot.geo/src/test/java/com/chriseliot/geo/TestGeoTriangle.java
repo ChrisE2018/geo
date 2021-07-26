@@ -216,13 +216,13 @@ public class TestGeoTriangle
         assertEquals (t.getL3 (), t.getUndeterminedSide ());
 
         // Make L1 the undetermined side
-        t.getL1 ().setDefaultFormula ();
+        t.getL1 ().setStatusUnknown ();
         t.getL3 ().setGivenStatus (GeoStatus.known);
         assertEquals (2, t.countSidesDetermined ());
         assertEquals (t.getL1 (), t.getUndeterminedSide ());
 
         // Make L2 the undetermined side
-        t.getL2 ().setDefaultFormula ();
+        t.getL2 ().setStatusUnknown ();
         t.getL1 ().setGivenStatus (GeoStatus.known);
         assertEquals (2, t.countSidesDetermined ());
         assertEquals (t.getL2 (), t.getUndeterminedSide ());
@@ -453,7 +453,7 @@ public class TestGeoTriangle
         l2.setGivenStatus (GeoStatus.known);
         l3.setGivenStatus (GeoStatus.known);
         assertEquals (GeoStatus.derived, t.getStatus ());
-        l3.setDefaultFormula ();
+        l3.setStatusUnknown ();
         plane.resetDerived ();
         assertEquals (GeoStatus.unknown, t.getStatus ());
         final NamedVariable neededSide = t.getUndeterminedSide ();
@@ -512,7 +512,7 @@ public class TestGeoTriangle
             total++;
             for (final NamedVariable v : vars)
             {
-                v.setDefaultFormula ();
+                v.setStatusUnknown ();
             }
             plane.resetDerived ();
             for (int j = 0; j < vars.length; j++)
@@ -610,7 +610,7 @@ public class TestGeoTriangle
                 total++;
                 for (final NamedVariable v : vars)
                 {
-                    v.setDefaultFormula ();
+                    v.setStatusUnknown ();
                 }
                 plane.resetDerived ();
                 int knownCount = 0;

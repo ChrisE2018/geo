@@ -67,6 +67,18 @@ public class Inference
         return names;
     }
 
+    public boolean isDetermined ()
+    {
+        for (final NamedVariable term : terms)
+        {
+            if (!term.isDetermined ())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * The instantiated formula with variable names replacing the corresponding format variables.
      */

@@ -205,7 +205,7 @@ public class GeoItem
     }
 
     /** Set the status to unknown. */
-    public void setDefaultFormula ()
+    public void setStatusUnknown ()
     {
         setStatus (GeoStatus.unknown, null);
     }

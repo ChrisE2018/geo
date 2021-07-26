@@ -193,6 +193,17 @@ public class TestSupport
         return false;
     }
 
+    public static void dream (int ms)
+    {
+        try
+        {
+            Thread.sleep (ms);
+        }
+        catch (final InterruptedException e)
+        {
+        }
+    }
+
     @Override
     public String toString ()
     {

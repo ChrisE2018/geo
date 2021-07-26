@@ -350,10 +350,6 @@ public class TestGeoPlane
             }
             else
             {
-                if (item.getStatus () != GeoStatus.derived)
-                {
-                    System.out.printf ("Invalid %s status\n", item);
-                }
                 assertEquals (GeoStatus.derived, item.getStatus ());
             }
         }

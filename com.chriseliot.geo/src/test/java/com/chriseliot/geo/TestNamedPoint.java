@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 import javax.xml.parsers.*;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.w3c.dom.*;
 
 import com.chriseliot.geo.gui.CloseDialogThread;
@@ -194,6 +195,7 @@ public class TestNamedPoint
         assertNotNull (test.toString ());
     }
 
+    @DisabledIfSystemProperty (named = "java.awt.headless", matches = "true")
     @Test
     public void testPopup ()
     {
@@ -212,7 +214,7 @@ public class TestNamedPoint
         thread.start ();
         result.get ("Set Value").accept (test);
         thread.halt ();
-        thread.dream (10);
+        TestSupport.dream (10);
         System.out.printf ("Set Value dialog returns\n");
         assertTrue (thread.isDialogSeen ());
     }
@@ -225,33 +227,6 @@ public class TestNamedPoint
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
         test.setValueAction (new Point2D.Double (20, 30));
     }
-
-    // @Test
-    // public void testAttributes ()
-    // {
-    // final GeoPlane plane = new GeoPlane ();
-    // final GeoItem parent = new GeoItem (plane, "t", Color.black);
-    // final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20,
-    // SwingConstants.NORTH_WEST);
-    // final Map<String, Object> attributes = test.getAttributes ();
-    // assertEquals (10.0, attributes.get ("positionx"));
-    // assertEquals (20.0, attributes.get ("positiony"));
-    // final Map<String, String> attributes2 = new HashMap<> ();
-    // for (final Entry<String, Object> entry : attributes.entrySet ())
-    // {
-    // final String key = entry.getKey ();
-    // final Object value = entry.getValue ();
-    // if (value == null)
-    // {
-    // attributes2.put (key, (String)value);
-    // }
-    // else
-    // {
-    // attributes2.put (key, value.toString ());
-    // }
-    // }
-    // test.readAttributes (attributes2);
-    // }
 
     @Test
     public void testXmlAttributes () throws ParserConfigurationException

@@ -9,6 +9,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FileUtils
 {
+    public JFileChooser chooser = null;
+
     /**
      * Determine if a pathname ends with an extension.
      *
@@ -143,9 +145,10 @@ public class FileUtils
             }
         };
         fileChooser.setDialogTitle (title);
-
+        // Make available for unit testing to close
+        chooser = fileChooser;
         final int userSelection = fileChooser.showSaveDialog (parent);
-
+        chooser = null;
         if (userSelection == JFileChooser.APPROVE_OPTION)
         {
             final File file = fileChooser.getSelectedFile ();
@@ -156,13 +159,15 @@ public class FileUtils
 
     public File getReadFile (Component parent, String title, File currentDir, String extensionDescription, String extension)
     {
-
         final JFileChooser fileChooser = new JFileChooser (currentDir);
         // Should use a file filter here.
         final FileNameExtensionFilter filter = new FileNameExtensionFilter (extensionDescription, removeDot (extension));
         fileChooser.setFileFilter (filter);
         fileChooser.setDialogTitle (title);
+        // Make available for unit testing to close
+        chooser = fileChooser;
         final int result = fileChooser.showOpenDialog (parent);
+        chooser = null;
         if (result == JFileChooser.APPROVE_OPTION)
         {
             final File file = fileChooser.getSelectedFile ();

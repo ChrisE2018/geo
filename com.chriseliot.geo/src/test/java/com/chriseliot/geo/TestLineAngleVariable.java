@@ -65,7 +65,7 @@ class TestLineAngleVariable
         thread.start ();
         result.get ("Set Value").accept (test);
         thread.halt ();
-        thread.dream (10);
+        TestSupport.dream (10);
         System.out.printf ("Set Value dialog returns\n");
         assertTrue (thread.isDialogSeen ());
     }

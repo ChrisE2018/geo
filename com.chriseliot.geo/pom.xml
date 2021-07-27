@@ -8,7 +8,7 @@
 	<name>Geo</name>
 	<description>Geometry analysis</description>
 	<packaging>jar</packaging>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -19,7 +19,7 @@
 		<matheclipse.version>2.0.0-SNAPSHOT</matheclipse.version>
 		<opencsv.version>4.1</opencsv.version>
 	</properties>
-	
+
 	<dependencies>
 
 		<dependency>
@@ -34,8 +34,8 @@
 			<version>${log4j.version}</version>
 		</dependency>
 
+		<!-- Needed for org.junit.Assert -->
 		<dependency>
-			<!-- Needed for org.junit.Assert -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
@@ -51,29 +51,36 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.matheclipse</groupId>
 			<artifactId>matheclipse-core</artifactId>
 			<version>${matheclipse.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.matheclipse</groupId>
 			<artifactId>matheclipse-gpl</artifactId>
 			<version>${matheclipse.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.matheclipse</groupId>
 			<artifactId>matheclipse-io</artifactId>
 			<version>${matheclipse.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>${opencsv.version}</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<repositories>

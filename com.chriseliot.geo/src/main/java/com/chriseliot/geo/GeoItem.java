@@ -252,9 +252,9 @@ public class GeoItem
      * @param variables Variables to substitute into the template string to create the derivation
      *            formula.
      */
-    public void setFormula (String reason, String formulaExpression, NamedVariable... variables)
+    public void setFormula (String reason, String formulaExpression, GeoItem... variables)
     {
-        final NamedVariable[] terms = new NamedVariable[variables.length];
+        final GeoItem[] terms = new GeoItem[variables.length];
         System.arraycopy (variables, 0, terms, 0, variables.length);
         inferences.add (new Inference (this, formulaExpression, terms));
         setStatus (GeoStatus.derived, reason);

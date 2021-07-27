@@ -445,121 +445,121 @@ public class GeoLine extends GeoItem
             }
         }
         // Determine dx
-        if (!dx.isDetermined ())
+        // if (!dx.isDetermined ())
         {
-            if (angle.isDetermined () && length.isDetermined ())
+            // if (angle.isDetermined () && length.isDetermined ())
             {
                 dx.setFormula ("dx from angle of line", "%s == %s * sin((90 -  %s) * Degree)", dx, length, angle);
             }
         }
-        if (!dx.isDetermined ())
+        // if (!dx.isDetermined ())
         {
-            if (from.getX ().isDetermined () && midpoint.getX ().isDetermined ())
+            // if (from.getX ().isDetermined () && midpoint.getX ().isDetermined ())
             {
                 dx.setFormula ("midpoint x of line", "%s == (%s - %s) * 2", dx, midpoint.getX (), from.getX ());
             }
         }
-        if (!dx.isDetermined ())
+        // if (!dx.isDetermined ())
         {
-            if (to.getX ().isDetermined () && midpoint.getX ().isDetermined ())
+            // if (to.getX ().isDetermined () && midpoint.getX ().isDetermined ())
             {
                 dx.setFormula ("midpoint x of line", "%s == (%s - %s) * 2", dx, to.getX (), midpoint.getX ());
             }
         }
-        if (!dx.isDetermined ())
+        // if (!dx.isDetermined ())
         {
-            if (from.getX ().isDetermined () && to.getX ().isDetermined ())
+            // if (from.getX ().isDetermined () && to.getX ().isDetermined ())
             {
                 dx.setFormula ("dx from endpoints", "%s == %s - %s", dx, to.getX (), from.getX ());
             }
         }
-        if (!dx.isDetermined ())
+        // if (!dx.isDetermined ())
         {
             // dx^2 == l^2 - dy^2
-            if (length.isDetermined () && dy.isDetermined ())
+            // if (length.isDetermined () && dy.isDetermined ())
             {
                 dx.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dx, length, dy);
             }
         }
         // Determine dy
-        if (!dy.isDetermined ())
+        // if (!dy.isDetermined ())
         {
-            if (angle.isDetermined () && length.isDetermined ())
+            // if (angle.isDetermined () && length.isDetermined ())
             {
                 dy.setFormula ("dy from angle of line", "%s == %s * cos((90 - %s) * Degree)", dy, length, angle);
             }
         }
-        if (!dy.isDetermined ())
+        // if (!dy.isDetermined ())
         {
-            if (from.getY ().isDetermined () && midpoint.getY ().isDetermined ())
+            // if (from.getY ().isDetermined () && midpoint.getY ().isDetermined ())
             {
                 dy.setFormula ("midpoint y of line", "%s == (%s - %s) * 2", dy, midpoint.getY (), from.getY ());
             }
         }
-        if (!dy.isDetermined ())
+        // if (!dy.isDetermined ())
         {
-            if (to.getY ().isDetermined () && midpoint.getY ().isDetermined ())
+            // if (to.getY ().isDetermined () && midpoint.getY ().isDetermined ())
             {
                 dy.setFormula ("midpoint y of line", "%s == (%s - %s) * 2", dy, to.getY (), midpoint.getY ());
             }
         }
-        if (!dy.isDetermined ())
+        // if (!dy.isDetermined ())
         {
-            if (from.getY ().isDetermined () && to.getY ().isDetermined ())
+            // if (from.getY ().isDetermined () && to.getY ().isDetermined ())
             {
                 dy.setFormula ("dy from endpoints", "%s == %s - %s", dy, to.getY (), from.getY ());
             }
         }
-        if (!dy.isDetermined ())
+        // if (!dy.isDetermined ())
         {
             // dy^2 == l^2 - dx^2
-            if (length.isDetermined () && dx.isDetermined ())
+            // if (length.isDetermined () && dx.isDetermined ())
             {
                 dy.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dy, length, dx);
             }
         }
         // Determine to.x
-        if (!to.getX ().isDetermined ())
+        // if (!to.getX ().isDetermined ())
         {
-            if (from.getX ().isDetermined () && dx.isDetermined ())
+            // if (from.getX ().isDetermined () && dx.isDetermined ())
             {
                 to.getX ().setFormula ("endpoint and dx", "%s == %s + %s", to.getX (), from.getX (), dx);
             }
         }
         // Determine to.y
-        if (!to.getY ().isDetermined ())
+        // if (!to.getY ().isDetermined ())
         {
-            if (from.getY ().isDetermined () && dy.isDetermined ())
+            // if (from.getY ().isDetermined () && dy.isDetermined ())
             {
                 to.getY ().setFormula ("to y from dy of line", "%s == %s + %s", to.getY (), from.getY (), dy);
             }
         }
         // Determine from.x
-        if (!from.getX ().isDetermined ())
+        // if (!from.getX ().isDetermined ())
         {
-            if (to.getX ().isDetermined () && dx.isDetermined ())
+            // if (to.getX ().isDetermined () && dx.isDetermined ())
             {
                 from.getX ().setFormula ("from x from dx of line", "%s == %s - %s", from.getX (), to.getX (), dx);
             }
         }
         // Determine from.y
-        if (!from.getY ().isDetermined ())
+        // if (!from.getY ().isDetermined ())
         {
-            if (to.getY ().isDetermined () && dy.isDetermined ())
+            // if (to.getY ().isDetermined () && dy.isDetermined ())
             {
                 from.getY ().setFormula ("from y from dy of line", "%s == %s - %s", from.getY (), to.getY (), dy);
             }
         }
         // Determine midpoint.x
-        if (!midpoint.getX ().isDetermined ())
+        // if (!midpoint.getX ().isDetermined ())
         {
-            if (from.getX ().isDetermined () && dx.isDetermined ())
+            // if (from.getX ().isDetermined () && dx.isDetermined ())
             {
                 midpoint.getX ().setFormula ("midpoint = Ax + (dx / 2)", "%s == %s + (%s / 2)", midpoint.getX (), from.getX (),
                         dx);
             }
         }
-        if (!midpoint.getX ().isDetermined ())
+        // if (!midpoint.getX ().isDetermined ())
         {
             if (to.getX ().isDetermined () && dx.isDetermined ())
             {
@@ -569,47 +569,47 @@ public class GeoLine extends GeoItem
         // Determine midpoint.y
         if (!midpoint.getY ().isDetermined ())
         {
-            if (from.getY ().isDetermined () && dy.isDetermined ())
+            // if (from.getY ().isDetermined () && dy.isDetermined ())
             {
                 midpoint.getY ().setFormula ("midpoint = Ay + (dy / 2)", "%s == %s + (%s / 2)", midpoint.getY (), from.getY (),
                         dy);
             }
         }
-        if (!midpoint.getY ().isDetermined ())
+        // if (!midpoint.getY ().isDetermined ())
         {
-            if (to.getY ().isDetermined () && dy.isDetermined ())
+            // if (to.getY ().isDetermined () && dy.isDetermined ())
             {
                 midpoint.getY ().setFormula ("midpoint = By - (dy / 2)", "%s == %s - (%s / 2)", midpoint.getY (), to.getY (), dy);
             }
         }
         // Determine length
-        if (!length.isDetermined ())
+        // if (!length.isDetermined ())
         {
-            if (dx.isDetermined () && dy.isDetermined ())
+            // if (dx.isDetermined () && dy.isDetermined ())
             {
                 length.setFormula ("length = sqrt(dx^2 + dy^2)", "%s == sqrt(%s^2 + %s^2)", length, dx, dy);
             }
         }
-        if (!length.isDetermined ())
+        // if (!length.isDetermined ())
         {
-            if (dx.isDetermined () && angle.isDetermined ())
+            // if (dx.isDetermined () && angle.isDetermined ())
             {
                 // dx = l*sin(theta) so l = dx / sin(theta)
                 length.setFormula ("length = dx / sin(theta)", "%s == %s / sin(%s * Degree)", length, dx, angle);
             }
         }
-        if (!length.isDetermined ())
+        // if (!length.isDetermined ())
         {
-            if (dy.isDetermined () && angle.isDetermined ())
+            // if (dy.isDetermined () && angle.isDetermined ())
             {
                 // dy = l*cos(theta) so l = dy / cos(theta)
                 length.setFormula ("length = dy / cos(theta)", "%s == %s / cos(%s * Degree)", length, dy, angle);
             }
         }
         // Determine angle
-        if (!angle.isDetermined ())
+        // if (!angle.isDetermined ())
         {
-            if (dx.isDetermined () && dy.isDetermined ())
+            // if (dx.isDetermined () && dy.isDetermined ())
             {
                 // This appears to be the opposite of the numeric version
                 // See ::recalculate and ::axisYangle

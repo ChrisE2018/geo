@@ -3,23 +3,20 @@ package com.chriseliot.geo;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.*;
-import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.*;
 import org.matheclipse.core.eval.ExprEvaluator;
-import org.matheclipse.core.interfaces.IExpr;
 import org.w3c.dom.Element;
 
 import com.chriseliot.geo.gui.NamedVariableActions;
-import com.chriseliot.util.*;
+import com.chriseliot.util.Labels;
 
 /** A variable representing a single real value. */
 public class NamedVariable extends GeoItem
 {
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
-    private static TextUtils tu = new TextUtils ();
 
     /**
      * Current value determined from the screen positions. This may be more specific than can be
@@ -27,11 +24,6 @@ public class NamedVariable extends GeoItem
      * geometry allows for some range of values.
      */
     private Double value;
-
-    /**
-     * Represents one derivation step.
-     */
-    private final List<Inference> inferences = new ArrayList<> ();
 
     /** Location on screen to draw label for this variable. */
     private NamedPoint location;
@@ -88,19 +80,6 @@ public class NamedVariable extends GeoItem
         this.value = value;
     }
 
-    /** Represents one derivation step. */
-    public Inference getInference ()
-    {
-        for (final Inference inference : inferences)
-        {
-            if (inference.isDetermined ())
-            {
-                return inference;
-            }
-        }
-        return null;
-    }
-
     /** Set the status to unknown. Reset the formula and terms to the correct default state. */
     @Override
     public void setStatusUnknown ()
@@ -109,131 +88,26 @@ public class NamedVariable extends GeoItem
     }
 
     /**
-     * Shorthand function to set the formula and save the names of the variables involved.
+     * Define the value of this item for math eclipse. This should be overridden.
      *
-     * @param reason A string giving the reason for this derivation.
-     * @param formulaExpression A Java format template to create the derivation formula.
-     * @param variables Variables to substitute into the template string to create the derivation
-     *            formula.
+     * @param eval The symbolic math context. Use the defineVariable method to define a boolean,
+     *            double or IExpr binding the name of this item to some value.
      */
-    public void setFormula (String reason, String formulaExpression, NamedVariable... variables)
+    @Override
+    public void defineVariable (ExprEvaluator eval)
     {
-        final NamedVariable[] terms = new NamedVariable[variables.length];
-        System.arraycopy (variables, 0, terms, 0, variables.length);
-        inferences.add (new Inference (this, formulaExpression, terms));
-        setStatus (GeoStatus.derived, reason);
+        eval.defineVariable (getName (), value);
     }
 
     /**
-     * Solve the formula in terms of given knowns to determine the value of this variable.
+     * Get a math eclipse expression for the value of this item. This should be overridden.
      *
-     * 1. Perform a recursive search to find the root source of the derivation.
-     *
-     * 2. Use the Symja solver to eliminate all of the intermediate variables from the derivation.
-     *
-     * @return an expression for this variable in terms of the given known values only, with no
-     *         intermediate terms involved.
+     * @return The item value.
      */
-    public String getDerivedFormula ()
+    @Override
+    public String getStringValue ()
     {
-        final StringBuilder builder = new StringBuilder ();
-        final Set<String> chain = new HashSet<> ();
-        final Set<String> roots = new HashSet<> ();
-        getDerivationChain (chain, roots);
-        builder.append ("eliminate");
-        builder.append ("(");
-        builder.append ("{");
-        tu.join (builder, ", ", chain);
-        builder.append ("}");
-        builder.append (", ");
-        builder.append ("{");
-        roots.remove (getName ());
-        tu.join (builder, ", ", roots);
-        builder.append ("}");
-        builder.append (")");
-        logger.info ("Symbolic %s: %s", getName (), builder.toString ());
-        final ExprEvaluator eval = new ExprEvaluator ();
-        final IExpr expr = eval.parse (builder.toString ());
-        logger.info ("Expression: %s", expr);
-        final IExpr value = eval.eval (expr);
-        logger.info ("Value: %s", value);
-        return value.toString ();
-    }
-
-    /**
-     * Get the formulas required to derive this value.
-     *
-     * @param chain All formulas involved in deriving this value are added to this set. This is done
-     *            by searching the terms for GeoItems that contribute to the derivation of this
-     *            value. The formula for this variable is included in the set.
-     * @param roots The variable names of the intermediate terms that are derived along the way
-     *            while deriving this value. These are the names that should be eliminated to create
-     *            the overall formula. The name of this variable is included in the set, but needs
-     *            to be removed before the elimination step because we want it to be part of the
-     *            overall formula.
-     */
-    private void getDerivationChain (Set<String> chain, Set<String> roots)
-    {
-        final Inference inference = getInference ();
-        if (inference != null)
-        {
-            for (final NamedVariable term : inference.getTerms ())
-            {
-                roots.add (term.getName ());
-                final Inference termInference = term.getInference ();
-                if (termInference != null)
-                {
-                    final String termFormula = termInference.getInstantiation ();
-                    chain.add (termFormula);
-                    if (term != this)
-                    {
-                        term.getDerivationChain (chain, roots);
-                    }
-                }
-            }
-        }
-    }
-
-    public void getDerivation (StringBuilder builder, int level)
-    {
-        final Inference inference = getInference ();
-        if (inference != null)
-        {
-            final NamedVariable[] terms = inference.getTerms ();
-            for (int i = 1; i < terms.length; i++)
-            {
-                final NamedVariable ti = terms[i];
-                ti.getDerivation (builder, level + 1);
-                ti.getFormulaLine (builder, level);
-            }
-        }
-    }
-
-    public void getFormulaLine (StringBuilder builder, int level)
-    {
-        for (int i = 0; i < level; i++)
-        {
-            builder.append ("|  ");
-        }
-        final Inference inference = getInference ();
-        if (inference == null)
-        {
-            builder.append (String.format ("%s == %.3f", getName (), getDoubleValue ()));
-        }
-        else
-        {
-            final String formula = inference.getInstantiation ();
-            builder.append (formula);
-        }
-        if (getStatus () == GeoStatus.known)
-        {
-            builder.append (" given");
-        }
-        else if (getStatus () == GeoStatus.fixed)
-        {
-            builder.append (" fixed");
-        }
-        builder.append ("\n");
+        return String.format ("%.4f", value);
     }
 
     /** Derive consequential formulas around this variable. */
@@ -377,20 +251,6 @@ public class NamedVariable extends GeoItem
         {
             element.setAttribute ("value", String.valueOf (value));
         }
-        // TODO: Save and restore all inferences
-        final Inference inference = getInference ();
-        if (inference != null)
-        {
-            element.setAttribute ("formula", String.valueOf (inference.getFormula ()));
-        }
-        if (inference == null)
-        {
-            element.setAttribute ("terms", "");
-        }
-        else
-        {
-            element.setAttribute ("terms", tu.join ("+", inference.getTermNames ()));
-        }
         if (location != null)
         {
             element.setAttribute ("location", String.valueOf (location.getName ()));
@@ -403,19 +263,6 @@ public class NamedVariable extends GeoItem
         super.marshall (element);
         final GeoPlane plane = getPlane ();
         value = xu.getDouble (element, "value", null);
-        final String formulaExpression = xu.get (element, "formula", null);
-        if (formulaExpression != null)
-        {
-            final List<String> termList = tu.split (xu.get (element, "terms", ""), "+");
-            final NamedVariable[] terms = new NamedVariable[termList.size ()];
-            for (int i = 0; i < terms.length; i++)
-            {
-                final String name = termList.get (i);
-                // This might have to be deferred until the end of the read
-                terms[i] = (NamedVariable)plane.get (name);
-            }
-            inferences.add (new Inference (this, formulaExpression, terms));
-        }
 
         final String locationName = xu.get (element, "location", null);
         if (locationName != null)

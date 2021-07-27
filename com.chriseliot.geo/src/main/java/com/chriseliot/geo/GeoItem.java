@@ -8,15 +8,19 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.*;
+import org.matheclipse.core.eval.ExprEvaluator;
+import org.matheclipse.core.interfaces.IExpr;
 import org.w3c.dom.*;
 
 import com.chriseliot.util.*;
 
 public class GeoItem
 {
+    private static Logger logger = LogManager.getFormatterLogger (GeoItem.class);
+
     public static final XMLUtil xu = new XMLUtil ();
 
-    private static Logger logger = LogManager.getFormatterLogger (GeoItem.class);
+    public static final TextUtils tu = new TextUtils ();
 
     /** Separator between parts of a name. */
     public static char SEP = '$';
@@ -53,6 +57,11 @@ public class GeoItem
 
     /** The reason this item was given this status. */
     private String reason = null;
+
+    /**
+     * Represents one derivation of the value of this item.
+     */
+    private final List<Inference> inferences = new ArrayList<> ();
 
     /** Make a toplevel item (with no parent). */
     public GeoItem (GeoPlane plane, String nameRoot, Color color)
@@ -222,6 +231,168 @@ public class GeoItem
         return reason;
     }
 
+    /** Represents one derivation step. */
+    public Inference getInference ()
+    {
+        for (final Inference inference : inferences)
+        {
+            if (inference.isDetermined ())
+            {
+                return inference;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Shorthand function to set the formula and save the names of the variables involved.
+     *
+     * @param reason A string giving the reason for this derivation.
+     * @param formulaExpression A Java format template to create the derivation formula.
+     * @param variables Variables to substitute into the template string to create the derivation
+     *            formula.
+     */
+    public void setFormula (String reason, String formulaExpression, NamedVariable... variables)
+    {
+        final NamedVariable[] terms = new NamedVariable[variables.length];
+        System.arraycopy (variables, 0, terms, 0, variables.length);
+        inferences.add (new Inference (this, formulaExpression, terms));
+        setStatus (GeoStatus.derived, reason);
+    }
+
+    /**
+     * Solve the formula in terms of given knowns to determine the value of this variable.
+     *
+     * 1. Perform a recursive search to find the root source of the derivation.
+     *
+     * 2. Use the Symja solver to eliminate all of the intermediate variables from the derivation.
+     *
+     * @return an expression for this variable in terms of the given known values only, with no
+     *         intermediate terms involved.
+     */
+    public String getDerivedFormula ()
+    {
+        final StringBuilder builder = new StringBuilder ();
+        final Set<String> chain = new HashSet<> ();
+        final Set<String> roots = new HashSet<> ();
+        getDerivationChain (chain, roots);
+        builder.append ("eliminate");
+        builder.append ("(");
+        builder.append ("{");
+        tu.join (builder, ", ", chain);
+        builder.append ("}");
+        builder.append (", ");
+        builder.append ("{");
+        roots.remove (getName ());
+        tu.join (builder, ", ", roots);
+        builder.append ("}");
+        builder.append (")");
+        logger.info ("Symbolic %s: %s", getName (), builder.toString ());
+        final ExprEvaluator eval = new ExprEvaluator ();
+        final IExpr expr = eval.parse (builder.toString ());
+        logger.info ("Expression: %s", expr);
+        final IExpr value = eval.eval (expr);
+        logger.info ("Value: %s", value);
+        return value.toString ();
+    }
+
+    /**
+     * Get the formulas required to derive this value.
+     *
+     * @param chain All formulas involved in deriving this value are added to this set. This is done
+     *            by searching the terms for GeoItems that contribute to the derivation of this
+     *            value. The formula for this variable is included in the set.
+     * @param roots The variable names of the intermediate terms that are derived along the way
+     *            while deriving this value. These are the names that should be eliminated to create
+     *            the overall formula. The name of this variable is included in the set, but needs
+     *            to be removed before the elimination step because we want it to be part of the
+     *            overall formula.
+     */
+    private void getDerivationChain (Set<String> chain, Set<String> roots)
+    {
+        final Inference inference = getInference ();
+        if (inference != null)
+        {
+            for (final GeoItem term : inference.getTerms ())
+            {
+                roots.add (term.getName ());
+                final Inference termInference = term.getInference ();
+                if (termInference != null)
+                {
+                    final String termFormula = termInference.getInstantiation ();
+                    chain.add (termFormula);
+                    if (term != this)
+                    {
+                        term.getDerivationChain (chain, roots);
+                    }
+                }
+            }
+        }
+    }
+
+    public void getDerivation (StringBuilder builder, int level)
+    {
+        final Inference inference = getInference ();
+        if (inference != null)
+        {
+            final GeoItem[] terms = inference.getTerms ();
+            for (int i = 1; i < terms.length; i++)
+            {
+                final GeoItem ti = terms[i];
+                ti.getDerivation (builder, level + 1);
+                ti.getFormulaLine (builder, level);
+            }
+        }
+    }
+
+    public void getFormulaLine (StringBuilder builder, int level)
+    {
+        for (int i = 0; i < level; i++)
+        {
+            builder.append ("|  ");
+        }
+        final Inference inference = getInference ();
+        if (inference == null)
+        {
+            builder.append (String.format ("%s == %s", getName (), getStringValue ()));
+        }
+        else
+        {
+            final String formula = inference.getInstantiation ();
+            builder.append (formula);
+        }
+        if (getStatus () == GeoStatus.known)
+        {
+            builder.append (" given");
+        }
+        else if (getStatus () == GeoStatus.fixed)
+        {
+            builder.append (" fixed");
+        }
+        builder.append ("\n");
+    }
+
+    /**
+     * Define the value of this item for math eclipse. This should be overridden.
+     *
+     * @param eval The symbolic math context. Use the defineVariable method to define a boolean,
+     *            double or IExpr binding the name of this item to some value.
+     */
+    public void defineVariable (ExprEvaluator eval)
+    {
+        eval.defineVariable (name);
+    }
+
+    /**
+     * Get a math eclipse expression for the value of this item. This should be overridden.
+     *
+     * @return The item value.
+     */
+    public String getStringValue ()
+    {
+        return name;
+    }
+
     /**
      * Recalculate values derived from screen positions after a something moves.
      */
@@ -343,6 +514,12 @@ public class GeoItem
             child.getElement (result);
         }
         getAttributes (result);
+        for (final Inference inference : inferences)
+        {
+            final Element element = doc.createElement (Inference.class.getSimpleName ());
+            root.appendChild (element);
+            inference.getAttributes (element);
+        }
     }
 
     /** Convert to an element for saving to a file. */

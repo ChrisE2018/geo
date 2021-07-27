@@ -1,17 +1,26 @@
 
 package com.chriseliot.geo;
 
+import java.util.List;
+
+import org.w3c.dom.Element;
+
+import com.chriseliot.util.*;
+
 public class Inference
 {
+    private static XMLUtil xu = new XMLUtil ();
+    private static TextUtils tu = new TextUtils ();
+
     /** The variable that will be derived by this inference. */
-    private final NamedVariable owner;
+    private final GeoItem owner;
 
     /**
      * Formula for the true value. This relates the variables in terms to the value of the owner
      * variable. To make the actual formula requires instantiating this expression with the names of
      * the terms.
      */
-    private final String formula;
+    private String formula;
 
     /**
      * A list of variables used in the formula. The set of free variables of the formulaExpression
@@ -19,9 +28,9 @@ public class Inference
      * exact values of all terms. These values can be plugged into the formula to compute a value of
      * this variable.
      */
-    private final NamedVariable[] terms;
+    private GeoItem[] terms;
 
-    public Inference (NamedVariable owner, String formula, NamedVariable[] terms)
+    public Inference (GeoItem owner, String formula, GeoItem[] terms)
     {
         this.owner = owner;
         this.formula = formula;
@@ -30,7 +39,7 @@ public class Inference
     }
 
     /** The variable that will be derived by this inference. */
-    public NamedVariable getOwner ()
+    public GeoItem getOwner ()
     {
         return owner;
     }
@@ -51,7 +60,7 @@ public class Inference
      * exact values of all terms. These values can be plugged into the formula to compute a value of
      * this variable.
      */
-    public NamedVariable[] getTerms ()
+    public GeoItem[] getTerms ()
     {
         return terms;
     }
@@ -69,7 +78,7 @@ public class Inference
 
     public boolean isDetermined ()
     {
-        for (final NamedVariable term : terms)
+        for (final GeoItem term : terms)
         {
             if (!term.isDetermined ())
             {
@@ -86,6 +95,26 @@ public class Inference
     {
         final Object[] names = getTermNames ();
         return String.format (formula, names);
+    }
+
+    public void getAttributes (Element element)
+    {
+        element.setAttribute ("formula", String.valueOf (getFormula ()));
+        element.setAttribute ("terms", tu.join ("+", getTermNames ()));
+    }
+
+    public void marshall (Element element)
+    {
+        final GeoPlane plane = owner.getPlane ();
+        formula = xu.get (element, "formula", null);
+
+        final List<String> termList = tu.split (xu.get (element, "terms", ""), "+");
+        terms = new NamedVariable[termList.size ()];
+        for (int i = 0; i < terms.length; i++)
+        {
+            final String name = termList.get (i);
+            terms[i] = plane.get (name);
+        }
     }
 
     @Override

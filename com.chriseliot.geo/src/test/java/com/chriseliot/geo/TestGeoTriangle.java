@@ -465,20 +465,6 @@ public class TestGeoTriangle
         final NamedVariable opposite = t.getOppositeAngle (neededSide);
         assertEquals (angle2, opposite);
         angle2.setGivenStatus (GeoStatus.known);
-
-        // assertEquals (-143.130102, v1.getAngle1 ().getDoubleValue (), TestSupport.epsilon);
-        // assertEquals (143.130102, v1.getAngle2 ().getDoubleValue (), TestSupport.epsilon);
-        // assertEquals (v1.getAngle1 ().getDoubleValue (), -v1.getAngle2 ().getDoubleValue ());
-        // assertEquals (-90, v2.getAngle1 ().getDoubleValue (), TestSupport.epsilon);
-        // assertEquals (53.130101, v3.getAngle1 ().getDoubleValue (), TestSupport.epsilon);
-        // final String trace = null; // "testSolve1";
-        // ts.checkExpression (t.getL1 (), 40, trace);
-        // ts.checkExpression (t.getL2 (), 30, trace);
-        // ts.checkExpression (t.getL3 (), 50, trace);
-        //
-        // ts.checkExpression (t.getAngle1 (), 36.8699, trace);
-        // ts.checkExpression (t.getAngle2 (), 90, trace);
-        // ts.checkExpression (t.getAngle3 (), 53.130102, trace);
     }
 
     @Test
@@ -534,7 +520,7 @@ public class TestGeoTriangle
                     if (item instanceof NamedVariable)
                     {
                         final NamedVariable v = (NamedVariable)item;
-                        ts.checkExpression (v, v.getDoubleValue (), "testCombinations");
+                        ts.checkExpression (v, v.getDoubleValue (), null);
                     }
                 }
             }

@@ -41,18 +41,19 @@ public class TestSupport
             {
                 logger.info ("[%s] checkExpression testing if %s == %.2f", trace, named.getName (), expected);
             }
-            final NamedVariable[] terms = inference.getTerms ();
+            final GeoItem[] terms = inference.getTerms ();
 
             final ExprEvaluator eval = new ExprEvaluator ();
             for (int i = 1; i < terms.length; i++)
             {
-                final NamedVariable var = terms[i];
+                final GeoItem var = terms[i];
                 assertNotNull (var);
-                final String name = var.getName ();
-                eval.defineVariable (name, var.getDoubleValue ());
+                var.defineVariable (eval);
+                // final String name = var.getName ();
+                // eval.defineVariable (name, var.getStringValue ());
                 if (trace != null)
                 {
-                    logger.info ("[%s] Var %s = %.2f", trace, name, var.getDoubleValue ());
+                    logger.info ("[%s] Var %s = %s", trace, var.getName (), var.getStringValue ());
                 }
             }
             final IExpr expr = eval.parse (formula);

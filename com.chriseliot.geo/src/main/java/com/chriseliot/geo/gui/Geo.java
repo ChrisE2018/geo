@@ -103,24 +103,21 @@ public class Geo extends JPanel
                 final int column = table.columnAtPoint (point);
                 final GeoItem item = solution.getRowItem (row);
                 logger.info ("Click on %s", item);
-                if (item instanceof NamedVariable)
+
+                final Inference inference = item.getInference ();
+                if (inference != null)
                 {
-                    final NamedVariable var = (NamedVariable)item;
-                    final Inference inference = var.getInference ();
-                    if (inference != null)
+                    final GeoItem[] terms = inference.getTerms ();
+                    final StringBuilder builder = new StringBuilder ();
+                    for (int i = 0; i < terms.length; i++)
                     {
-                        final NamedVariable[] terms = inference.getTerms ();
-                        final StringBuilder builder = new StringBuilder ();
-                        for (int i = 0; i < terms.length; i++)
+                        if (i > 0)
                         {
-                            if (i > 0)
-                            {
-                                builder.append (", ");
-                            }
-                            builder.append (terms[i].getName ());
+                            builder.append (", ");
                         }
-                        logger.info ("Terms: %s", builder);
+                        builder.append (terms[i].getName ());
                     }
+                    logger.info ("Terms: %s", builder);
                 }
                 if (mouseEvent.getClickCount () == 2 && row != -1)
                 {

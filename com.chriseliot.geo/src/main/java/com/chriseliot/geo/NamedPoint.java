@@ -302,8 +302,11 @@ public class NamedPoint extends GeoItem
         buffer.append (" ");
         buffer.append (getParent ().getClass ().getSimpleName ());
         final Point2D.Double pos = getPosition ();
-        buffer.append (" ");
-        buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
+        if (pos != null)
+        {
+            buffer.append (" ");
+            buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
+        }
         buffer.append (" ");
         buffer.append (getStatus ());
         final String reason = getReason ();

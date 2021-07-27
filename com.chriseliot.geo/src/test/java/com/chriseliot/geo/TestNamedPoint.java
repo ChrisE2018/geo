@@ -126,19 +126,14 @@ public class TestNamedPoint
         final GeoItem parent = new GeoItem (plane, "t", Color.black);
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
         assertNotNull (test.toString ());
-        // test.setPosition (null);
-        // assertNotNull (test.toString ());
+        test.setPosition (null);
+        assertNotNull (test.toString ());
     }
 
     /** Check variables for a standard point at <10, 20> */
     private void checkVariables (NamedPoint test)
     {
-        checkVariables (test, null);
-    }
-
-    /** Check variables for a standard point at <10, 20> */
-    private void checkVariables (NamedPoint test, String trace)
-    {
+        final String trace = null;
         ts.checkExpression (test.getX (), 10, trace);
         ts.checkExpression (test.getY (), 20, trace);
     }
@@ -193,6 +188,24 @@ public class TestNamedPoint
         test.setGivenStatus (GeoStatus.known);
         checkVariables (test);
         assertNotNull (test.toString ());
+    }
+
+    @Test
+    public void testEquivalent ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
+        final NamedPoint alpha = new NamedPoint (parent, false, Color.red, "alpha", 10, 20, SwingConstants.NORTH_WEST);
+        final NamedPoint beta = new NamedPoint (parent, false, Color.red, "beta", 15, 30, SwingConstants.NORTH_WEST);
+        test.setGivenStatus (GeoStatus.known);
+        assertTrue (test.getX ().isDetermined ());
+        assertTrue (test.getY ().isDetermined ());
+        assertTrue (alpha.getX ().isDetermined ());
+        assertTrue (alpha.getY ().isDetermined ());
+        // Beta is not in the same place so propagation does not occur
+        assertFalse (beta.getX ().isDetermined ());
+        assertFalse (beta.getY ().isDetermined ());
     }
 
     @DisabledIfSystemProperty (named = "java.awt.headless", matches = "true")

@@ -1,7 +1,7 @@
 
 package com.chriseliot.geo;
 
-import java.util.List;
+import java.util.*;
 
 import org.w3c.dom.Element;
 
@@ -14,6 +14,10 @@ public class Inference
 
     /** The variable that will be derived by this inference. */
     private final GeoItem owner;
+    /**
+     * The reason this item was given this status. This should be associated with an Inference
+     */
+    private String reason;
 
     /**
      * Formula for the true value. This relates the variables in terms to the value of the owner
@@ -30,9 +34,10 @@ public class Inference
      */
     private GeoItem[] terms;
 
-    public Inference (GeoItem owner, String formula, GeoItem[] terms)
+    public Inference (GeoItem owner, String reason, String formula, GeoItem[] terms)
     {
         this.owner = owner;
+        this.reason = reason;
         this.formula = formula;
         this.terms = terms;
         assert (owner.equals (terms[0]));
@@ -42,6 +47,12 @@ public class Inference
     public GeoItem getOwner ()
     {
         return owner;
+    }
+
+    /** The reason this item was given this status. */
+    public String getReason ()
+    {
+        return reason;
     }
 
     /**
@@ -76,11 +87,24 @@ public class Inference
         return names;
     }
 
-    public boolean isDetermined ()
+    public boolean hasTerm (GeoItem term)
     {
-        for (final GeoItem term : terms)
+        for (final GeoItem t : terms)
         {
-            if (!term.isDetermined ())
+            if (t.equals (term))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isDetermined (Set<GeoItem> closed)
+    {
+        for (int i = 1; i < terms.length; i++)
+        {
+            final GeoItem term = terms[i];
+            if (!term.isDetermined (closed))
             {
                 return false;
             }
@@ -99,13 +123,15 @@ public class Inference
 
     public void getAttributes (Element element)
     {
-        element.setAttribute ("formula", String.valueOf (getFormula ()));
+        element.setAttribute ("reason", reason);
+        element.setAttribute ("formula", formula);
         element.setAttribute ("terms", tu.join ("+", getTermNames ()));
     }
 
     public void marshall (Element element)
     {
         final GeoPlane plane = owner.getPlane ();
+        reason = xu.get (element, "reason", null);
         formula = xu.get (element, "formula", null);
 
         final List<String> termList = tu.split (xu.get (element, "terms", ""), "+");
@@ -115,6 +141,28 @@ public class Inference
             final String name = termList.get (i);
             terms[i] = plane.get (name);
         }
+    }
+
+    public boolean matches (String reason, String formula, GeoItem[] terms)
+    {
+        if (getReason ().equals (reason))
+        {
+            if (this.formula.equals (formula))
+            {
+                if (this.terms.length == terms.length)
+                {
+                    for (final GeoItem item : terms)
+                    {
+                        if (!hasTerm (item))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

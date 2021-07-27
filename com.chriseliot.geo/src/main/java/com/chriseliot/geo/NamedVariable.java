@@ -290,14 +290,6 @@ public class NamedVariable extends GeoItem
         }
         buffer.append (" ");
         buffer.append (getStatus ());
-        final String reason = getReason ();
-        if (reason != null)
-        {
-            buffer.append (" ");
-            buffer.append ("'");
-            buffer.append (getReason ());
-            buffer.append ("'");
-        }
         final Inference inference = getInference ();
         if (inference != null)
         {

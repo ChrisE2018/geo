@@ -647,53 +647,53 @@ public class GeoTriangle extends GeoItem
         {
             if (l1.isDetermined () && l2.isDetermined () && l3.isDetermined ())
             {
-                setStatus (GeoStatus.derived, "triangle sides");
+                setStatus (GeoStatus.derived, "triangle known");
             }
         }
         if (!isDetermined ())
         {
             if (v1.isDetermined () && v2.isDetermined () && v3.isDetermined ())
             {
-                setStatus (GeoStatus.derived, "triangle vertices");
+                setStatus (GeoStatus.derived, "triangle known");
             }
         }
         if (isDetermined ())
         {
             if (!l1.isDetermined ())
             {
-                l1.setStatus (GeoStatus.derived, "determined triangle");
+                l1.setStatus (GeoStatus.derived, "triangle known");
             }
             if (!l2.isDetermined ())
             {
-                l2.setStatus (GeoStatus.derived, "determined triangle");
+                l2.setStatus (GeoStatus.derived, "triangle known");
             }
             if (!l3.isDetermined ())
             {
-                l3.setStatus (GeoStatus.derived, "determined triangle");
+                l3.setStatus (GeoStatus.derived, "triangle known");
             }
             if (!angle1.isDetermined ())
             {
-                angle1.setStatus (GeoStatus.derived, "determined triangle");
+                angle1.setStatus (GeoStatus.derived, "triangle known");
             }
             if (!angle2.isDetermined ())
             {
-                angle2.setStatus (GeoStatus.derived, "determined triangle");
+                angle2.setStatus (GeoStatus.derived, "triangle known");
             }
             if (!angle3.isDetermined ())
             {
-                angle3.setStatus (GeoStatus.derived, "determined triangle");
+                angle3.setStatus (GeoStatus.derived, "triangle known");
             }
             if (!v1.getVertex ().isDetermined ())
             {
-                v1.getVertex ().setStatus (GeoStatus.derived, "determined triangle");
+                v1.getVertex ().setStatus (GeoStatus.derived, "triangle known");
             }
             if (!v2.getVertex ().isDetermined ())
             {
-                v2.getVertex ().setStatus (GeoStatus.derived, "determined triangle");
+                v2.getVertex ().setStatus (GeoStatus.derived, "triangle known");
             }
             if (!v3.getVertex ().isDetermined ())
             {
-                v3.getVertex ().setStatus (GeoStatus.derived, "determined triangle");
+                v3.getVertex ().setStatus (GeoStatus.derived, "triangle known");
             }
         }
     }
@@ -706,43 +706,17 @@ public class GeoTriangle extends GeoItem
     {
         final NamedPoint av = a.getVertex ();
         final NamedPoint bv = b.getVertex ();
-        if (!l.isDetermined ())
-        {
-            if (av.isDetermined ())
-            {
-                if (bv.isDetermined ())
-                {
-                    l.setFormula ("triangle vertices", "%s == sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)", l, bv.getX (), av.getX (),
-                            bv.getY (), av.getY ());
-                    logger.info ("Length %s derived from vertices %s, %s", l.getName (), a.getName (), b.getName ());
-                }
-            }
-        }
+
+        l.setFormula ("triangle vertices", "%s == sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)", l, bv.getX (), av.getX (), bv.getY (),
+                av.getY ());
+        logger.info ("Length %s derived from vertices %s, %s", l.getName (), a.getName (), b.getName ());
     }
 
     private void deriveThirdAngle ()
     {
-        if (!angle1.isDetermined ())
-        {
-            if (angle2.isDetermined () && angle3.isDetermined ())
-            {
-                angle1.setFormula ("triangle angles sum 180", "%s == 180 - (%s + %s)", angle1, angle2, angle3);
-            }
-        }
-        if (!angle2.isDetermined ())
-        {
-            if (angle3.isDetermined () && angle1.isDetermined ())
-            {
-                angle2.setFormula ("triangle angles sum 180", "%s == 180 - (%s + %s)", angle2, angle3, angle1);
-            }
-        }
-        if (!angle3.isDetermined ())
-        {
-            if (angle2.isDetermined () && angle1.isDetermined ())
-            {
-                angle3.setFormula ("triangle angles sum 180", "%s == 180 - (%s + %s)", angle3, angle2, angle1);
-            }
-        }
+        angle1.setFormula ("triangle angles sum 180", "%s == 180 - (%s + %s)", angle1, angle2, angle3);
+        angle2.setFormula ("triangle angles sum 180", "%s == 180 - (%s + %s)", angle2, angle3, angle1);
+        angle3.setFormula ("triangle angles sum 180", "%s == 180 - (%s + %s)", angle3, angle2, angle1);
     }
 
     /** Compute a triangle angle from a vertex angle. */
@@ -871,17 +845,15 @@ public class GeoTriangle extends GeoItem
     private void deriveVertexByLawOfCosines (GeoVertex v)
     {
         final TriangleAngleVariable theta = getAngle (v);
-        if (!theta.isDetermined ())
-        {
-            final NamedVariable a = getLeg1 (v);
-            final NamedVariable b = getLeg2 (v);
-            final NamedVariable c = getOpposite (v);
-            theta.setFormula ("law of cosines",
-                    "%s == Block({$a=%s, $b=%s, $c=%s}, Return(ArcCos(($a^2 + $b^2 - $c^2) / (2 * $a * $b)) / Degree))", theta, a,
-                    b, c);
 
-            // logger.info ("Theta %s: %s", theta.getName (), theta.getFormula ());
-        }
+        final NamedVariable a = getLeg1 (v);
+        final NamedVariable b = getLeg2 (v);
+        final NamedVariable c = getOpposite (v);
+        theta.setFormula ("law of cosines",
+                "%s == Block({$a=%s, $b=%s, $c=%s}, Return(ArcCos(($a^2 + $b^2 - $c^2) / (2 * $a * $b)) / Degree))", theta, a, b,
+                c);
+
+        // logger.info ("Theta %s: %s", theta.getName (), theta.getFormula ());
     }
 
     /**
@@ -893,25 +865,15 @@ public class GeoTriangle extends GeoItem
     {
         final TriangleAngleVariable theta = getAngle (v);
         final NamedVariable c = getOpposite (v);
-        if (!c.isDetermined ())
-        {
-            if (theta.isDetermined ())
-            {
-                final NamedVariable a = getLeg1 (v);
-                final NamedVariable b = getLeg2 (v);
-                if (a.isDetermined ())
-                {
-                    if (b.isDetermined ())
-                    {
-                        c.setFormula ("law of cosines",
-                                "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta * Degree))))",
-                                c, a, b, theta);
 
-                        logger.info ("Calculate %s: %s", c.getName (), c.getInference ().getInstantiation ());
-                    }
-                }
-            }
-        }
+        final NamedVariable a = getLeg1 (v);
+        final NamedVariable b = getLeg2 (v);
+
+        c.setFormula ("law of cosines",
+                "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta * Degree))))", c, a, b,
+                theta);
+
+        logger.info ("Calculate %s: %s", c.getName (), c.getInference ().getInstantiation ());
     }
 
     /**

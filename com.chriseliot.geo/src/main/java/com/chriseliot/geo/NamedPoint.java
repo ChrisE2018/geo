@@ -197,43 +197,18 @@ public class NamedPoint extends GeoItem
     @Override
     public void solve ()
     {
-        if (isDetermined ())
-        {
-            if (!x.isDetermined ())
-            {
-                x.setFormula ("definition of point", "%s == " + x.getDoubleValue (), x);
-            }
-            if (!y.isDetermined ())
-            {
-                y.setFormula ("definition of point", "%s == " + y.getDoubleValue (), y);
-            }
-        }
-        else if (x.isDetermined () && y.isDetermined ())
-        {
-            setStatus (GeoStatus.derived, "definition of point");
-        }
+        x.setFormula ("definition of point", "%s == " + x.getDoubleValue (), x);
+        y.setFormula ("definition of point", "%s == " + y.getDoubleValue (), y);
+        setFormula ("aggregate", "%s == {%s, %s}", this, x, y);
     }
 
     /** If two points are at the same screen position, make them equivalent. */
     public void equivalent (NamedPoint p)
     {
-        if (p.getX ().isDetermined () && !getX ().isDetermined ())
-        {
-            getX ().setFormula ("equivalent pont x", "%s == %s", getX (), p.getX ());
-        }
-        if (p.getY ().isDetermined () && !getY ().isDetermined ())
-        {
-            getY ().setFormula ("equivalent pont y", "%s == %s", getY (), p.getY ());
-        }
-
-        if (!p.getX ().isDetermined () && getX ().isDetermined ())
-        {
-            p.getX ().setFormula ("equivalent pont x", "%s == %s", p.getX (), getX ());
-        }
-        if (!p.getY ().isDetermined () && getY ().isDetermined ())
-        {
-            p.getY ().setFormula ("equivalent pont y", "%s == %s", p.getY (), getY ());
-        }
+        x.setFormula ("equivalent point x", "%s == %s", x, p.x);
+        y.setFormula ("equivalent point y", "%s == %s", y, p.y);
+        p.x.setFormula ("equivalent point x", "%s == %s", p.x, x);
+        p.y.setFormula ("equivalent point y", "%s == %s", p.y, y);
     }
 
     /**
@@ -302,18 +277,13 @@ public class NamedPoint extends GeoItem
         buffer.append (" ");
         buffer.append (getParent ().getClass ().getSimpleName ());
         final Point2D.Double pos = getPosition ();
-        buffer.append (" ");
-        buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
-        buffer.append (" ");
-        buffer.append (getStatus ());
-        final String reason = getReason ();
-        if (reason != null)
+        if (pos != null)
         {
             buffer.append (" ");
-            buffer.append ("'");
-            buffer.append (getReason ());
-            buffer.append ("'");
+            buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
         }
+        buffer.append (" ");
+        buffer.append (getStatus ());
         buffer.append (">");
         return buffer.toString ();
     }

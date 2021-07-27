@@ -82,7 +82,6 @@ public class TestNamedVariable
         final Inference inference = test.getInference ();
         assertNotNull (inference);
         assertEquals ("1 + 1 = 2", inference.getInstantiation ());
-        assertEquals ("test", test.getReason ());
         plane.solve ();
     }
 
@@ -97,7 +96,6 @@ public class TestNamedVariable
         final NamedVariable x = new NamedVariable (parent, color, "x", 44.0);
         final NamedVariable y = new NamedVariable (parent, color, "y", 45.0);
         test.setFormula ("test", "c == 43.0", test);
-        assertEquals ("test", test.getReason ());
         assertEquals ("c==43.0", test.getDerivedFormula ());
         plane.solve ();
         x.setStatusUnknown ();
@@ -161,7 +159,7 @@ public class TestNamedVariable
         assertNotEquals (v, parent.getY ());
 
         v.setFormula ("test", "%s == 55", v);
-        assertEquals (GeoStatus.derived, v.getStatus ());
+        assertTrue (v.isDetermined ());
 
         // Try to change to a conflicting name
         final String oldName = v.getName ();

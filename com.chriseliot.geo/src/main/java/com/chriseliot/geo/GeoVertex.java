@@ -283,9 +283,9 @@ public class GeoVertex extends GeoItem
     @Override
     public void solve ()
     {
-        if (line1.getAngle ().isDetermined () && line2.getAngle ().isDetermined ())
+        // if (line1.getAngle ().isDetermined () && line2.getAngle ().isDetermined ())
         {
-            if (!angle.isDetermined ())
+            // if (!angle.isDetermined ())
             {
                 angle.setFormula ("vertex angles", "%s == %s - %s", angle, line2.getAngle (), line1.getAngle ());
             }
@@ -294,11 +294,11 @@ public class GeoVertex extends GeoItem
         {
             if (!vertex.isDetermined ())
             {
-                vertex.setStatus (GeoStatus.derived, "vertex known");
+                vertex.setStatus (GeoStatus.derived, "position from vertex");
             }
             if (!angle.isDetermined ())
             {
-                angle.setStatus (GeoStatus.derived, "vertex known");
+                angle.setStatus (GeoStatus.derived, "angle from vertx");
             }
         }
         if (!isDetermined ())
@@ -307,7 +307,7 @@ public class GeoVertex extends GeoItem
             {
                 if (vertex.isDetermined ())
                 {
-                    setStatus (GeoStatus.derived, "vertex determined");
+                    setStatus (GeoStatus.derived, "vertex from angle");
                 }
             }
         }

@@ -197,9 +197,9 @@ public class NamedPoint extends GeoItem
     @Override
     public void solve ()
     {
-        x.setFormula ("definition of point", "%s == " + x.getDoubleValue (), x);
-        y.setFormula ("definition of point", "%s == " + y.getDoubleValue (), y);
         setFormula ("aggregate", "%s == {%s, %s}", this, x, y);
+        x.setFormula ("fixed value", "%s == " + x.getDoubleValue (), x, this);
+        y.setFormula ("fixed value", "%s == " + y.getDoubleValue (), y, this);
     }
 
     /** If two points are at the same screen position, make them equivalent. */

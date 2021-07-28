@@ -445,17 +445,17 @@ public class GeoLine extends GeoItem
             }
         }
         // Determine dx
-        dx.setFormula ("dx from angle of line", "%s == %s * sin((90 -  %s) * Degree)", dx, length, angle);
+        dx.setFormula ("dx from endpoints", "%s == %s - %s", dx, to.getX (), from.getX ());
         dx.setFormula ("midpoint x of line", "%s == (%s - %s) * 2", dx, midpoint.getX (), from.getX ());
         dx.setFormula ("midpoint x of line", "%s == (%s - %s) * 2", dx, to.getX (), midpoint.getX ());
-        dx.setFormula ("dx from endpoints", "%s == %s - %s", dx, to.getX (), from.getX ());
+        dx.setFormula ("dx from angle of line", "%s == %s * sin((90 -  %s) * Degree)", dx, length, angle);
         dx.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dx, length, dy);
 
         // Determine dy
-        dy.setFormula ("dy from angle of line", "%s == %s * cos((90 - %s) * Degree)", dy, length, angle);
+        dy.setFormula ("dy from endpoints", "%s == %s - %s", dy, to.getY (), from.getY ());
         dy.setFormula ("midpoint y of line", "%s == (%s - %s) * 2", dy, midpoint.getY (), from.getY ());
         dy.setFormula ("midpoint y of line", "%s == (%s - %s) * 2", dy, to.getY (), midpoint.getY ());
-        dy.setFormula ("dy from endpoints", "%s == %s - %s", dy, to.getY (), from.getY ());
+        dy.setFormula ("dy from angle of line", "%s == %s * cos((90 - %s) * Degree)", dy, length, angle);
         dy.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dy, length, dx);
 
         // Determine to.x
@@ -471,11 +471,15 @@ public class GeoLine extends GeoItem
         from.getY ().setFormula ("from y from dy of line", "%s == %s - %s", from.getY (), to.getY (), dy);
 
         // Determine midpoint.x
+        midpoint.getX ().setFormula ("midpoint = (Ax + Bx) / 2)", "%s == (%s + %s) / 2", midpoint.getX (), from.getX (),
+                to.getX ());
         midpoint.getX ().setFormula ("midpoint = Ax + (dx / 2)", "%s == %s + (%s / 2)", midpoint.getX (), from.getX (), dx);
 
         midpoint.getX ().setFormula ("midpoint = Bx - (dx / 2)", "%s == %s - (%s / 2)", midpoint.getX (), to.getX (), dx);
 
         // Determine midpoint.y
+        midpoint.getY ().setFormula ("midpoint = (Ay + By) / 2)", "%s == (%s + %s) / 2", midpoint.getY (), from.getY (),
+                to.getY ());
         midpoint.getY ().setFormula ("midpoint = Ay + (dy / 2)", "%s == %s + (%s / 2)", midpoint.getY (), from.getY (), dy);
 
         midpoint.getY ().setFormula ("midpoint = By - (dy / 2)", "%s == %s - (%s / 2)", midpoint.getY (), to.getY (), dy);

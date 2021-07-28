@@ -11,10 +11,11 @@ import java.io.*;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import com.chriseliot.util.*;
 
+@Tag ("Triangle")
 public class TestGeoTriangle
 {
     private final TestSupport ts = new TestSupport ();

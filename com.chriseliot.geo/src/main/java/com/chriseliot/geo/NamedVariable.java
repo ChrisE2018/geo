@@ -129,6 +129,7 @@ public class NamedVariable extends GeoItem
                 }
             }
         }
+        setFormula ("fixed value", "%s == " + getDoubleValue (), this, this);
     }
 
     /** Location on screen to draw label for this variable. */

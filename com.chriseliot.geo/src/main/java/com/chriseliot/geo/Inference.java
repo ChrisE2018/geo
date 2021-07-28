@@ -3,12 +3,15 @@ package com.chriseliot.geo;
 
 import java.util.*;
 
+import org.apache.logging.log4j.*;
 import org.w3c.dom.Element;
 
 import com.chriseliot.util.*;
 
 public class Inference
 {
+    private static Logger logger = LogManager.getFormatterLogger (Inference.class);
+
     private static XMLUtil xu = new XMLUtil ();
     private static TextUtils tu = new TextUtils ();
 
@@ -99,15 +102,46 @@ public class Inference
         return false;
     }
 
-    public boolean isDetermined (Set<GeoItem> closed)
+    public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed)
     {
         for (int i = 1; i < terms.length; i++)
         {
             final GeoItem term = terms[i];
-            if (!term.isDetermined (closed))
+            if (!term.isDetermined (known, closed))
             {
                 return false;
             }
+        }
+        return true;
+    }
+
+    public boolean whyDetermined (Set<GeoItem> known, Set<GeoItem> closed)
+    {
+        final Set<GeoItem> savedKnown = new HashSet<> (known);
+        final Set<GeoItem> savedClosed = new HashSet<> (closed);
+        for (int i = 1; i < terms.length; i++)
+        {
+            final GeoItem term = terms[i];
+            if (!term.isDetermined (known, closed))
+            {
+                final Set<GeoItem> missing = new HashSet<> (closed);
+                missing.removeAll (known);
+                logger.info ("%s is not determined because %s it not determined without %s", this, term.getName (),
+                        GeoItem.getNames (missing));
+                final Set<GeoItem> supportRequired = term.getSupport ();
+                final Set<GeoItem> supportMissing = new HashSet<> (supportRequired);
+                supportMissing.removeAll (known);
+                logger.info ("%s needs support %s which is missing %s", term.getName (), GeoItem.getNames (supportRequired),
+                        GeoItem.getNames (supportMissing));
+
+                return false;
+            }
+        }
+        logger.info ("%s is determined because %s terms are determined", this, terms.length - 1);
+        for (int i = 1; i < terms.length; i++)
+        {
+            final GeoItem term = terms[i];
+            term.whyDetermined (savedKnown, savedClosed);
         }
         return true;
     }
@@ -171,6 +205,8 @@ public class Inference
         final StringBuilder buffer = new StringBuilder ();
         buffer.append ("#<");
         buffer.append (getClass ().getSimpleName ());
+        buffer.append (" ");
+        buffer.append (reason);
         buffer.append (" ");
         buffer.append (getInstantiation ());
         buffer.append (">");

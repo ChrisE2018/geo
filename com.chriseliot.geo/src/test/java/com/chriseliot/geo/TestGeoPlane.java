@@ -16,7 +16,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.*;
 
 import org.apache.logging.log4j.*;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import com.chriseliot.util.Namer;
 
@@ -288,6 +288,7 @@ public class TestGeoPlane
         plane.solve ();
     }
 
+    @Tag ("Triangle")
     @Test
     public void testBasicStatus ()
     {
@@ -319,6 +320,7 @@ public class TestGeoPlane
         assertEquals (GeoStatus.unknown, t.getStatus ());
     }
 
+    @Tag ("Triangle")
     @Test
     public void testResetDerived ()
     {
@@ -478,6 +480,7 @@ public class TestGeoPlane
         assertNotNull (plane.getLabels ());
     }
 
+    @Tag ("Triangle")
     @Test
     public void testPaint2 () throws IOException
     {

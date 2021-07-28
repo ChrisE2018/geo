@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith (Watcher.class)
 public class FileUtilsTest
 {
     @Test

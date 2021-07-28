@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.*;
 
 import javax.swing.SwingConstants;
 import javax.xml.parsers.*;
@@ -185,54 +186,15 @@ public class TestNamedVariable
         final Point2D.Double position = new Point2D.Double (10, 20);
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
-        // final CloseDialogThread thread = new CloseDialogThread ();
-        // thread.start ();
-        // v.showDerivationAction ();
-        // thread.halt ();
-        // thread.dream (10);
-        // System.out.printf ("Derivation dialog returns\n");
-        // assertTrue (thread.isDialogSeen ());
-
         final NamedVariable x = parent.getX ();
         final NamedVariable y = parent.getY ();
         v.setGivenStatus (GeoStatus.known);
         y.setGivenStatus (GeoStatus.fixed);
         x.setFormula ("test", "%s == %s + %s", x, y, v);
         final StringBuilder builder = new StringBuilder ();
-        x.getDerivation (builder, 3);
+        final Set<GeoItem> closed = new HashSet<> ();
+        x.getDerivation (builder, 3, closed);
     }
-
-    // @Test
-    // public void testAttributes ()
-    // {
-    // final GeoPlane plane = new GeoPlane ();
-    // final GeoItem item = new GeoItem (plane, "t", Color.black);
-    // final Point2D.Double position = new Point2D.Double (10, 20);
-    // final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position,
-    // SwingConstants.NORTH_WEST);
-    // final NamedVariable test = new NamedVariable (parent, Color.red, "test1");
-    // test.setDoubleValue (9.5);
-    // final Map<String, Object> attributes = test.getAttributes ();
-    // assertEquals (9.5, attributes.get ("value"));
-    // final Map<String, String> attributes2 = new HashMap<> ();
-    // for (final Entry<String, Object> entry : attributes.entrySet ())
-    // {
-    // final String key = entry.getKey ();
-    // final Object value = entry.getValue ();
-    // if (value == null)
-    // {
-    // attributes2.put (key, (String)value);
-    // }
-    // else
-    // {
-    // attributes2.put (key, value.toString ());
-    // }
-    // }
-    // test.readAttributes (attributes2);
-    // assertNotNull (test.getAttributes ());
-    // test.setLocation (null);
-    // assertNotNull (test.getAttributes ());
-    // }
 
     @Test
     public void testSetValueAction ()

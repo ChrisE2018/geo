@@ -490,17 +490,21 @@ public class GeoItem
         }
     }
 
-    public void getDerivation (StringBuilder builder, int level)
+    public void getDerivation (StringBuilder builder, int level, Set<GeoItem> closed)
     {
-        final Inference inference = getInference ();
-        if (inference != null)
+        if (!closed.contains (this))
         {
-            final GeoItem[] terms = inference.getTerms ();
-            for (int i = 1; i < terms.length; i++)
+            final Inference inference = getInference ();
+            if (inference != null)
             {
-                final GeoItem ti = terms[i];
-                ti.getDerivation (builder, level + 1);
-                ti.getFormulaLine (builder, level);
+                closed.add (this);
+                final GeoItem[] terms = inference.getTerms ();
+                for (int i = 1; i < terms.length; i++)
+                {
+                    final GeoItem ti = terms[i];
+                    ti.getDerivation (builder, level + 1, closed);
+                    ti.getFormulaLine (builder, level);
+                }
             }
         }
     }

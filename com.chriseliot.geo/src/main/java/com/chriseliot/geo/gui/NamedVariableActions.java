@@ -1,6 +1,8 @@
 
 package com.chriseliot.geo.gui;
 
+import java.util.*;
+
 import javax.swing.*;
 
 import com.chriseliot.geo.*;
@@ -29,7 +31,8 @@ public class NamedVariableActions
             final StringBuilder builder = new StringBuilder ();
             final String formula = inference.getInstantiation ();
             builder.append (String.format ("Derivation: %s\n\n", formula));
-            item.getDerivation (builder, 0);
+            final Set<GeoItem> closed = new HashSet<> ();
+            item.getDerivation (builder, 0, closed);
             item.getFormulaLine (builder, 0);
             JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
         }

@@ -129,10 +129,17 @@ public class Inference
                 logger.info ("%s is not determined because %s it not determined without %s", this, term.getName (),
                         GeoItem.getNames (missing));
                 final Set<GeoItem> supportRequired = term.getSupport ();
-                final Set<GeoItem> supportMissing = new HashSet<> (supportRequired);
-                supportMissing.removeAll (known);
-                logger.info ("%s needs support %s which is missing %s", term.getName (), GeoItem.getNames (supportRequired),
-                        GeoItem.getNames (supportMissing));
+                if (supportRequired == null)
+                {
+
+                }
+                else
+                {
+                    final Set<GeoItem> supportMissing = new HashSet<> (supportRequired);
+                    supportMissing.removeAll (known);
+                    logger.info ("%s needs support %s which is missing %s", term.getName (), GeoItem.getNames (supportRequired),
+                            GeoItem.getNames (supportMissing));
+                }
 
                 return false;
             }

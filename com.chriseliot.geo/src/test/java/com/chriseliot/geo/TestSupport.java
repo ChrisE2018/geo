@@ -26,6 +26,12 @@ public class TestSupport
         assertNotNull (toString ());
     }
 
+    @Test
+    public void testGetPngFile ()
+    {
+        assertNotNull (getTestPngFile (this, "test"));
+    }
+
     public void checkExpression (NamedVariable named, double expected)
     {
         checkExpression (named, expected, null);

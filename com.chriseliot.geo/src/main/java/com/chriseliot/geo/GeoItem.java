@@ -712,7 +712,7 @@ public class GeoItem
         final GeoItem item = getPlane ().get (name);
         if (item == null)
         {
-            logger.warn ("Can't locate item %s", name);
+            logger.warn ("Can't locate %s in %s", name, GeoItem.getNames (getPlane ().getItems ()));
         }
         else
         {

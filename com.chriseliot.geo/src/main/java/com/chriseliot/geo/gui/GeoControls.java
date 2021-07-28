@@ -1,6 +1,8 @@
 
 package com.chriseliot.geo.gui;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
@@ -300,7 +302,7 @@ public class GeoControls extends JPanel implements ActionListener
         }
     }
 
-    private void readXml (File file) throws ParserConfigurationException, IOException, SAXException
+    public void readXml (File file) throws ParserConfigurationException, IOException, SAXException
     {
         final GeoPlane plane = geo.getPlane ();
         plane.clear ();
@@ -336,8 +338,17 @@ public class GeoControls extends JPanel implements ActionListener
         else if (tag.equals ("GeoVertex"))
         {
             final Color color = new Color (xu.getInteger (element, "color", 0));
-            final GeoLine line1 = (GeoLine)plane.get (xu.get (element, "line1", null));
-            final GeoLine line2 = (GeoLine)plane.get (xu.get (element, "line2", null));
+            final String name1 = xu.get (element, "line1", null);
+            final String name2 = xu.get (element, "line2", null);
+            assertNotNull (name1);
+            assertNotNull (name2);
+            logger.info ("Vertex %s", xu.get (element, "name", null));
+            logger.info ("Line1 %s", name1);
+            logger.info ("Line2 %s", name2);
+            final GeoLine line1 = (GeoLine)plane.get (name1);
+            final GeoLine line2 = (GeoLine)plane.get (name2);
+            assertNotNull (line1);
+            assertNotNull (line2);
             final GeoVertex item = new GeoVertex (plane, color, line1, line2, new Point2D.Double (0, 0));
             plane.addItem (item);
             item.marshall (element);

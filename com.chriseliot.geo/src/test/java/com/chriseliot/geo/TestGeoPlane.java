@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.beans.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -336,43 +335,11 @@ public class TestGeoPlane
         plane.findTriangles ();
         final GeoTriangle t = plane.getTriangle (v1, v2, v3);
         assertNotNull (t);
-        t.addStatusChangeListener (new PropertyChangeListener ()
-        {
-            @Override
-            public void propertyChange (PropertyChangeEvent e)
-            {
-                logger.info ("Triangle %s %s changed from %s to %s", e.getSource (), e.getPropertyName (), e.getOldValue (),
-                        e.getNewValue ());
-                try
-                {
-                    throw new Exception ();
-                }
-                catch (final Exception ex)
-                {
-                    // ex.printStackTrace ();
-                }
-            }
-        });
+        t.addStatusChangeListener (new TraceStatusChangeListener ());
         assertFalse (line1.isDetermined ());
         assertFalse (line2.isDetermined ());
         assertFalse (line3.isDetermined ());
-        line1.addStatusChangeListener (new PropertyChangeListener ()
-        {
-            @Override
-            public void propertyChange (PropertyChangeEvent e)
-            {
-                logger.info ("Line %s %s changed from %s to %s", e.getSource (), e.getPropertyName (), e.getOldValue (),
-                        e.getNewValue ());
-                try
-                {
-                    throw new Exception ();
-                }
-                catch (final Exception ex)
-                {
-                    // ex.printStackTrace ();
-                }
-            }
-        });
+        line1.addStatusChangeListener (new TraceStatusChangeListener ());
         assertFalse (t.isDetermined ());
         final NamedPoint p1 = v1.getVertex ();
         final NamedPoint p2 = v2.getVertex ();

@@ -868,12 +868,10 @@ public class GeoTriangle extends GeoItem
 
         final NamedVariable a = getLeg1 (v);
         final NamedVariable b = getLeg2 (v);
-
         c.setFormula ("law of cosines",
                 "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta * Degree))))", c, a, b,
                 theta);
-
-        logger.info ("Calculate %s: %s", c.getName (), c.getInference ().getInstantiation ());
+        logger.info ("Calculate %s", c.getName ());
     }
 
     /**

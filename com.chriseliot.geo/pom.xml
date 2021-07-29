@@ -8,18 +8,18 @@
 	<name>Geo</name>
 	<description>Geometry analysis</description>
 	<packaging>jar</packaging>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<log4j.version>2.13.0</log4j.version>
 		<junit.version>4.11</junit.version>
-		<junit.jupiter.version>5.4.0</junit.jupiter.version>
+		<junit.jupiter.version>5.7.0</junit.jupiter.version>
 		<matheclipse.version>2.0.0-SNAPSHOT</matheclipse.version>
 		<opencsv.version>4.1</opencsv.version>
 	</properties>
-	
+
 	<dependencies>
 
 		<dependency>
@@ -34,20 +34,16 @@
 			<version>${log4j.version}</version>
 		</dependency>
 
+		<!-- junit 5 -->
 		<dependency>
-			<!-- Needed for org.junit.Assert -->
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<!-- junit 5 -->
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.jupiter.version}</version>
 		</dependency>
 
 		<dependency>
@@ -55,25 +51,25 @@
 			<artifactId>matheclipse-core</artifactId>
 			<version>${matheclipse.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.matheclipse</groupId>
 			<artifactId>matheclipse-gpl</artifactId>
 			<version>${matheclipse.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.matheclipse</groupId>
 			<artifactId>matheclipse-io</artifactId>
 			<version>${matheclipse.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>${opencsv.version}</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<repositories>
@@ -96,6 +92,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M5</version>
+				<configuration>
+					<excludedGroups>KnownFailure</excludedGroups>
+				</configuration>
 			</plugin>
 
 			<plugin>

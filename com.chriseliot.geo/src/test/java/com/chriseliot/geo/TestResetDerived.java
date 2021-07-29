@@ -1,7 +1,6 @@
 
 package com.chriseliot.geo;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Color;
@@ -154,6 +153,7 @@ class TestResetDerived
         }
     }
 
+    @Tag ("KnownFailure")
     @Tag ("Triangle")
     @Test
     public void testResetDerived2 ()

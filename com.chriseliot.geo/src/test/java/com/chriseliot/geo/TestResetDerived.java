@@ -34,7 +34,8 @@ class TestResetDerived
     @BeforeEach
     public void init ()
     {
-        logger.info ("Setup test scenario");
+        logger.info ("****************************");
+        logger.info ("Setup test scenario starting");
         Namer.reset ();
         plane = new GeoPlane ();
         line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
@@ -68,6 +69,8 @@ class TestResetDerived
         assertFalse (line1.isDetermined ());
         assertFalse (line2.isDetermined ());
         assertFalse (line3.isDetermined ());
+        logger.info ("Setup test scenario complete");
+        logger.info ("****************************");
     }
 
     @AfterEach
@@ -98,6 +101,7 @@ class TestResetDerived
         logger.info ("Changing %s.status to known", p1.getName ());
         p1.setGivenStatus (GeoStatus.known);
         logger.info ("Changed %s.status to known", p1.getName ());
+        logger.info ("****************************");
         assertFalse (line1.isDetermined ());
         assertFalse (line2.isDetermined ());
         assertFalse (line3.isDetermined ());
@@ -154,30 +158,46 @@ class TestResetDerived
     @Test
     public void testResetDerived2 ()
     {
-        logger.info ("Changing %s.status to known", p1.getName ());
+        logger.info ("Making point %s known", p1.getName ());
         p1.setGivenStatus (GeoStatus.known);
         logger.info ("Changed %s.status to known", p1.getName ());
+        logger.info ("****************************");
 
+        logger.info ("Making point %s known", p2.getName ());
         p2.setGivenStatus (GeoStatus.known);
-
-        line2.solve ();
+        logger.info ("Changed %s.status to known", p2.getName ());
+        logger.info ("****************************");
+        // line2.solve ();
 
         // Make triangle be known or derived
+        logger.info ("Making point %s known", p3.getName ());
         p3.setGivenStatus (GeoStatus.known);
+        logger.info ("Changed %s.status to known", p3.getName ());
+        logger.info ("****************************");
 
-        // Make everything be known or derived
+        // Make vertices be known
+        logger.info ("v1: %s", v1.getName ());
+        logger.info ("v2: %s", v2.getName ());
+        logger.info ("v3: %s", v3.getName ());
         v1.setGivenStatus (GeoStatus.known);
         v2.setGivenStatus (GeoStatus.known);
         v3.setGivenStatus (GeoStatus.known);
+        logger.info ("****************************");
+        logger.info ("Everything should now  be determined");
         // Part1 ends here
         for (final GeoItem item : plane.getItems ())
         {
             if (!(item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3))
             {
+                logger.info ("****************************");
+                logger.info ("Checking if %s isDetermined as expected", item.getName ());
                 assertTrue (item.whyDetermined ());
                 // assertEquals (GeoStatus.derived, item.getStatus ());
+                logger.info ("%s isDetermined as expected", item.getName ());
             }
         }
+        logger.info ("****************************");
+        logger.info ("Retract assertions");
 
         // Retract assertions
         v1.setStatusUnknown ();

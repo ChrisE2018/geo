@@ -4,13 +4,13 @@
 	<Appenders>
 		<Console name="ConsoleAppender" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%d{HH:mm:ss.SSS} [%-5level] %c{2}#%M(%L) - %msg%n" />
+				pattern="%d{HH:mm:ss.SSS} [%-5level] %logger{36}(%L) - %msg%n" />
 		</Console>
 		<File name="FileAppender"
 			fileName="${sys:user.home}/Documents/foe/logs-${date:yyyy}/geologs-${date:yyyy-MM}/geo-${date:yyyyMMdd}.log"
 			immediateFlush="true" append="true" bufferedIO="true">
 			<PatternLayout
-				pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%-5level] %c{5}#%M(%L) - %msg%n" />
+				pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger{36}(%L) - %msg%n" />
 		</File>
 	</Appenders>
 	<Loggers>

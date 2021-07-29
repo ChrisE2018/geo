@@ -319,6 +319,63 @@ public class TestGeoPlane
         assertEquals (GeoStatus.unknown, t.getStatus ());
     }
 
+    @Test
+    public void testPaint1 ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoItem item = new GeoItem (plane, "t", Color.black);
+        final GeoItem child = new GeoItem (item, "t", Color.black);
+        assertEquals (item, child.getParent ());
+        final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
+        final Graphics g = image.getGraphics ();
+        final Set<String> categories = new HashSet<> ();
+        plane.paintItems (g, categories);
+        categories.add ("simple");
+        categories.add ("standard");
+        categories.add ("detail");
+        plane.paintItems (g, categories);
+        assertNotNull (plane.getLabels ());
+    }
+
+    @Tag ("Triangle")
+    @Test
+    public void testPaint2 () throws IOException
+    {
+        Namer.reset ();
+        final GeoPlane plane = new GeoPlane ();
+
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (50, 50), new Point2D.Double (350, 50));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (350, 50), new Point2D.Double (350, 450));
+        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (350, 450), new Point2D.Double (50, 50));
+
+        final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (350, 50));
+        final GeoVertex v2 = new GeoVertex (plane, Color.green, line2, line3, new Point2D.Double (350, 450));
+        final GeoVertex v3 = new GeoVertex (plane, Color.green, line3, line1, new Point2D.Double (50, 50));
+
+        final GeoTriangle t = new GeoTriangle (plane, Color.red, v1, v2, v3);
+        t.setSelected (false);
+
+        final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
+        final Graphics g = image.getGraphics ();
+        final Set<String> categories = new HashSet<> ();
+        categories.add ("simple");
+        categories.add ("standard");
+        categories.add ("detail");
+        plane.paintItems (g, categories);
+        // Be sure to call Namer.reset before generating images for compare.
+        ts.compare (image, ts.getTestPngFile (this, "p1"));
+        v1.getVertex ().setGivenStatus (GeoStatus.known);
+        v2.getVertex ().setGivenStatus (GeoStatus.known);
+        v3.getVertex ().setGivenStatus (GeoStatus.known);
+        plane.paintItems (g, categories);
+        ts.compare (image, ts.getTestPngFile (this, "p2"));
+
+        // Get coverage of missing file case inside TestSupport
+        final File temp = ts.getTestDataFile (this, "p2", "temp");
+        ts.compare (image, temp);
+        temp.delete ();
+    }
+
     @Tag ("Triangle")
     @Test
     public void testResetDerived ()
@@ -427,62 +484,5 @@ public class TestGeoPlane
         assertEquals (GeoStatus.unknown, line2.getStatus ());
         assertEquals (GeoStatus.unknown, line3.getStatus ());
         assertEquals (GeoStatus.unknown, t.getStatus ());
-    }
-
-    @Test
-    public void testPaint1 ()
-    {
-        final GeoPlane plane = new GeoPlane ();
-        final GeoItem item = new GeoItem (plane, "t", Color.black);
-        final GeoItem child = new GeoItem (item, "t", Color.black);
-        assertEquals (item, child.getParent ());
-        final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
-        final Graphics g = image.getGraphics ();
-        final Set<String> categories = new HashSet<> ();
-        plane.paintItems (g, categories);
-        categories.add ("simple");
-        categories.add ("standard");
-        categories.add ("detail");
-        plane.paintItems (g, categories);
-        assertNotNull (plane.getLabels ());
-    }
-
-    @Tag ("Triangle")
-    @Test
-    public void testPaint2 () throws IOException
-    {
-        Namer.reset ();
-        final GeoPlane plane = new GeoPlane ();
-
-        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (50, 50), new Point2D.Double (350, 50));
-        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (350, 50), new Point2D.Double (350, 450));
-        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (350, 450), new Point2D.Double (50, 50));
-
-        final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (350, 50));
-        final GeoVertex v2 = new GeoVertex (plane, Color.green, line2, line3, new Point2D.Double (350, 450));
-        final GeoVertex v3 = new GeoVertex (plane, Color.green, line3, line1, new Point2D.Double (50, 50));
-
-        final GeoTriangle t = new GeoTriangle (plane, Color.red, v1, v2, v3);
-        t.setSelected (false);
-
-        final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
-        final Graphics g = image.getGraphics ();
-        final Set<String> categories = new HashSet<> ();
-        categories.add ("simple");
-        categories.add ("standard");
-        categories.add ("detail");
-        plane.paintItems (g, categories);
-        // Be sure to call Namer.reset before generating images for compare.
-        ts.compare (image, ts.getTestPngFile (this, "p1"));
-        v1.getVertex ().setGivenStatus (GeoStatus.known);
-        v2.getVertex ().setGivenStatus (GeoStatus.known);
-        v3.getVertex ().setGivenStatus (GeoStatus.known);
-        plane.paintItems (g, categories);
-        ts.compare (image, ts.getTestPngFile (this, "p2"));
-
-        // Get coverage of missing file case inside TestSupport
-        final File temp = ts.getTestDataFile (this, "p2", "temp");
-        ts.compare (image, temp);
-        temp.delete ();
     }
 }

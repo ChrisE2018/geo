@@ -25,7 +25,6 @@ public class GetSaveFileTest
         final FileUtils test = new FileUtils ();
         assertNull (test.chooser);
         final CloseChooserThread thread = new CloseChooserThread (test);
-        thread.closeDialogs ();
         thread.start ();
         final File currentDir = new File ("data/").getAbsoluteFile ();
         logger.info ("Creating getSaveFile dialog");

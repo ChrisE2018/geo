@@ -3,7 +3,7 @@ package com.chriseliot.geo.gui;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.swing.JFileChooser;
+import javax.swing.*;
 
 import org.apache.logging.log4j.*;
 
@@ -28,44 +28,49 @@ public class CloseChooserThread extends Thread
         return isDialogSeen;
     }
 
-    public int closeDialogs ()
+    public void validateAndClose ()
     {
-        int count = 0;
         final JFileChooser chooser = fu.chooser;
+        logger.info ("Validate %s", chooser);
+        SwingUtilities.invokeLater (new Runnable ()
+        {
+            @Override
+            public void run ()
+            {
+                TestSupport.dream (100);
+                if (chooser != null)
+                {
+                    chooser.validate ();
+                    chooser.cancelSelection ();
+                    isDialogSeen = true;
+                }
+            }
+        });
+    }
 
+    public void closeDialog ()
+    {
+        final JFileChooser chooser = fu.chooser;
         if (chooser != null)
         {
             logger.info ("Found %s", chooser);
-            if (!chooser.isValid ())
-            {
-                logger.info ("Validate %s", chooser);
-                chooser.validate ();
-
-                // Give the dialog time to get in a good state
-                TestSupport.dream (10);
-            }
-            logger.info ("Closing %s", chooser);
             chooser.cancelSelection ();
             isDialogSeen = true;
-            count++;
         }
-        return count;
     }
 
     @Override
     public void run ()
     {
         isRunning = true;
-        for (int i = 0; i < limit && isRunning; i++)
+        isDialogSeen = false;
+        validateAndClose ();
+        for (int i = 0; i < limit && isRunning && !isDialogSeen; i++)
         {
             TestSupport.dream (100);
-            if (closeDialogs () > 0)
-            {
-                isRunning = false;
-            }
+            closeDialog ();
         }
         isRunning = false;
         assertTrue (isDialogSeen);
-        TestSupport.dream (50);
     }
 }

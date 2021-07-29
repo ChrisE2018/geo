@@ -1,7 +1,6 @@
 
 package com.chriseliot.geo;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.*;
@@ -414,15 +413,15 @@ public class TestGeoPlane
         categories.add ("detail");
         plane.paintItems (g, categories);
         // Be sure to call Namer.reset before generating images for compare.
-        ts.compare (image, ts.getTestPngFile (this, "p1"));
+        ts.compare (image, ts.getTestPngFile (this, "master_p1"));
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         v2.getVertex ().setGivenStatus (GeoStatus.known);
         v3.getVertex ().setGivenStatus (GeoStatus.known);
         plane.paintItems (g, categories);
-        ts.compare (image, ts.getTestPngFile (this, "p2"));
+        ts.compare (image, ts.getTestPngFile (this, "master_p2"));
 
         // Get coverage of missing file case inside TestSupport
-        final File temp = ts.getTestDataFile (this, "p2", "temp");
+        final File temp = ts.getTestDataFile (this, "master_p3", "temp");
         ts.compare (image, temp);
         temp.delete ();
     }

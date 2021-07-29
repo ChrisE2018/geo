@@ -1,8 +1,7 @@
 
 package com.chriseliot.util;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 

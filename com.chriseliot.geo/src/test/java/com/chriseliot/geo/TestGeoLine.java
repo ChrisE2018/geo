@@ -2,7 +2,6 @@
 package com.chriseliot.geo;
 
 import static java.lang.Math.sqrt;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.*;

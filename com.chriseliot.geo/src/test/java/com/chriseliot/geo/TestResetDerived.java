@@ -1,10 +1,12 @@
 
 package com.chriseliot.geo;
 
+import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.util.*;
 
 import org.apache.logging.log4j.*;
 import org.junit.jupiter.api.*;
@@ -184,16 +186,79 @@ class TestResetDerived
         v2.setGivenStatus (GeoStatus.known);
         v3.setGivenStatus (GeoStatus.known);
         logger.info ("****************************");
-        logger.info ("Everything should now  be determined");
+        logger.info ("Everything should now be determined");
         // Part1 ends here
+
+        // Collect items that should be determined but are not
+        final Set<String> dd = new TreeSet<> ();
+        for (final GeoItem item : plane.getItems ())
+        {
+            if (item.isDetermined ())
+            {
+                dd.add (item.getName ());
+            }
+        }
+        final List<String> d = new ArrayList<> (dd);
+        final int bucket = 10;
+        for (int i = 0; i < d.size (); i += bucket)
+        {
+            logger.info ("Determined %s", d.subList (i, min (d.size (), i + bucket)));
+        }
+        final GeoItem mx = plane.get ("l01$M$x");
+        if (!mx.isDetermined ())
+        {
+            logger.info ("Explanation of %s %s: %s", mx.getName (), mx.getStatus (), GeoItem.getNames (mx.getSupport ()));
+            assertTrue (mx.whyDetermined ());
+        }
+        logger.info ("*** mx is determined");
+
+        final GeoItem my = plane.get ("l01$M$y");
+        if (!my.isDetermined ())
+        {
+            logger.info ("Explanation of %s %s: %s", my.getName (), my.getStatus (), GeoItem.getNames (my.getSupport ()));
+            assertTrue (my.whyDetermined ());
+        }
+        logger.info ("*** my is determined");
+
+        final Set<GeoItem> undetermined = new HashSet<> ();
+        for (final GeoItem item : plane.getItems ())
+        {
+            if (!(item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3))
+            {
+                final boolean determined = item.isDetermined ();
+                assertTrue (determined); // Stop here for now
+                if (!determined)
+                {
+                    logger.info ("Item %s should be determined: %s", item.getName (), determined);
+                    undetermined.add (item);
+                    for (final Inference inference : item.getInferences ())
+                    {
+                        logger.info ("**** %s inference %s", item.getName (), inference);
+                    }
+                }
+            }
+        }
+
+        assertTrue (undetermined.isEmpty ());
+
+        for (final GeoItem item : undetermined)
+        {
+            logger.info ("****************************");
+            logger.info ("Checking why %s is not determined as expected", item.getName ());
+            assertTrue (item.whyDetermined ());
+            // assertEquals (GeoStatus.derived, item.getStatus ());
+            logger.info ("%s isDetermined as expected", item.getName ());
+        }
         for (final GeoItem item : plane.getItems ())
         {
             if (!(item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3))
             {
                 logger.info ("****************************");
                 logger.info ("Checking if %s isDetermined as expected", item.getName ());
-                assertTrue (item.whyDetermined ());
-                // assertEquals (GeoStatus.derived, item.getStatus ());
+                if (!item.isDetermined ())
+                {
+                    assertTrue (item.whyDetermined ());
+                }
                 logger.info ("%s isDetermined as expected", item.getName ());
             }
         }

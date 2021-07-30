@@ -569,26 +569,6 @@ public class GeoTriangle extends GeoItem
         return toDegrees (acos (costheta));
     }
 
-    // /** Calculate length of base of triangle from opposite angle and length of two legs. */
-    // public double base (double a, double b, double theta)
-    // {
-    // return sqrt (a * a + b * b - (2 * a * b * cos (toRadians (theta))));
-    // }
-    //
-    // /** Distance between two points. */
-    // public double distance (Point2D.Double p, Point2D.Double q)
-    // {
-    // return sqrt (distance2 (p, q));
-    // }
-    //
-    // /** Square of the distance between two points. */
-    // public double distance2 (Point2D.Double p, Point2D.Double q)
-    // {
-    // final double dx = q.x - p.x;
-    // final double dy = q.y - p.y;
-    // return dx * dx + dy * dy;
-    // }
-
     /**
      * Derive inferences from this rectangle.
      *
@@ -615,87 +595,16 @@ public class GeoTriangle extends GeoItem
 
         // Implement variations of the law of cosines
         lawOfCosines ();
+
         // Law of sines:
         // If side a is opposite angle A and similarly b, B, c, C
         // then: (a / sin A) == (b / sin B) == (c / sin C)
         lawOfSines ();
         // If two angles are known the third is derived from 180 = a + b + c.
 
-        // Location of centroid
-        if (!centroid.getX ().isDetermined ())
-        {
-            final NamedVariable x1 = v1.getVertex ().getX ();
-            final NamedVariable x2 = v2.getVertex ().getX ();
-            final NamedVariable x3 = v3.getVertex ().getX ();
-            if (x1.isDetermined () && x2.isDetermined () && x3.isDetermined ())
-            {
-                centroid.getX ().setFormula ("centroid", "%s == (%s + %s + %s) / 3", centroid.getX (), x1, x2, x3);
-            }
-        }
-        if (!centroid.getY ().isDetermined ())
-        {
-            final NamedVariable y1 = v1.getVertex ().getY ();
-            final NamedVariable y2 = v2.getVertex ().getY ();
-            final NamedVariable y3 = v3.getVertex ().getY ();
-            if (y1.isDetermined () && y2.isDetermined () && y3.isDetermined ())
-            {
-                centroid.getY ().setFormula ("centroid", "%s == (%s + %s + %s) / 3", centroid.getY (), y1, y2, y3);
-            }
-        }
-        // If all angles and sides are known, the triangle is fully known
-        if (!isDetermined ())
-        {
-            if (l1.isDetermined () && l2.isDetermined () && l3.isDetermined ())
-            {
-                setStatus (GeoStatus.derived, "triangle known");
-            }
-        }
-        if (!isDetermined ())
-        {
-            if (v1.isDetermined () && v2.isDetermined () && v3.isDetermined ())
-            {
-                setStatus (GeoStatus.derived, "triangle known");
-            }
-        }
-        if (isDetermined ())
-        {
-            if (!l1.isDetermined ())
-            {
-                l1.setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!l2.isDetermined ())
-            {
-                l2.setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!l3.isDetermined ())
-            {
-                l3.setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!angle1.isDetermined ())
-            {
-                angle1.setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!angle2.isDetermined ())
-            {
-                angle2.setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!angle3.isDetermined ())
-            {
-                angle3.setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!v1.getVertex ().isDetermined ())
-            {
-                v1.getVertex ().setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!v2.getVertex ().isDetermined ())
-            {
-                v2.getVertex ().setStatus (GeoStatus.derived, "triangle known");
-            }
-            if (!v3.getVertex ().isDetermined ())
-            {
-                v3.getVertex ().setStatus (GeoStatus.derived, "triangle known");
-            }
-        }
+        locateCentroid ();
+
+        determineTriangleStatus ();
     }
 
     /**
@@ -722,42 +631,36 @@ public class GeoTriangle extends GeoItem
     /** Compute a triangle angle from a vertex angle. */
     private void angleFromVertex (TriangleAngleVariable angle, GeoVertex v)
     {
-        if (!angle.isDetermined ())
+        // Value is the correct angle
+        final double angleValue = angle.getDoubleValue ();
+        final String angleName = angle.getName ();
+        // Vertex angle may be a reflection
+        final NamedVariable vertexAngle = v.getAngle ();
+        final double vertexValue = vertexAngle.getDoubleValue ();
+        final String vertexName = vertexAngle.getName ();
+        if (abs (vertexValue - angleValue) < epsilon)
         {
-            if (v.isDetermined ())
-            {
-                // Value is the correct angle
-                final double angleValue = angle.getDoubleValue ();
-                final String angleName = angle.getName ();
-                // Vertex angle may be a reflection
-                final NamedVariable vertexAngle = v.getAngle ();
-                final double vertexValue = vertexAngle.getDoubleValue ();
-                final String vertexName = vertexAngle.getName ();
-                if (abs (vertexValue - angleValue) < epsilon)
-                {
-                    angle.setFormula ("Angle from vertex", "%s == %s", angle, vertexAngle);
-                    logger.info ("Angle %s == vertex %s", angleName, vertexName);
-                }
-                else if (vertexValue < 0 && abs (angleValue + vertexValue) < epsilon)
-                {
-                    angle.setFormula ("Angle from -vertex", "%s == -%s", angle, vertexAngle);
-                    logger.info ("Angle %s == -vertex %s", angleName, vertexName);
-                }
-                else if (vertexValue >= 0 && abs (180 - angleValue - vertexValue) < epsilon)
-                {
-                    angle.setFormula ("Angle from 180-vertex", "%s == 180-%s", angle, vertexAngle);
-                    logger.info ("Angle %s == 180-vertex %s", angleName, vertexName);
-                }
-                else if (vertexValue < 0 && abs (180 - angleValue + vertexValue) < epsilon)
-                {
-                    angle.setFormula ("Angle from vertex+180", "%s == %s+180", angle, vertexAngle);
-                    logger.info ("Angle %s == vertex %s + 180", angleName, vertexName);
-                }
-                else
-                {
-                    logger.warn ("Angle %s %.2f does not match vertex %s %.2f", angleName, angleValue, vertexName, vertexValue);
-                }
-            }
+            angle.setFormula ("Angle from vertex", "%s == %s", angle, vertexAngle);
+            logger.info ("Angle %s == vertex %s", angleName, vertexName);
+        }
+        else if (vertexValue < 0 && abs (angleValue + vertexValue) < epsilon)
+        {
+            angle.setFormula ("Angle from -vertex", "%s == -%s", angle, vertexAngle);
+            logger.info ("Angle %s == -vertex %s", angleName, vertexName);
+        }
+        else if (vertexValue >= 0 && abs (180 - angleValue - vertexValue) < epsilon)
+        {
+            angle.setFormula ("Angle from 180-vertex", "%s == 180-%s", angle, vertexAngle);
+            logger.info ("Angle %s == 180-vertex %s", angleName, vertexName);
+        }
+        else if (vertexValue < 0 && abs (180 - angleValue + vertexValue) < epsilon)
+        {
+            angle.setFormula ("Angle from vertex+180", "%s == %s+180", angle, vertexAngle);
+            logger.info ("Angle %s == vertex %s + 180", angleName, vertexName);
+        }
+        else
+        {
+            logger.warn ("Angle %s %.2f does not match vertex %s %.2f", angleName, angleValue, vertexName, vertexValue);
         }
     }
 
@@ -770,42 +673,36 @@ public class GeoTriangle extends GeoItem
      */
     private void vertexFromAngle (TriangleAngleVariable angle, GeoVertex v)
     {
-        if (!v.isDetermined ())
+        // Value is the correct angle
+        final double angleValue = angle.getDoubleValue ();
+        final String angleName = angle.getName ();
+        // Vertex angle may be a reflection
+        final NamedVariable vertexAngle = v.getAngle ();
+        final double vertexValue = vertexAngle.getDoubleValue ();
+        final String vertexName = vertexAngle.getName ();
+        if (vertexValue == angleValue)
         {
-            if (angle.isDetermined ())
-            {
-                // Value is the correct angle
-                final double angleValue = angle.getDoubleValue ();
-                final String angleName = angle.getName ();
-                // Vertex angle may be a reflection
-                final NamedVariable vertexAngle = v.getAngle ();
-                final double vertexValue = vertexAngle.getDoubleValue ();
-                final String vertexName = vertexAngle.getName ();
-                if (vertexValue == angleValue)
-                {
-                    vertexAngle.setFormula ("Vertex from angle", "%s == %s", vertexAngle, angle);
-                    logger.info ("Vertex %s == angle %s", vertexName, angleName);
-                }
-                else if (vertexValue < 0 && vertexValue == -angleValue)
-                {
-                    vertexAngle.setFormula ("Vertex from -angle", "%s == -%s", vertexAngle, angle);
-                    logger.info ("Vertex %s == -angle %s", vertexName, angleName);
-                }
-                else if (vertexValue >= 0 && vertexValue == 180 - angleValue)
-                {
-                    vertexAngle.setFormula ("Vertex from 180-angle", "%s == 180-%s", vertexAngle, angle);
-                    logger.info ("Vertex %s == 180-angle %s", vertexName, angleName);
-                }
-                else if (vertexValue < 0 && vertexValue == angleValue - 180)
-                {
-                    vertexAngle.setFormula ("Vertex from angle-180", "%s == %s-180", vertexAngle, angle);
-                    logger.info ("Vertex %s == angle %s - 180", vertexName, angleName);
-                }
-                else
-                {
-                    logger.warn ("Vertex %s %.2f does not match angle %s %.2f", vertexName, vertexValue, angleName, angleValue);
-                }
-            }
+            vertexAngle.setFormula ("Vertex from angle", "%s == %s", vertexAngle, angle);
+            logger.info ("Vertex %s == angle %s", vertexName, angleName);
+        }
+        else if (vertexValue < 0 && vertexValue == -angleValue)
+        {
+            vertexAngle.setFormula ("Vertex from -angle", "%s == -%s", vertexAngle, angle);
+            logger.info ("Vertex %s == -angle %s", vertexName, angleName);
+        }
+        else if (vertexValue >= 0 && vertexValue == 180 - angleValue)
+        {
+            vertexAngle.setFormula ("Vertex from 180-angle", "%s == 180-%s", vertexAngle, angle);
+            logger.info ("Vertex %s == 180-angle %s", vertexName, angleName);
+        }
+        else if (vertexValue < 0 && vertexValue == angleValue - 180)
+        {
+            vertexAngle.setFormula ("Vertex from angle-180", "%s == %s-180", vertexAngle, angle);
+            logger.info ("Vertex %s == angle %s - 180", vertexName, angleName);
+        }
+        else
+        {
+            logger.warn ("Vertex %s %.2f does not match angle %s %.2f", vertexName, vertexValue, angleName, angleValue);
         }
     }
 
@@ -819,14 +716,11 @@ public class GeoTriangle extends GeoItem
      */
     private void lawOfCosines ()
     {
-        final int count = countSidesDetermined ();
-        if (count == 3)
-        {
-            // Determine all angles
-            deriveVertexByLawOfCosines (v1);
-            deriveVertexByLawOfCosines (v2);
-            deriveVertexByLawOfCosines (v3);
-        }
+        // Determine all angles
+        deriveVertexByLawOfCosines (v1);
+        deriveVertexByLawOfCosines (v2);
+        deriveVertexByLawOfCosines (v3);
+
         applyLawOfCosines (v1);
         applyLawOfCosines (v2);
         applyLawOfCosines (v3);
@@ -891,39 +785,13 @@ public class GeoTriangle extends GeoItem
         final TriangleAngleVariable A = getOppositeAngle (a);
         final TriangleAngleVariable B = getOppositeAngle (b);
         final TriangleAngleVariable C = getOppositeAngle (c);
-        if (!a.isDetermined () && A.isDetermined ())
-        {
-            if (b.isDetermined () && B.isDetermined ())
-            {
-                applyLawOfSines (a, A, b, B);
-            }
-            if (c.isDetermined () && C.isDetermined ())
-            {
-                applyLawOfSines (a, A, c, C);
-            }
-        }
-        if (!b.isDetermined () && B.isDetermined ())
-        {
-            if (a.isDetermined () && A.isDetermined ())
-            {
-                applyLawOfSines (b, B, a, A);
-            }
-            if (c.isDetermined () && C.isDetermined ())
-            {
-                applyLawOfSines (b, B, c, C);
-            }
-        }
-        if (!c.isDetermined () && C.isDetermined ())
-        {
-            if (a.isDetermined () && A.isDetermined ())
-            {
-                applyLawOfSines (c, C, a, A);
-            }
-            if (b.isDetermined () && B.isDetermined ())
-            {
-                applyLawOfSines (c, C, b, B);
-            }
-        }
+        applyLawOfSines (a, A, b, B);
+        applyLawOfSines (a, A, c, C);
+        applyLawOfSines (b, B, a, A);
+        applyLawOfSines (b, B, c, C);
+        applyLawOfSines (c, C, a, A);
+        applyLawOfSines (c, C, b, B);
+
         // We can apply the law of sines to calculate angles also, but sometimes the answer is
         // ambiguous
         // @see https://www.mathsisfun.com/algebra/trig-sine-law.html
@@ -940,10 +808,85 @@ public class GeoTriangle extends GeoItem
      */
     private void applyLawOfSines (NamedVariable a, TriangleAngleVariable A, NamedVariable b, TriangleAngleVariable B)
     {
-        a.setFormula ("law of size",
+        a.setFormula ("law of sines",
                 "%s == Block({angleA=%s, sideB=%s, angleB=%s}, Return((sideB * Sin (angleA * Degree)) / Sin(angleB * Degree)))",
                 a, A, b, B);
-        logger.info ("Calculate %s: %s", a.getName (), a.getInference ().getInstantiation ());
+        logger.info ("Calculate %s", a.getName ());
+    }
+
+    /** Location of centroid */
+    private void locateCentroid ()
+    {
+        final NamedVariable x1 = v1.getVertex ().getX ();
+        final NamedVariable x2 = v2.getVertex ().getX ();
+        final NamedVariable x3 = v3.getVertex ().getX ();
+
+        centroid.getX ().setFormula ("centroid", "%s == (%s + %s + %s) / 3", centroid.getX (), x1, x2, x3);
+
+        final NamedVariable y1 = v1.getVertex ().getY ();
+        final NamedVariable y2 = v2.getVertex ().getY ();
+        final NamedVariable y3 = v3.getVertex ().getY ();
+
+        centroid.getY ().setFormula ("centroid", "%s == (%s + %s + %s) / 3", centroid.getY (), y1, y2, y3);
+    }
+
+    /** Set status (but not formula) of sides and angles. */
+    private void determineTriangleStatus ()
+    {
+        // If all angles and sides are known, the triangle is fully known
+        if (!isDetermined ())
+        {
+            if (l1.isDetermined () && l2.isDetermined () && l3.isDetermined ())
+            {
+                setStatus (GeoStatus.derived, "triangle known");
+            }
+        }
+        if (!isDetermined ())
+        {
+            if (v1.isDetermined () && v2.isDetermined () && v3.isDetermined ())
+            {
+                setStatus (GeoStatus.derived, "triangle known");
+            }
+        }
+        if (isDetermined ())
+        {
+            if (!l1.isDetermined ())
+            {
+                l1.setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!l2.isDetermined ())
+            {
+                l2.setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!l3.isDetermined ())
+            {
+                l3.setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!angle1.isDetermined ())
+            {
+                angle1.setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!angle2.isDetermined ())
+            {
+                angle2.setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!angle3.isDetermined ())
+            {
+                angle3.setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!v1.getVertex ().isDetermined ())
+            {
+                v1.getVertex ().setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!v2.getVertex ().isDetermined ())
+            {
+                v2.getVertex ().setStatus (GeoStatus.derived, "triangle known");
+            }
+            if (!v3.getVertex ().isDetermined ())
+            {
+                v3.getVertex ().setStatus (GeoStatus.derived, "triangle known");
+            }
+        }
     }
 
     public int countSidesDetermined ()

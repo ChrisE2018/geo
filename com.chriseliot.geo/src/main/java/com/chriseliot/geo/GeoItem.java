@@ -53,6 +53,9 @@ public class GeoItem
     /** Is this item expanded in the solution table. */
     private boolean isOpen;
 
+    /** Have inferences been derived since the last GeoPlane change. */
+    private boolean isSolved = false;
+
     /** The current status of this item */
     private GeoStatus status = GeoStatus.unknown;
 
@@ -302,13 +305,12 @@ public class GeoItem
             closed.add (this);
             for (final Inference inference : inferences)
             {
-                if (inference.isDetermined (new HashSet<> (known), new HashSet<> (closed), false))
+                if (inference.isDetermined (known, closed, why))
                 {
                     if (why)
                     {
                         logger.info ("%s is determined by inference %s with %d open terms", this, inference,
                                 inference.getTerms ().length - 1);
-                        inference.isDetermined (known, closed, why);
                     }
                     known.add (this);
                     return true;
@@ -318,13 +320,6 @@ public class GeoItem
         if (why)
         {
             logger.info ("%s is not determined because none of the %d inferences hold", this, inferences.size ());
-            // closed.clear ();
-            closed.add (this);
-            for (final Inference inference : inferences)
-            {
-                logger.info ("Potential inference %s", inference);
-                inference.isDetermined (known, closed, why);
-            }
         }
         return false;
     }
@@ -333,67 +328,6 @@ public class GeoItem
     {
         return isDetermined (true);
     }
-
-    // public boolean whyDeterminedOLD ()
-    // {
-    // if (status.isDetermined ())
-    // {
-    // logger.info ("%s is determined by status %s", this, status);
-    // return true;
-    // }
-    // final Set<GeoItem> known = new HashSet<> ();
-    // final Set<GeoItem> closed = new HashSet<> ();
-    // closed.add (this);
-    // for (final Inference inference : inferences)
-    // {
-    // if (inference.isDetermined (new HashSet<> (known), new HashSet<> (closed)))
-    // {
-    // logger.info ("%s is determined by inference %s with %d open terms", this, inference,
-    // inference.getTerms ().length - 1);
-    // inference.whyDetermined (known, closed);
-    // known.add (this);
-    // return true;
-    // }
-    // }
-    // logger.info ("%s is not determined because none of the %d inferences hold", this,
-    // inferences.size ());
-    // closed.clear ();
-    // closed.add (this);
-    // for (final Inference inference : inferences)
-    // {
-    // logger.info ("Potential inference %s", inference);
-    // inference.whyDetermined (known, closed);
-    // }
-    // return false;
-    // }
-
-    // /** Is this value known directly or indirectly. */
-    // public boolean whyDetermined (Set<GeoItem> known, Set<GeoItem> closed)
-    // {
-    // if (status.isDetermined ())
-    // {
-    // logger.info ("%s is determined by status %s", this, status);
-    // known.add (this);
-    // return true;
-    // }
-    // if (!closed.contains (this))
-    // {
-    // closed.add (this);
-    // for (final Inference inference : inferences)
-    // {
-    // if (inference.isDetermined (new HashSet<> (known), new HashSet<> (closed)))
-    // {
-    // logger.info ("%s is determined by inference %s with %d open terms", this, inference,
-    // inference.getTerms ().length - 1);
-    // inference.whyDetermined (known, closed);
-    // known.add (this);
-    // return true;
-    // }
-    // }
-    // }
-    // logger.info ("%s is not determined", this);
-    // return false;
-    // }
 
     /** Determine the list of items that form the basis for inferring this one is determined. */
     public Set<GeoItem> getSupport ()
@@ -674,6 +608,26 @@ public class GeoItem
         for (final GeoItem child : new ArrayList<> (children))
         {
             child.remove ();
+        }
+    }
+
+    public void resetInferences ()
+    {
+        // inferences.clear ();
+        isSolved = false;
+    }
+
+    public boolean isSolved ()
+    {
+        return isSolved;
+    }
+
+    public void deriveInferences ()
+    {
+        if (!isSolved)
+        {
+            isSolved = true;
+            solve ();
         }
     }
 

@@ -90,6 +90,16 @@ public class Inference
         return names;
     }
 
+    public List<GeoItem> getTermList ()
+    {
+        final List<GeoItem> result = new ArrayList<> ();
+        for (final GeoItem item : terms)
+        {
+            result.add (item);
+        }
+        return result;
+    }
+
     public boolean hasTerm (GeoItem term)
     {
         for (final GeoItem t : terms)
@@ -104,8 +114,6 @@ public class Inference
 
     public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed, boolean why)
     {
-        final Set<GeoItem> savedKnown = new HashSet<> (known);
-        final Set<GeoItem> savedClosed = new HashSet<> (closed);
         for (int i = 1; i < terms.length; i++)
         {
             final GeoItem term = terms[i];
@@ -132,11 +140,7 @@ public class Inference
         if (why)
         {
             logger.info ("%s is determined because %s terms are determined", this, terms.length - 1);
-            for (int i = 1; i < terms.length; i++)
-            {
-                final GeoItem term = terms[i];
-                term.isDetermined (savedKnown, savedClosed, why);
-            }
+            logger.info ("--- determined %s", GeoItem.getNames (getTermList ().subList (1, terms.length)));
         }
         return true;
     }

@@ -204,8 +204,10 @@ public class GeoPlane
             if (item.getStatus () == GeoStatus.derived)
             {
                 item.setStatusUnknown ();
+                item.resetInferences ();
             }
         }
+        setDirty ();
         solve ();
         fireChangeListeners (this);
     }
@@ -634,6 +636,10 @@ public class GeoPlane
     public void setDirty ()
     {
         dirty = true;
+        for (final GeoItem item : items)
+        {
+            item.resetInferences ();
+        }
     }
 
     public void solve ()
@@ -643,7 +649,7 @@ public class GeoPlane
             dirty = false;
             for (final GeoItem item : items)
             {
-                item.solve ();
+                item.deriveInferences ();
             }
         }
     }

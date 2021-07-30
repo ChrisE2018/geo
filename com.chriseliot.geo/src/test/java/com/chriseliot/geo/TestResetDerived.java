@@ -219,32 +219,52 @@ class TestResetDerived
             assertTrue (my.whyDetermined ());
         }
         logger.info ("*** my is determined");
-
+        for (final GeoItem item : plane.getItems ())
+        {
+            if (!item.isSolved ())
+            {
+                logger.info ("%s isSolved %s", item.getName (), item.isSolved ());
+            }
+        }
         final Set<GeoItem> undetermined = new HashSet<> ();
         for (final GeoItem item : plane.getItems ())
         {
             if (!(item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3))
             {
                 final boolean determined = item.isDetermined ();
-                assertTrue (determined); // Stop here for now
+                if (determined)
+                {
+                    item.setStatus (GeoStatus.derived, "determined");
+                }
                 if (!determined)
                 {
-                    logger.info ("Item %s should be determined: %s", item.getName (), determined);
+                    logger.info ("Item %s should be determined: %s isSolved: %s", item.getName (), determined, item.isSolved ());
                     undetermined.add (item);
-                    for (final Inference inference : item.getInferences ())
-                    {
-                        logger.info ("**** %s inference %s", item.getName (), inference);
-                    }
+                    // for (final Inference inference : item.getInferences ())
+                    // {
+                    // final Set<GeoItem> known = new HashSet<> ();
+                    // final Set<GeoItem> closed = new HashSet<> ();
+                    // logger.info ("**** %s inference %s: %s", item.getName (), inference,
+                    // inference.isDetermined (known, closed, false) ? "isDetermined" : "is not
+                    // determined");
+                    // }
                 }
             }
         }
 
-        assertTrue (undetermined.isEmpty ());
+        // assertTrue (undetermined.isEmpty ());
 
         for (final GeoItem item : undetermined)
         {
             logger.info ("****************************");
             logger.info ("Checking why %s is not determined as expected", item.getName ());
+            for (final Inference inference : item.getInferences ())
+            {
+                final Set<GeoItem> known = new HashSet<> ();
+                final Set<GeoItem> closed = new HashSet<> ();
+                logger.info ("**** %s inference %s: %s", item.getName (), inference,
+                        inference.isDetermined (known, closed, false) ? "isDetermined" : "is not determined");
+            }
             assertTrue (item.whyDetermined ());
             // assertEquals (GeoStatus.derived, item.getStatus ());
             logger.info ("%s isDetermined as expected", item.getName ());

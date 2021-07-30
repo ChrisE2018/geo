@@ -14,8 +14,8 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<log4j.version>2.13.0</log4j.version>
-		<junit.version>4.11</junit.version>
 		<junit.jupiter.version>5.7.0</junit.jupiter.version>
+		<junit.platform.version>1.7.2</junit.platform.version>
 		<matheclipse.version>2.0.0-SNAPSHOT</matheclipse.version>
 		<opencsv.version>4.1</opencsv.version>
 	</properties>
@@ -40,10 +40,17 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${junit.jupiter.version}</version>
 		</dependency>
+		<!-- junit TestListener -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
 			<version>${junit.jupiter.version}</version>
+		</dependency>
+		<!-- junit TestListener -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-reporting</artifactId>
+			<version>${junit.platform.version}</version>
 		</dependency>
 
 		<dependency>
@@ -70,6 +77,11 @@
 			<version>${opencsv.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.chriseliot.service</groupId>
+			<artifactId>com.chriseliot.service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

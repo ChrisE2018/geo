@@ -48,11 +48,9 @@ class TestResetDerived
         plane.findTriangles ();
         t = plane.getTriangle (v1, v2, v3);
         assertNotNull (t);
-        t.addStatusChangeListener (new TraceStatusChangeListener ());
         assertFalse (line1.isDetermined ());
         assertFalse (line2.isDetermined ());
         assertFalse (line3.isDetermined ());
-        line1.addStatusChangeListener (new TraceStatusChangeListener ());
         assertFalse (t.isDetermined ());
         p1 = v1.getVertex ();
         p2 = v2.getVertex ();
@@ -158,6 +156,9 @@ class TestResetDerived
     @Test
     public void testResetDerived2 ()
     {
+        t.addStatusChangeListener (new TraceStatusChangeListener ());
+        line1.addStatusChangeListener (new TraceStatusChangeListener ());
+
         logger.info ("Making point %s known", p1.getName ());
         p1.setGivenStatus (GeoStatus.known);
         logger.info ("Changed %s.status to known", p1.getName ());

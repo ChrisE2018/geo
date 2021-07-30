@@ -636,20 +636,37 @@ public class GeoPlane
     public void setDirty ()
     {
         dirty = true;
+    }
+
+    public void unsolve ()
+    {
         for (final GeoItem item : items)
         {
+            item.getInferences ().clear ();
             item.resetInferences ();
         }
+        setDirty ();
     }
 
     public void solve ()
     {
-        while (dirty)
+        if (dirty)
         {
-            dirty = false;
             for (final GeoItem item : items)
             {
-                item.deriveInferences ();
+                item.resetInferences ();
+            }
+            while (dirty)
+            {
+                dirty = false;
+                for (final GeoItem item : items)
+                {
+                    item.deriveInferences ();
+                }
+            }
+            for (final GeoItem item : items)
+            {
+                item.isDetermined ();
             }
         }
     }

@@ -111,9 +111,12 @@ public class GeoItem
     public static List<String> getNames (Collection<GeoItem> items)
     {
         final List<String> result = new ArrayList<> ();
-        for (final GeoItem item : items)
+        if (items != null)
         {
-            result.add (item.getName ());
+            for (final GeoItem item : items)
+            {
+                result.add (item.getName ());
+            }
         }
         return result;
     }
@@ -209,13 +212,6 @@ public class GeoItem
     }
 
     /** Set the current status of this item. */
-    public void setStatusX (GeoStatus status)
-    {
-        logger.info ("Unjustified status change %s", name);
-        setStatus (status, "na");
-    }
-
-    /** Set the current status of this item. */
     public void setStatus (GeoStatus status, String reason)
     {
         if (this.status != status)
@@ -261,7 +257,16 @@ public class GeoItem
     /** Is this value known directly or indirectly. */
     public boolean isDetermined ()
     {
-        return isDetermined (false);
+        if (status.isDetermined ())
+        {
+            return true;
+        }
+        if (isDetermined (false))
+        {
+            status = GeoStatus.derived;
+            return true;
+        }
+        return false;
     }
 
     /** Is this value known directly or indirectly. */
@@ -280,7 +285,7 @@ public class GeoItem
         closed.add (this);
         for (final Inference inference : inferences)
         {
-            if (inference.isDetermined (known, closed, why))
+            if (inference.isDetermined (known, closed, why, 0))
             {
                 return true;
             }
@@ -289,7 +294,7 @@ public class GeoItem
     }
 
     /** Is this value known directly or indirectly. */
-    public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed, boolean why)
+    public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed, boolean why, int level)
     {
         if (known.contains (this))
         {
@@ -305,11 +310,11 @@ public class GeoItem
             closed.add (this);
             for (final Inference inference : inferences)
             {
-                if (inference.isDetermined (known, closed, why))
+                if (inference.isDetermined (known, closed, why, level + 1))
                 {
                     if (why)
                     {
-                        logger.info ("%s is determined by inference %s with %d open terms", this, inference,
+                        logger.info ("%s %s is determined by inference %s with %d open terms", indent (level), this, inference,
                                 inference.getTerms ().length - 1);
                     }
                     known.add (this);
@@ -319,9 +324,20 @@ public class GeoItem
         }
         if (why)
         {
-            logger.info ("%s is not determined because none of the %d inferences hold", this, inferences.size ());
+            logger.info ("%s %s is not determined because none of the %d inferences hold", indent (level), this,
+                    inferences.size ());
         }
         return false;
+    }
+
+    public String indent (int level)
+    {
+        final StringBuilder builder = new StringBuilder ();
+        for (int i = 0; i < level; i++)
+        {
+            builder.append ("|  ");
+        }
+        return builder.toString ();
     }
 
     public boolean whyDetermined ()
@@ -334,7 +350,7 @@ public class GeoItem
     {
         final Set<GeoItem> known = new HashSet<> ();
         final Set<GeoItem> closed = new HashSet<> ();
-        if (isDetermined (known, closed, false))
+        if (isDetermined (known, closed, false, 0))
         {
             return known;
         }
@@ -349,7 +365,7 @@ public class GeoItem
             final Set<GeoItem> known = new HashSet<> ();
             final Set<GeoItem> closed = new HashSet<> ();
             closed.add (this);
-            if (inference.isDetermined (known, closed, false))
+            if (inference.isDetermined (known, closed, false, 0))
             {
                 return inference;
             }
@@ -657,7 +673,17 @@ public class GeoItem
     public void popup (Map<String, Consumer<GeoItem>> result)
     {
         result.put ("known", item -> item.setGivenStatus (GeoStatus.known));
-        result.put ("unknown", item -> item.setGivenStatus (GeoStatus.unknown));
+        result.put ("unknown", new Consumer<GeoItem> ()
+        {
+            @Override
+            public void accept (GeoItem item)
+            {
+                setGivenStatus (GeoStatus.unknown);
+                plane.setDirty ();
+                plane.solve ();
+                plane.fireChangeListeners (this);
+            }
+        });
     }
 
     /** Convert to an element for saving to a file. */

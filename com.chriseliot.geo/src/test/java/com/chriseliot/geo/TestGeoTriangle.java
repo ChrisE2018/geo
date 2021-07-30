@@ -8,9 +8,10 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
+import org.apache.logging.log4j.*;
 import org.junit.jupiter.api.*;
 
 import com.chriseliot.util.*;
@@ -18,6 +19,7 @@ import com.chriseliot.util.*;
 @Tag ("Triangle")
 public class TestGeoTriangle
 {
+    private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
     private final TestSupport ts = new TestSupport ();
 
     @Test
@@ -466,6 +468,111 @@ public class TestGeoTriangle
         final NamedVariable opposite = t.getOppositeAngle (neededSide);
         assertEquals (angle2, opposite);
         angle2.setGivenStatus (GeoStatus.known);
+    }
+
+    @Test
+    public void testAllDetermined1 ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 55));
+        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new Point2D.Double (50, 55));
+        assertNotNull (line1);
+        assertNotNull (line2);
+        assertNotNull (line3);
+        final GeoVertex v1 = plane.getVertex (new Point2D.Double (10, 20));
+        final GeoVertex v2 = plane.getVertex (new Point2D.Double (50, 55));
+        final GeoVertex v3 = plane.getVertex (new Point2D.Double (30, 40));
+
+        final GeoTriangle t = plane.getTriangle (v1, v2, v3);
+        assertNotNull (t.toString ());
+        v1.getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        v1.getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        v2.getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        v2.getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        v3.getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        v3.getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        assertTrue (t.isDetermined ());
+
+        for (final GeoItem item : plane.getItems ())
+        {
+            assertTrue (item.isDetermined ());
+        }
+    }
+
+    @Test
+    public void testAllDetermined2 ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 55));
+        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new Point2D.Double (50, 55));
+        assertNotNull (line1);
+        assertNotNull (line2);
+        assertNotNull (line3);
+        final GeoVertex v1 = plane.getVertex (new Point2D.Double (10, 20));
+        final GeoVertex v2 = plane.getVertex (new Point2D.Double (50, 55));
+        final GeoVertex v3 = plane.getVertex (new Point2D.Double (30, 40));
+
+        final GeoTriangle t = plane.getTriangle (v1, v2, v3);
+        assertNotNull (t.toString ());
+        t.getL1 ().setGivenStatus (GeoStatus.known);
+        t.getL2 ().setGivenStatus (GeoStatus.known);
+        t.getL3 ().setGivenStatus (GeoStatus.known);
+        t.getV3 ().getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        t.getV3 ().getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        assertTrue (t.isDetermined ());
+
+        for (final GeoItem item : plane.getItems ())
+        {
+            assertTrue (item.isDetermined ());
+        }
+    }
+
+    @Test
+    public void testAllDeterminedExplain ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 55));
+        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new Point2D.Double (50, 55));
+        assertNotNull (line1);
+        assertNotNull (line2);
+        assertNotNull (line3);
+        final GeoVertex v1 = plane.getVertex (new Point2D.Double (10, 20));
+        final GeoVertex v2 = plane.getVertex (new Point2D.Double (50, 55));
+        final GeoVertex v3 = plane.getVertex (new Point2D.Double (30, 40));
+
+        final GeoTriangle t = plane.getTriangle (v1, v2, v3);
+        assertNotNull (t.toString ());
+        v1.getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        v1.getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        v2.getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        v2.getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        v3.getVertex ().getX ().setGivenStatus (GeoStatus.known);
+        v3.getVertex ().getY ().setGivenStatus (GeoStatus.known);
+        assertTrue (t.isDetermined ());
+        logger.info ("**************************************");
+        logger.info ("Checking that all items are determined");
+        final List<GeoItem> problems = new ArrayList<> ();
+        for (final GeoItem item : plane.getItems ())
+        {
+            if (!item.isDetermined ())
+            {
+                problems.add (item);
+                logger.info ("%s is not determined as expected", item.getName ());
+            }
+        }
+        if (!problems.isEmpty ())
+        {
+            logger.info ("**************************************");
+            for (final GeoItem item : problems)
+            {
+                logger.info ("Explaining why %s is not determined as expected", item.getName ());
+                logger.info ("%s support %s", item.getName (), GeoItem.getNames (item.getSupport ()));
+                assertTrue (item.whyDetermined ());
+            }
+        }
     }
 
     @Test

@@ -13,7 +13,7 @@ import javax.swing.event.*;
 
 import org.apache.logging.log4j.*;
 
-import com.chriseliot.util.Labels;
+import com.chriseliot.util.*;
 
 /**
  * Container for geometry items. Nothing accessible from this class should be a GUI element so a
@@ -100,6 +100,7 @@ public class GeoPlane
     /** Clear the geometry plane. */
     public void clear ()
     {
+        Namer.reset ();
         items.clear ();
         bindings.clear ();
     }
@@ -203,8 +204,10 @@ public class GeoPlane
             if (item.getStatus () == GeoStatus.derived)
             {
                 item.setStatusUnknown ();
+                item.resetInferences ();
             }
         }
+        setDirty ();
         solve ();
         fireChangeListeners (this);
     }
@@ -635,14 +638,35 @@ public class GeoPlane
         dirty = true;
     }
 
+    public void unsolve ()
+    {
+        for (final GeoItem item : items)
+        {
+            item.getInferences ().clear ();
+            item.resetInferences ();
+        }
+        setDirty ();
+    }
+
     public void solve ()
     {
-        while (dirty)
+        if (dirty)
         {
-            dirty = false;
             for (final GeoItem item : items)
             {
-                item.solve ();
+                item.resetInferences ();
+            }
+            while (dirty)
+            {
+                dirty = false;
+                for (final GeoItem item : items)
+                {
+                    item.deriveInferences ();
+                }
+            }
+            for (final GeoItem item : items)
+            {
+                item.isDetermined ();
             }
         }
     }

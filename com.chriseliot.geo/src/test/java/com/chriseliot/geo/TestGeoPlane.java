@@ -13,7 +13,7 @@ import java.util.List;
 import javax.swing.SwingConstants;
 import javax.swing.event.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import com.chriseliot.util.Namer;
 
@@ -284,8 +284,9 @@ public class TestGeoPlane
         plane.solve ();
     }
 
+    @Tag ("Triangle")
     @Test
-    public void testResetDerived ()
+    public void testBasicStatus ()
     {
         final GeoPlane plane = new GeoPlane ();
         final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
@@ -313,61 +314,6 @@ public class TestGeoPlane
         assertEquals (GeoStatus.unknown, p2.getStatus ());
         assertEquals (GeoStatus.unknown, p3.getStatus ());
         assertEquals (GeoStatus.unknown, t.getStatus ());
-
-        // Two known vertices are enough to solve the triangle
-        // But not if it is just their positions
-        p2.setGivenStatus (GeoStatus.known);
-        assertEquals (GeoStatus.known, p1.getStatus ());
-        assertEquals (GeoStatus.known, p2.getStatus ());
-        assertEquals (GeoStatus.unknown, p3.getStatus ());
-        assertEquals (GeoStatus.unknown, t.getStatus ());
-        assertEquals (GeoStatus.unknown, line1.getStatus ());
-        assertEquals (GeoStatus.derived, line2.getStatus ());
-        assertEquals (GeoStatus.unknown, line3.getStatus ());
-        assertEquals (GeoStatus.unknown, t.getStatus ());
-
-        // Make triangle be known or derived
-        p3.setGivenStatus (GeoStatus.known);
-
-        assertEquals (GeoStatus.known, p1.getStatus ());
-        assertEquals (GeoStatus.known, p2.getStatus ());
-        assertEquals (GeoStatus.known, p3.getStatus ());
-        assertEquals (GeoStatus.derived, line1.getStatus ());
-        assertEquals (GeoStatus.derived, line2.getStatus ());
-        assertEquals (GeoStatus.derived, line3.getStatus ());
-        assertEquals (GeoStatus.derived, t.getStatus ());
-
-        // Make everything be known or derived
-        v1.setGivenStatus (GeoStatus.known);
-        v2.setGivenStatus (GeoStatus.known);
-        v3.setGivenStatus (GeoStatus.known);
-        for (final GeoItem item : plane.getItems ())
-        {
-            if (item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3)
-            {
-                assertEquals (GeoStatus.known, item.getStatus ());
-            }
-            else
-            {
-                assertEquals (GeoStatus.derived, item.getStatus ());
-            }
-        }
-
-        // Retract assertions
-        v1.setStatusUnknown ();
-        v2.setStatusUnknown ();
-        v3.setStatusUnknown ();
-        p1.setStatusUnknown ();
-        p2.setStatusUnknown ();
-        plane.resetDerived ();
-
-        assertEquals (GeoStatus.unknown, p1.getStatus ());
-        assertEquals (GeoStatus.unknown, p2.getStatus ());
-        assertEquals (GeoStatus.known, p3.getStatus ());
-        assertEquals (GeoStatus.unknown, line1.getStatus ());
-        assertEquals (GeoStatus.unknown, line2.getStatus ());
-        assertEquals (GeoStatus.unknown, line3.getStatus ());
-        assertEquals (GeoStatus.unknown, t.getStatus ());
     }
 
     @Test
@@ -388,6 +334,7 @@ public class TestGeoPlane
         assertNotNull (plane.getLabels ());
     }
 
+    @Tag ("Triangle")
     @Test
     public void testPaint2 () throws IOException
     {
@@ -417,6 +364,7 @@ public class TestGeoPlane
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         v2.getVertex ().setGivenStatus (GeoStatus.known);
         v3.getVertex ().setGivenStatus (GeoStatus.known);
+        plane.solve ();
         plane.paintItems (g, categories);
         ts.compare (image, ts.getTestPngFile (this, "master_p2"));
 
@@ -425,4 +373,118 @@ public class TestGeoPlane
         ts.compare (image, temp);
         temp.delete ();
     }
+
+    // Replaced by class TestResetDerived
+    // @Tag ("Triangle")
+    // @Test
+    // public void testResetDerived ()
+    // {
+    // final GeoPlane plane = new GeoPlane ();
+    // final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new
+    // Point2D.Double (30, 40));
+    // final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new
+    // Point2D.Double (50, 55));
+    // final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new
+    // Point2D.Double (50, 55));
+    //
+    // // Vertices should be named for the opposite side, but here they are not
+    // final GeoVertex v1 = line1.getVertex (line2);
+    // final GeoVertex v2 = line2.getVertex (line3);
+    // final GeoVertex v3 = line3.getVertex (line1);
+    // plane.findTriangles ();
+    // final GeoTriangle t = plane.getTriangle (v1, v2, v3);
+    // assertNotNull (t);
+    // t.addStatusChangeListener (new TraceStatusChangeListener ());
+    // assertFalse (line1.isDetermined ());
+    // assertFalse (line2.isDetermined ());
+    // assertFalse (line3.isDetermined ());
+    // line1.addStatusChangeListener (new TraceStatusChangeListener ());
+    // assertFalse (t.isDetermined ());
+    // final NamedPoint p1 = v1.getVertex ();
+    // final NamedPoint p2 = v2.getVertex ();
+    // final NamedPoint p3 = v3.getVertex ();
+    //
+    // // Make sure points are as expected
+    // assertEquals (new Point2D.Double (10, 20), p1.getPosition ());
+    // assertEquals (new Point2D.Double (50, 55), p2.getPosition ());
+    // assertEquals (new Point2D.Double (30, 40), p3.getPosition ());
+    //
+    // // Two known vertices are enough to solve the triangle
+    // // But not if it is just their positions
+    // assertFalse (line1.isDetermined ());
+    // assertFalse (line2.isDetermined ());
+    // assertFalse (line3.isDetermined ());
+    // logger.info ("Changing %s.status to known", p1.getName ());
+    // p1.setGivenStatus (GeoStatus.known);
+    // logger.info ("Changed %s.status to known", p1.getName ());
+    // assertFalse (line1.isDetermined ());
+    // assertFalse (line2.isDetermined ());
+    // assertFalse (line3.isDetermined ());
+    // assertTrue (p1.isDetermined ());
+    // assertEquals (line2.getFrom ().getPosition (), p1.getPosition ());
+    // assertTrue (line2.getFrom ().isDetermined ());
+    //
+    // assertFalse (t.isDetermined ());
+    //
+    // p2.setGivenStatus (GeoStatus.known);
+    // assertTrue (p2.isDetermined ());
+    // assertEquals (line2.getTo ().getPosition (), p2.getPosition ());
+    // assertTrue (line2.getTo ().isDetermined ());
+    //
+    // assertFalse (t.isDetermined ());
+    //
+    // assertEquals (GeoStatus.known, p1.getStatus ());
+    // assertEquals (GeoStatus.known, p2.getStatus ());
+    // assertEquals (GeoStatus.unknown, p3.getStatus ());
+    // assertEquals (GeoStatus.unknown, t.getStatus ());
+    // assertEquals (GeoStatus.unknown, line1.getStatus ());
+    // line2.solve ();
+    // assertTrue (line2.isDetermined ());
+    // assertEquals (GeoStatus.derived, line2.getStatus ());
+    // assertEquals (GeoStatus.unknown, line3.getStatus ());
+    // assertEquals (GeoStatus.unknown, t.getStatus ());
+    //
+    // // Make triangle be known or derived
+    // p3.setGivenStatus (GeoStatus.known);
+    //
+    // assertEquals (GeoStatus.known, p1.getStatus ());
+    // assertEquals (GeoStatus.known, p2.getStatus ());
+    // assertEquals (GeoStatus.known, p3.getStatus ());
+    // assertEquals (GeoStatus.derived, line1.getStatus ());
+    // assertEquals (GeoStatus.derived, line2.getStatus ());
+    // assertEquals (GeoStatus.derived, line3.getStatus ());
+    // assertEquals (GeoStatus.derived, t.getStatus ());
+    //
+    // // Make everything be known or derived
+    // v1.setGivenStatus (GeoStatus.known);
+    // v2.setGivenStatus (GeoStatus.known);
+    // v3.setGivenStatus (GeoStatus.known);
+    // for (final GeoItem item : plane.getItems ())
+    // {
+    // if (item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3)
+    // {
+    // assertEquals (GeoStatus.known, item.getStatus ());
+    // }
+    // else
+    // {
+    // assertEquals (GeoStatus.derived, item.getStatus ());
+    // }
+    // }
+    //
+    // // Retract assertions
+    // v1.setStatusUnknown ();
+    // v2.setStatusUnknown ();
+    // v3.setStatusUnknown ();
+    // p1.setStatusUnknown ();
+    // p2.setStatusUnknown ();
+    // plane.resetDerived ();
+    //
+    // assertEquals (GeoStatus.unknown, p1.getStatus ());
+    // assertEquals (GeoStatus.unknown, p2.getStatus ());
+    // assertEquals (GeoStatus.known, p3.getStatus ());
+    // assertEquals (GeoStatus.unknown, line1.getStatus ());
+    // assertEquals (GeoStatus.unknown, line2.getStatus ());
+    // assertEquals (GeoStatus.unknown, line3.getStatus ());
+    // assertEquals (GeoStatus.unknown, t.getStatus ());
+    // }
 }

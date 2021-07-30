@@ -129,6 +129,7 @@ public class NamedVariable extends GeoItem
                 }
             }
         }
+        setFormula ("fixed value", "%s == " + getDoubleValue (), this, this);
     }
 
     /** Location on screen to draw label for this variable. */
@@ -290,14 +291,6 @@ public class NamedVariable extends GeoItem
         }
         buffer.append (" ");
         buffer.append (getStatus ());
-        final String reason = getReason ();
-        if (reason != null)
-        {
-            buffer.append (" ");
-            buffer.append ("'");
-            buffer.append (getReason ());
-            buffer.append ("'");
-        }
         final Inference inference = getInference ();
         if (inference != null)
         {

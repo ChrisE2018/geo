@@ -197,6 +197,7 @@ public class NamedPoint extends GeoItem
     @Override
     public void solve ()
     {
+<<<<<<< HEAD
         if (isDetermined ())
         {
             if (!x.isDetermined ())
@@ -217,28 +218,20 @@ public class NamedPoint extends GeoItem
                 setFormula ("definition of point", "%s == {%s, %s}", this, x, y);
             }
         }
+=======
+        setFormula ("aggregate", "%s == {%s, %s}", this, x, y);
+        x.setFormula ("fixed value", "%s == " + x.getDoubleValue (), x, this);
+        y.setFormula ("fixed value", "%s == " + y.getDoubleValue (), y, this);
+>>>>>>> refs/heads/task_248-Save_all_symbolic_for
     }
 
     /** If two points are at the same screen position, make them equivalent. */
     public void equivalent (NamedPoint p)
     {
-        if (p.getX ().isDetermined () && !getX ().isDetermined ())
-        {
-            getX ().setFormula ("equivalent pont x", "%s == %s", getX (), p.getX ());
-        }
-        if (p.getY ().isDetermined () && !getY ().isDetermined ())
-        {
-            getY ().setFormula ("equivalent pont y", "%s == %s", getY (), p.getY ());
-        }
-
-        if (!p.getX ().isDetermined () && getX ().isDetermined ())
-        {
-            p.getX ().setFormula ("equivalent pont x", "%s == %s", p.getX (), getX ());
-        }
-        if (!p.getY ().isDetermined () && getY ().isDetermined ())
-        {
-            p.getY ().setFormula ("equivalent pont y", "%s == %s", p.getY (), getY ());
-        }
+        x.setFormula ("equivalent point x", "%s == %s", x, p.x);
+        y.setFormula ("equivalent point y", "%s == %s", y, p.y);
+        p.x.setFormula ("equivalent point x", "%s == %s", p.x, x);
+        p.y.setFormula ("equivalent point y", "%s == %s", p.y, y);
     }
 
     /**
@@ -308,6 +301,7 @@ public class NamedPoint extends GeoItem
         buffer.append (getParent ().getClass ().getSimpleName ());
         final Point2D.Double pos = getPosition ();
         if (pos != null)
+<<<<<<< HEAD
         {
             buffer.append (" ");
             buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
@@ -316,12 +310,14 @@ public class NamedPoint extends GeoItem
         buffer.append (getStatus ());
         final String reason = getReason ();
         if (reason != null)
+=======
+>>>>>>> refs/heads/task_248-Save_all_symbolic_for
         {
             buffer.append (" ");
-            buffer.append ("'");
-            buffer.append (getReason ());
-            buffer.append ("'");
+            buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
         }
+        buffer.append (" ");
+        buffer.append (getStatus ());
         buffer.append (">");
         return buffer.toString ();
     }

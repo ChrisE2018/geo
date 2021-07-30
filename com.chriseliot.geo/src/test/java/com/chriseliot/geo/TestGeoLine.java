@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.matheclipse.core.eval.ExprEvaluator;
-import org.matheclipse.core.interfaces.IExpr;
+impo
+import org.junit.jupiter.params.provider.CsvSource;
+rt org.matheclipse.core.interfaces.IExpr;
 import org.w3c.dom.*;
 
 import com.chriseliot.util.*;
@@ -455,19 +457,25 @@ public class TestGeoLine
         final Inference inference = mx.getInference ();
         assertNotNull (inference);
         final String formula = inference.getInstantiation ();
-        final String[] terms = inference.getTermNames ();
+        final GeoItem[] terms = inference.getTerms ();
 
         final ExprEvaluator eval = new ExprEvaluator ();
         for (int i = 1; i < terms.length; i++)
         {
-            final String var = terms[i];
-            System.out.printf ("%s = %s\n", var, i);
-            eval.defineVariable (var, i);
+            final NamedVariable term = (NamedVariable)terms[i];
+            final String var = term.getName ();
+            // System.out.printf ("%s = %s = %.3f\n", var, i, term.getDoubleValue ());
+            eval.defineVariable (var, term.getDoubleValue ());
         }
-        assertEquals ("l01$M$x == l01$A$x + (l01$dx / 2)", formula);
+        assertEquals ("l01$M$x == (l01$A$x + l01$B$x) / 2", formula);
         final IExpr expr = eval.parse (formula);
+        // System.out.printf ("Expr %s\n", expr);
+        // System.out.printf ("Expr 1 %s\n", expr.getAt (1));
+        // System.out.printf ("Expr 2 %s\n", expr.getAt (2));
+        // System.out.printf ("l01$A$x %s\n", eval.evalf ("l01$A$x"));
+        // System.out.printf ("l01$B$x %s\n", eval.evalf ("l01$B$x"));
         final IExpr f = expr.getAt (2);
-        assertEquals (2.0, eval.evalf (f), TestSupport.epsilon);
+        assertEquals (20.0, eval.evalf (f), TestSupport.epsilon);
     }
 
     /** Check all child values. */
@@ -540,6 +548,18 @@ public class TestGeoLine
         test.getFrom ().getX ().setGivenStatus (GeoStatus.known);
         test.getMidpoint ().getX ().setGivenStatus (GeoStatus.known);
         test.getMidpoint ().getY ().setGivenStatus (GeoStatus.known);
+        assertTrue (test.getMidpoint ().isDetermined ());
+        assertTrue (test.getFrom ().isDetermined ());
+        // logger.info ("why B.x support: %s", GeoItem.getNames (test.getTo ().getX ().getSupport
+        // ()));
+        // assertTrue (test.getTo ().getX ().whyDetermined ());
+        // logger.info ("why B.y support: %s", GeoItem.getNames (test.getTo ().getX ().getSupport
+        // ()));
+        // assertTrue (test.getTo ().getY ().whyDetermined ());
+        // logger.info ("why %s", test.getName ());
+        // assertTrue (test.getTo ().whyDetermined ());
+        // test.whyDetermined ();
+        assertTrue (test.getTo ().isDetermined ());
         assertTrue (test.isDetermined ());
         final String trace = null; // "testSolve7"
         checkLineVariables (test, trace);
@@ -554,6 +574,10 @@ public class TestGeoLine
         test.getTo ().getX ().setGivenStatus (GeoStatus.known);
         test.getMidpoint ().getX ().setGivenStatus (GeoStatus.known);
         test.getMidpoint ().getY ().setGivenStatus (GeoStatus.known);
+        assertTrue (test.getFrom ().getX ().isDetermined ());
+        assertTrue (test.getFrom ().getY ().isDetermined ());
+        assertTrue (test.getFrom ().isDetermined ());
+        assertTrue (test.isDetermined ());
         assertTrue (test.isDetermined ());
         final String trace = null; // "testSolve8"
         checkLineVariables (test, trace);
@@ -691,8 +715,723 @@ public class TestGeoLine
      * @param expected
      */
     public void testCombination (int i, boolean expected)
+    @Test
+    public void testDebugCombination ()
     {
-        final GeoPlane plane = new GeoPlane ();
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+               
+        }
+        test.solve ();
+        assertEquals (expected, test.isDetermined ());
+        if (test.isDetermined ())
+        {
+            checkLineVariables (test);
+     
+        }
+        test.solve ();
+        assertEquals (expected, test.isDetermined ());
+        if (test.isDetermined ())
+        {
+            checkLineVariables (test);
+            for (final GeoItem item : plane.getItems ())
+       for (final GeoItem item : plane.getItems ())
+  "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    @Test
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    @Test
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    @Test
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    @Test
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String 
+    @Test
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    {
+        final GeoPlane plane = new GeoPlane ()
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,fa
+        }
+        test.solve ();
+        assertEquals (expected, test.isDetermined ());
+        if (test.isDetermined ())
+        {
+            checkLineVariables (test);
+            for (final GeoItem item : plane.getItems ())
+lse", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    p
+    public void testDebugCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (27, true);
+    }
+
+    @Test
+    public void testFirstNotDerivedCombination ()
+    {
+        // Debug this specific combination first
+        testCombination (26, false);
+    }
+
+    // @ParameterizedTest
+    @CsvSource ({"0,false", "1,false", "2,false", "3,false", "4,false", "5,false", "6,false", "7,false", "8,false", "9,false",
+                 "10,false", "11,false", "12,false", "13,false", "14,false", "15,true", "16,false", "17,false", "18,false",
+                 "19,false", "20,false", "21,false", "22,false", "23,false", "24,false", "25,false", "26,false", "27,true",
+                 "28,false", "29,false", "30,true", "31,true", "32,false", "33,false", "34,false", "35,false", "36,false",
+                 "37,false", "38,false", "39,true", "40,false", "41,false", "42,false", "43,false", "44,false", "45,true",
+                 "46,false", "47,true", "48,false", "49,false", "50,false", "51,true", "52,false", "53,false", "54,true",
+                 "55,true", "56,false", "57,true", "58,false", "59,true", "60,true", "61,true", "62,true", "63,true", "64,false",
+                 "65,false", "66,false", "67,false", "68,false", "69,false", "70,false", "71,true", "72,false", "73,false",
+                 "74,false", "75,true", "76,false", "77,true", "78,true", "79,true", "80,false", "81,false", "82,false",
+                 "83,true", "84,false", "85,false", "86,true", "87,true", "88,false", "89,true", "90,false", "91,true", "92,true",
+                 "93,true", "94,true", "95,true", "96,false", "97,false", "98,false", "99,true", "100,false", "101,false",
+                 "102,true", "103,true", "104,false", "105,true", "106,false", "107,true", "108,true", "109,true", "110,true",
+                 "111,true", "112,false", "113,false", "114,false", "115,true", "116,false", "117,false", "118,true", "119,true",
+                 "120,false", "121,true", "122,false", "123,true", "124,true", "125,true", "126,true", "127,true", "128,false",
+                 "129,false", "130,false", "131,false", "132,false", "133,false", "134,false", "135,true", "136,false",
+                 "137,false", "138,false", "139,true", "140,false", "141,true", "142,true", "143,true", "144,false", "145,false",
+                 "146,false", "147,true", "148,false", "149,false", "150,true", "151,true", "152,false", "153,true", "154,false",
+                 "155,true", "156,true", "157,true", "158,true", "159,true", "160,false", "161,false", "162,false", "163,true",
+                 "164,false", "165,false", "166,true", "167,true", "168,false", "169,true", "170,false", "171,true", "172,true",
+                 "173,true", "174,true", "175,true", "176,false", "177,false", "178,false", "179,true", "180,false", "181,false",
+                 "182,true", "183,true", "184,false", "185,true", "186,false", "187,true", "188,true", "189,true", "190,true",
+                 "191,true", "192,false", "193,false", "194,false", "195,true", "196,false", "197,false", "198,true", "199,true",
+                 "200,false", "201,true", "202,false", "203,true", "204,true", "205,true", "206,true", "207,true", "208,false",
+                 "209,false", "210,false", "211,true", "212,false", "213,false", "214,true", "215,true", "216,false", "217,true",
+                 "218,false", "219,true", "220,true", "221,true", "222,true", "223,true", "224,false", "225,false", "226,false",
+                 "227,true", "228,false", "229,false", "230,true", "231,true", "232,false", "233,true", "234,false", "235,true",
+                 "236,true", "237,true", "238,true", "239,true", "240,false", "241,false", "242,false", "243,true", "244,false",
+                 "245,false", "246,true", "247,true", "248,false", "249,true", "250,false", "251,true", "252,true", "253,true",
+                 "254,true", "255,true"})
+    public void testCsvCombination (String input, String expected)
+    {
+        // Zero based numbering
+        testCombination (Integer.parseInt (input), Boolean.parseBoolean (expected));
+    }
+
+    /**
+     *
+     * @param i Zero based numbering
+     * @param expected
+     */
+    public void testCombination (int i, boolean expected)
+ublic void testCombination (int i, boolean expected)
+;
         final GeoLine test = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
         final NamedPoint from = test.getFrom ();
         final NamedPoint to = test.getTo ();

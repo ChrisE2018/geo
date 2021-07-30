@@ -26,6 +26,12 @@ public class TestSupport
         assertNotNull (toString ());
     }
 
+    @Test
+    public void testGetPngFile ()
+    {
+        assertNotNull (getTestPngFile (this, "test"));
+    }
+
     public void checkExpression (NamedVariable named, double expected)
     {
         checkExpression (named, expected, null);
@@ -62,8 +68,7 @@ public class TestSupport
             final double value = eval.evalf (f);
             if (trace != null)
             {
-                final String reason = named.getReason ();
-                logger.info ("[%s] %s '%s'", trace, reason, formula);
+                logger.info ("[%s] '%s'", trace, formula);
                 logger.info ("[%s] Eval '%s'", trace, f);
                 logger.info ("[%s] expected %.2f = %.2f actual", trace, expected, value);
                 // Can't do this and get full coverage.

@@ -193,7 +193,7 @@ public class TestNamedPoint
     public void testEquivalent ()
     {
         final GeoPlane plane = new GeoPlane ();
-        final GeoItem parent = new GeoItem (plane, "t", Color.black);
+        final GeoItem parent = new GeoItem (plane, "parent", Color.black);
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
         final NamedPoint alpha = new NamedPoint (parent, false, Color.red, "alpha", 10, 20, SwingConstants.NORTH_WEST);
         final NamedPoint beta = new NamedPoint (parent, false, Color.red, "beta", 15, 30, SwingConstants.NORTH_WEST);
@@ -202,7 +202,8 @@ public class TestNamedPoint
         assertTrue (test.getY ().isDetermined ());
         assertTrue (alpha.getX ().isDetermined ());
         assertTrue (alpha.getY ().isDetermined ());
-        // Beta is not in the same place so propagation does not occur
+        // Beta is not in the same place so propagation should not occur
+        assertFalse (beta.getX ().whyDetermined ());
         assertFalse (beta.getX ().isDetermined ());
         assertFalse (beta.getY ().isDetermined ());
     }

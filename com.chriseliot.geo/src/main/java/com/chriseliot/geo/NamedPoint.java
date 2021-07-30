@@ -197,32 +197,9 @@ public class NamedPoint extends GeoItem
     @Override
     public void solve ()
     {
-<<<<<<< HEAD
-        if (isDetermined ())
-        {
-            if (!x.isDetermined ())
-            {
-                x.setFormula ("definition of point", "%s == " + x.getDoubleValue (), x);
-            }
-            if (!y.isDetermined ())
-            {
-                y.setFormula ("definition of point", "%s == " + y.getDoubleValue (), y);
-            }
-        }
-        if (!isDetermined ())
-        {
-            if (x.isDetermined () && y.isDetermined ())
-            {
-                // setStatus (GeoStatus.derived, "definition of point");
-                // Set value to a list of {x, y}
-                setFormula ("definition of point", "%s == {%s, %s}", this, x, y);
-            }
-        }
-=======
         setFormula ("aggregate", "%s == {%s, %s}", this, x, y);
         x.setFormula ("fixed value", "%s == " + x.getDoubleValue (), x, this);
         y.setFormula ("fixed value", "%s == " + y.getDoubleValue (), y, this);
->>>>>>> refs/heads/task_248-Save_all_symbolic_for
     }
 
     /** If two points are at the same screen position, make them equivalent. */
@@ -301,17 +278,6 @@ public class NamedPoint extends GeoItem
         buffer.append (getParent ().getClass ().getSimpleName ());
         final Point2D.Double pos = getPosition ();
         if (pos != null)
-<<<<<<< HEAD
-        {
-            buffer.append (" ");
-            buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));
-        }
-        buffer.append (" ");
-        buffer.append (getStatus ());
-        final String reason = getReason ();
-        if (reason != null)
-=======
->>>>>>> refs/heads/task_248-Save_all_symbolic_for
         {
             buffer.append (" ");
             buffer.append (String.format ("<%.2f, %.2f>", pos.x, pos.y));

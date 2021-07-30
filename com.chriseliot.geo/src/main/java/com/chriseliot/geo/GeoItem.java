@@ -8,6 +8,9 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.*;
+import org.matheclipse.core.eval.ExprEvaluator;
+import org.matheclipse.core.interfaces.IExpr;
 import org.w3c.dom.*;
 
 import com.chriseliot.util.*;
@@ -384,13 +387,7 @@ public class GeoItem
      * @param variables Variables to substitute into the template string to create the derivation
      *            formula.
      */
-    <<<<<<<HEAD
-
-    public void setFormula (String reason, String formulaExpression, GeoItem... variables)
-=======
-
     public void setFormula (String reason, String formula, GeoItem... variables)
->>>>>>> refs/heads/task_248-Save_all_symbolic_for
     {
         final GeoItem[] terms = new GeoItem[variables.length];
         System.arraycopy (variables, 0, terms, 0, variables.length);

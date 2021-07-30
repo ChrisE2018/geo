@@ -232,10 +232,6 @@ class TestResetDerived
             if (!(item == p1 || item == p2 || item == p3 || item == v1 || item == v2 || item == v3))
             {
                 final boolean determined = item.isDetermined ();
-                if (determined)
-                {
-                    item.setStatus (GeoStatus.derived, "determined");
-                }
                 if (!determined)
                 {
                     logger.info ("Item %s should be determined: %s isSolved: %s", item.getName (), determined, item.isSolved ());
@@ -263,7 +259,7 @@ class TestResetDerived
                 final Set<GeoItem> known = new HashSet<> ();
                 final Set<GeoItem> closed = new HashSet<> ();
                 logger.info ("**** %s inference %s: %s", item.getName (), inference,
-                        inference.isDetermined (known, closed, false) ? "isDetermined" : "is not determined");
+                        inference.isDetermined (known, closed, false, 0) ? "isDetermined" : "is not determined");
             }
             assertTrue (item.whyDetermined ());
             // assertEquals (GeoStatus.derived, item.getStatus ());

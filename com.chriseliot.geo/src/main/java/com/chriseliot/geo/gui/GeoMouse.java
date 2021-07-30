@@ -156,18 +156,27 @@ public class GeoMouse implements MouseListener, MouseMotionListener
             if (geoShape == GeoShape.select)
             {
                 plane.drag (c, d);
+                // Also need to remove all old derivations
+                plane.unsolve ();
+                plane.solve ();
             }
             else if (geoShape == GeoShape.line)
             {
                 plane.addItem (new GeoLine (plane, createColor, c, d));
+                plane.unsolve ();
+                plane.solve ();
             }
             else if (geoShape == GeoShape.rectangle)
             {
                 plane.addItem (new GeoRectangle (plane, createColor, c, d));
+                plane.unsolve ();
+                plane.solve ();
             }
             else if (geoShape == GeoShape.oval)
             {
                 plane.addItem (new GeoOval (plane, createColor, c, d));
+                plane.unsolve ();
+                plane.solve ();
             }
         }
         final GeoSolution solution = geo.getSolution ();

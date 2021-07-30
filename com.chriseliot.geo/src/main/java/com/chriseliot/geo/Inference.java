@@ -112,25 +112,25 @@ public class Inference
         return false;
     }
 
-    public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed, boolean why)
+    public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed, boolean why, int level)
     {
         for (int i = 1; i < terms.length; i++)
         {
             final GeoItem term = terms[i];
-            if (!term.isDetermined (known, closed, why))
+            if (!term.isDetermined (known, closed, why, level + 1))
             {
                 if (why)
                 {
                     final Set<GeoItem> missing = new HashSet<> (closed);
                     missing.removeAll (known);
-                    logger.info ("%s is not determined because %s it not determined without %s", this, term.getName (),
-                            GeoItem.getNames (missing));
+                    logger.info ("%s %s is not determined because %s it not determined without %s", indent (level), this,
+                            term.getName (), GeoItem.getNames (missing));
                     final Set<GeoItem> supportRequired = term.getSupport ();
                     if (supportRequired != null)
                     {
                         final Set<GeoItem> supportMissing = new HashSet<> (supportRequired);
                         supportMissing.removeAll (known);
-                        logger.info ("%s needs support %s which is missing %s", term.getName (),
+                        logger.info ("%s %s needs support %s which is missing %s", indent (level), term.getName (),
                                 GeoItem.getNames (supportRequired), GeoItem.getNames (supportMissing));
                     }
                 }
@@ -139,51 +139,21 @@ public class Inference
         }
         if (why)
         {
-            logger.info ("%s is determined because %s terms are determined", this, terms.length - 1);
-            logger.info ("--- determined %s", GeoItem.getNames (getTermList ().subList (1, terms.length)));
+            logger.info ("%s %s is determined because %s terms are determined", indent (level), this, terms.length - 1);
+            logger.info ("%s --- determined %s", indent (level), GeoItem.getNames (getTermList ().subList (1, terms.length)));
         }
         return true;
     }
 
-    // public boolean whyDetermined (Set<GeoItem> known, Set<GeoItem> closed)
-    // {
-    // final Set<GeoItem> savedKnown = new HashSet<> (known);
-    // final Set<GeoItem> savedClosed = new HashSet<> (closed);
-    // for (int i = 1; i < terms.length; i++)
-    // {
-    // final GeoItem term = terms[i];
-    // if (!term.isDetermined (known, closed))
-    // {
-    // final Set<GeoItem> missing = new HashSet<> (closed);
-    // missing.removeAll (known);
-    // logger.info ("%s is not determined because %s it not determined without %s", this,
-    // term.getName (),
-    // GeoItem.getNames (missing));
-    // final Set<GeoItem> supportRequired = term.getSupport ();
-    // if (supportRequired == null)
-    // {
-    //
-    // }
-    // else
-    // {
-    // final Set<GeoItem> supportMissing = new HashSet<> (supportRequired);
-    // supportMissing.removeAll (known);
-    // logger.info ("%s needs support %s which is missing %s", term.getName (), GeoItem.getNames
-    // (supportRequired),
-    // GeoItem.getNames (supportMissing));
-    // }
-    //
-    // return false;
-    // }
-    // }
-    // logger.info ("%s is determined because %s terms are determined", this, terms.length - 1);
-    // for (int i = 1; i < terms.length; i++)
-    // {
-    // final GeoItem term = terms[i];
-    // term.whyDetermined (savedKnown, savedClosed);
-    // }
-    // return true;
-    // }
+    public String indent (int level)
+    {
+        final StringBuilder builder = new StringBuilder ();
+        for (int i = 0; i < level; i++)
+        {
+            builder.append ("|  ");
+        }
+        return builder.toString ();
+    }
 
     /**
      * The instantiated formula with variable names replacing the corresponding format variables.

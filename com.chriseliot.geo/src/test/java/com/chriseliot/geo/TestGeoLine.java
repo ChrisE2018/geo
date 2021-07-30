@@ -545,7 +545,6 @@ public class TestGeoLine
         test.getFrom ().getX ().setGivenStatus (GeoStatus.known);
         test.getMidpoint ().getX ().setGivenStatus (GeoStatus.known);
         test.getMidpoint ().getY ().setGivenStatus (GeoStatus.known);
-        // test.solve ();
         assertTrue (test.getMidpoint ().isDetermined ());
         assertTrue (test.getFrom ().isDetermined ());
         // logger.info ("why B.x support: %s", GeoItem.getNames (test.getTo ().getX ().getSupport

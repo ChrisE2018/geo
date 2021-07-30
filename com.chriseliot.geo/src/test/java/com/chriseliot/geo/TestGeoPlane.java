@@ -364,6 +364,7 @@ public class TestGeoPlane
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         v2.getVertex ().setGivenStatus (GeoStatus.known);
         v3.getVertex ().setGivenStatus (GeoStatus.known);
+        plane.solve ();
         plane.paintItems (g, categories);
         ts.compare (image, ts.getTestPngFile (this, "p2"));
 

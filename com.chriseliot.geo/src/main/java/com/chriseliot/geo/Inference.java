@@ -1,9 +1,14 @@
 
 package com.chriseliot.geo;
 
+import static java.lang.Math.abs;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.*;
 
 import org.apache.logging.log4j.*;
+import org.matheclipse.core.eval.ExprEvaluator;
+import org.matheclipse.core.interfaces.IExpr;
 import org.w3c.dom.Element;
 
 import com.chriseliot.util.*;
@@ -43,7 +48,48 @@ public class Inference
         this.reason = reason;
         this.formula = formula;
         this.terms = terms;
-        assert (owner.equals (terms[0]));
+        assertEquals (owner, terms[0]);
+
+        if (owner instanceof NamedVariable)
+        {
+            final NamedVariable variable = (NamedVariable)owner;
+            if (variable.getDoubleValue () != null)
+            {
+                // Check the value
+                final String expression = getInstantiation ();
+                assertNotNull (expression);
+                final ExprEvaluator eval = new ExprEvaluator ();
+                final IExpr expr = eval.parse (expression);
+                final IExpr rhs = expr.getAt (2);
+                final StringBuilder builder = new StringBuilder ();
+                builder.append (String.format ("'%s' Inference: %s; rhs: %s", reason, expr, rhs));
+                for (final GeoItem term : terms)
+                {
+                    builder.append ("; ");
+                    builder.append (term.getName ());
+                    builder.append (" = ");
+                    builder.append (term.getStringValue ());
+                }
+                logger.info (builder.toString ());
+                for (final GeoItem term : terms)
+                {
+                    term.defineVariable (eval);
+                }
+                final double expected = ((NamedVariable)owner).getDoubleValue ();
+                final double actual = eval.evalf (rhs);
+                final double epsilon = 0.0001;
+                if (abs (actual - expected) > epsilon)
+                {
+                    logger.error ("Var %s expected %.2f != %.2f FAIL", owner.getName (), expected, actual);
+                }
+                else
+                {
+                    // logger.error ("Var %s expected %.2f == %.2f PASS", owner.getName (),
+                    // expected, actual);
+                }
+                assertEquals (expected, actual, epsilon);
+            }
+        }
     }
 
     /** The variable that will be derived by this inference. */

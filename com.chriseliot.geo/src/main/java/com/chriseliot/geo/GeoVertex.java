@@ -255,7 +255,9 @@ public class GeoVertex extends GeoItem
         else
         {
             vertex.setPosition (position);
-            final double theta1 = line1.angle (line2);
+            // This is angle from x axis but the formula for vertex
+            // angle uses the line.angle which is from the y axis
+            final double theta1 = line1.axisXangle () - line2.axisXangle ();
             angle.setDoubleValue (theta1);
             for (final GeoTriangle t : new ArrayList<> (triangles))
             {

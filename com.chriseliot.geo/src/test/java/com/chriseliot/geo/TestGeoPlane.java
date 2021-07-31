@@ -13,12 +13,14 @@ import java.util.List;
 import javax.swing.SwingConstants;
 import javax.swing.event.*;
 
+import org.apache.logging.log4j.*;
 import org.junit.jupiter.api.*;
 
 import com.chriseliot.util.Namer;
 
 public class TestGeoPlane
 {
+    private final Logger logger = LogManager.getFormatterLogger (getClass ());
     private final TestSupport ts = new TestSupport ();
 
     @Test
@@ -359,6 +361,14 @@ public class TestGeoPlane
         categories.add ("standard");
         categories.add ("detail");
         plane.paintItems (g, categories);
+        for (final GeoItem item : plane.getItems ())
+        {
+            if (item instanceof NamedVariable)
+            {
+                final NamedVariable v = (NamedVariable)item;
+                logger.info ("%s = %.2f", v.getName (), v.getDoubleValue ());
+            }
+        }
         // Be sure to call Namer.reset before generating images for compare.
         ts.compare (image, ts.getTestPngFile (this, "p1"));
         v1.getVertex ().setGivenStatus (GeoStatus.known);

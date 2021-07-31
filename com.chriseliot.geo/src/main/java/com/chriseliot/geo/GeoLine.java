@@ -448,15 +448,19 @@ public class GeoLine extends GeoItem
         dx.setFormula ("dx from endpoints", "%s == %s - %s", dx, to.getX (), from.getX ());
         dx.setFormula ("midpoint x of line", "%s == (%s - %s) * 2", dx, midpoint.getX (), from.getX ());
         dx.setFormula ("midpoint x of line", "%s == (%s - %s) * 2", dx, to.getX (), midpoint.getX ());
-        dx.setFormula ("dx from angle of line", "%s == %s * sin((90 -  %s) * Degree)", dx, length, angle);
-        dx.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dx, length, dy);
+        dx.setFormula ("dx from angle of line", "%s == %s * cos((90 -  %s) * Degree)", dx, length, angle);
+
+        // Could be + or -
+        // dx.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dx, length, dy);
 
         // Determine dy
         dy.setFormula ("dy from endpoints", "%s == %s - %s", dy, to.getY (), from.getY ());
         dy.setFormula ("midpoint y of line", "%s == (%s - %s) * 2", dy, midpoint.getY (), from.getY ());
         dy.setFormula ("midpoint y of line", "%s == (%s - %s) * 2", dy, to.getY (), midpoint.getY ());
-        dy.setFormula ("dy from angle of line", "%s == %s * cos((90 - %s) * Degree)", dy, length, angle);
-        dy.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dy, length, dx);
+        dy.setFormula ("dy from angle of line", "%s == %s * sin((90 - %s) * Degree)", dy, length, angle);
+
+        // Could be + or -
+        // dy.setFormula ("solve l^2 = dx^2+dy^2", "%s == sqrt(%s ^ 2 - %s ^2)", dy, length, dx);
 
         // Determine to.x
         to.getX ().setFormula ("endpoint and dx", "%s == %s + %s", to.getX (), from.getX (), dx);
@@ -487,11 +491,17 @@ public class GeoLine extends GeoItem
         // Determine length
         length.setFormula ("length = sqrt(dx^2 + dy^2)", "%s == sqrt(%s^2 + %s^2)", length, dx, dy);
 
-        // dx = l*sin(theta) so l = dx / sin(theta)
-        length.setFormula ("length = dx / sin(theta)", "%s == %s / sin(%s * Degree)", length, dx, angle);
+        if (sin (toRadians (angle.getDoubleValue ())) > 0.0001)
+        {
+            // dx = l*sin(theta) so l = dx / sin(theta)
+            length.setFormula ("length = dx / sin(theta)", "%s == %s / sin(%s * Degree)", length, dx, angle);
 
-        // dy = l*cos(theta) so l = dy / cos(theta)
-        length.setFormula ("length = dy / cos(theta)", "%s == %s / cos(%s * Degree)", length, dy, angle);
+        }
+        if (cos (toRadians (angle.getDoubleValue ())) > 0.0001)
+        {
+            // dy = l*cos(theta) so l = dy / cos(theta)
+            length.setFormula ("length = dy / cos(theta)", "%s == %s / cos(%s * Degree)", length, dy, angle);
+        }
 
         // This appears to be the opposite of the numeric version
         // See ::recalculate and ::axisYangle

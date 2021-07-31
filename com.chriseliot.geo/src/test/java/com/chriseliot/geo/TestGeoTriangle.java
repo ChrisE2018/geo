@@ -407,10 +407,11 @@ public class TestGeoTriangle
         // System.out.printf ("Line1 angle %s \n", line1.getAngle ().getDoubleValue ());
         // System.out.printf ("Line2 angle %s \n", line2.getAngle ().getDoubleValue ());
         // System.out.printf ("Line3 angle %s \n", line3.getAngle ().getDoubleValue ());
-        System.out.printf ("T %s %s %s\n", angle1.getDoubleValue (), angle2.getDoubleValue (), angle3.getDoubleValue ());
+        logger.info ("T %s %s %s", angle1.getDoubleValue (), angle2.getDoubleValue (), angle3.getDoubleValue ());
         assertEquals (90, line1.getAngle ().getDoubleValue ());
         assertEquals (36.869897, line2.getAngle ().getDoubleValue (), TestSupport.epsilon);
         assertEquals (180, line3.getAngle ().getDoubleValue ());
+        assertEquals (40.0, line3.getLength ().getDoubleValue (), TestSupport.epsilon);
         final GeoVertex v1 = t.getV1 ();
         final GeoVertex v2 = t.getV2 ();
         final GeoVertex v3 = t.getV3 ();

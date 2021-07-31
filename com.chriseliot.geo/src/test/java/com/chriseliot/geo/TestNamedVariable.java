@@ -79,10 +79,10 @@ public class TestNamedVariable
         final Color color = Color.red;
         final String name = "test1";
         final NamedVariable test = new NamedVariable (parent, color, name, 43.0);
-        test.setFormula ("test", "1 + 1 = 2", test);
+        test.setFormula ("test", "%s == 43", test);
         final Inference inference = test.getInference ();
         assertNotNull (inference);
-        assertEquals ("1 + 1 = 2", inference.getInstantiation ());
+        assertEquals ("test1 == 43", inference.getInstantiation ());
         plane.solve ();
     }
 
@@ -100,8 +100,8 @@ public class TestNamedVariable
         assertEquals ("c==43.0", test.getDerivedFormula ());
         plane.solve ();
         x.setStatusUnknown ();
-        y.setFormula ("test", "y == 55", y);
-        test.setFormula ("test", "%s == %s + 4", test, y);
+        y.setFormula ("test", "%s == 45", y);
+        test.setFormula ("test", "%s == %s - 2", test, y);
         assertEquals ("c==43.0", test.getDerivedFormula ());
     }
 
@@ -115,7 +115,7 @@ public class TestNamedVariable
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedPoint test2 = new NamedPoint (parent, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedPoint test3 = new NamedPoint (parent, false, Color.green, "test", position2, SwingConstants.NORTH_WEST);
-        test.getX ().setFormula ("1 + 1 = 2", "test", test.getX ());
+        test.getX ().setFormula ("test", "%s == 10", test.getX ());
         plane.solve ();
         assertNotNull (test2);
         assertNotNull (test3);
@@ -190,6 +190,9 @@ public class TestNamedVariable
         final NamedVariable y = parent.getY ();
         v.setGivenStatus (GeoStatus.known);
         y.setGivenStatus (GeoStatus.fixed);
+        x.setDoubleValue (28.0);
+        y.setDoubleValue (17.0);
+        v.setDoubleValue (11.0);
         x.setFormula ("test", "%s == %s + %s", x, y, v);
         final StringBuilder builder = new StringBuilder ();
         final Set<GeoItem> closed = new HashSet<> ();
@@ -235,7 +238,7 @@ public class TestNamedVariable
         final String name = GeoItem.class.getSimpleName ();
         assertNull (xu.getNthChild (root, name, 0));
         x.getElement (root);
-        x.setFormula ("test", "%s == 123", x);
+        x.setFormula ("test", "%s == 10", x);
         x.setLocation (null);
         x.setDoubleValue (null);
         x.getElement (root);

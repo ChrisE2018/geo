@@ -235,14 +235,10 @@ public class TestGeoPlane
 
         final Point2D.Double p4 = new Point2D.Double (40, 0);
         final GeoLine line1 = new GeoLine (plane, Color.red, p4, new Point2D.Double (40, 400));
-        final GeoLine line2 = new GeoLine (plane, Color.blue, p4, new Point2D.Double (40, 500));
-
-        final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, p4);
-
         assertEquals (child1, plane.getClickObject (new Point2D.Double (1, 0), 100));
         assertEquals (child2, plane.getClickObject (new Point2D.Double (22, 0), 100));
         assertEquals (child3, plane.getClickObject (new Point2D.Double (26, 0), 100));
-        assertEquals (v1.getVertex (), plane.getClickObject (new Point2D.Double (35, 0), 100));
+        assertEquals (line1.getFrom (), plane.getClickObject (new Point2D.Double (39, 0), 100));
     }
 
     private boolean fired = false;

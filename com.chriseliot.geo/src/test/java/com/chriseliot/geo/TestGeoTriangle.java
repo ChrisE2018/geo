@@ -418,9 +418,9 @@ public class TestGeoTriangle
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         v2.getVertex ().setGivenStatus (GeoStatus.known);
         v3.getVertex ().setGivenStatus (GeoStatus.known);
-        assertEquals (-143.130102, v1.getAngle ().getDoubleValue (), TestSupport.epsilon);
-        assertEquals (-90, v2.getAngle ().getDoubleValue (), TestSupport.epsilon);
-        assertEquals (53.130101, v3.getAngle ().getDoubleValue (), TestSupport.epsilon);
+        assertEquals (143.130102, v1.getAngle ().getDoubleValue (), TestSupport.epsilon);
+        assertEquals (90, v2.getAngle ().getDoubleValue (), TestSupport.epsilon);
+        assertEquals (-53.130101, v3.getAngle ().getDoubleValue (), TestSupport.epsilon);
         final String trace = null; // "testSolve1";
         ts.checkExpression (t.getL1 (), 30, trace);
         ts.checkExpression (t.getL2 (), 50, trace);

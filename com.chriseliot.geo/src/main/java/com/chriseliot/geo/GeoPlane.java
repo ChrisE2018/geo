@@ -662,12 +662,15 @@ public class GeoPlane
                 for (final GeoItem item : items)
                 {
                     item.deriveInferences ();
+                    // Copy deep status to the item itself
+                    // item.isDetermined ();
                 }
             }
-            for (final GeoItem item : items)
-            {
-                item.isDetermined ();
-            }
+            // for (final GeoItem item : items)
+            // {
+            // // Copy deep status to the item itself
+            // item.isDetermined ();
+            // }
         }
     }
 

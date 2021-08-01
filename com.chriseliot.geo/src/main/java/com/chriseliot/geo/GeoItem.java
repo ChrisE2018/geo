@@ -644,6 +644,8 @@ public class GeoItem
         {
             isSolved = true;
             solve ();
+            // Copy deep status to the item itself
+            isDetermined ();
         }
     }
 

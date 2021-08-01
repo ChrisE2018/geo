@@ -256,7 +256,6 @@ public class GeoVertex extends GeoItem
         else
         {
             vertex.setPosition (position);
-            // This must match the formula for vertex angle solver
             final double theta = line1.getAngle ().getDoubleValue () - line2.getAngle ().getDoubleValue ();
             logger.info ("Theta %s %.2f = %s %.2f - %s %.2f", getName (), theta, line1.getName (),
                     line1.getAngle ().getDoubleValue (), line2.getName (), line2.getAngle ().getDoubleValue ());
@@ -294,11 +293,11 @@ public class GeoVertex extends GeoItem
         {
             if (!vertex.isDetermined ())
             {
-                vertex.setStatus (GeoStatus.derived, "position from vertex");
+                vertex.setStatus (GeoStatus.derived, "vertex known");
             }
             if (!angle.isDetermined ())
             {
-                angle.setStatus (GeoStatus.derived, "angle from vertx");
+                angle.setStatus (GeoStatus.derived, "vertex known");
             }
         }
         if (!isDetermined ())

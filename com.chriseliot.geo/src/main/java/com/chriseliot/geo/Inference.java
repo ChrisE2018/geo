@@ -49,14 +49,18 @@ public class Inference
         this.formula = formula;
         this.terms = terms;
         assertEquals (owner, terms[0]);
+    }
 
+    public static boolean verifyInference (String reason, String formula, GeoItem[] terms)
+    {
+        final GeoItem owner = terms[0];
         if (owner instanceof NamedVariable)
         {
             final NamedVariable variable = (NamedVariable)owner;
             if (variable.getDoubleValue () != null)
             {
                 // Check the value
-                final String expression = getInstantiation ();
+                final String expression = getInstantiation (formula, terms);
                 assertNotNull (expression);
                 final ExprEvaluator eval = new ExprEvaluator ();
                 final IExpr expr = eval.parse (expression);
@@ -70,7 +74,7 @@ public class Inference
                     builder.append (" = ");
                     builder.append (term.getStringValue ());
                 }
-                logger.info (builder.toString ());
+                logger.debug (builder.toString ());
                 for (final GeoItem term : terms)
                 {
                     term.defineVariable (eval);
@@ -82,14 +86,10 @@ public class Inference
                 {
                     logger.error ("Var %s expected %.2f != %.2f FAIL", owner.getName (), expected, actual);
                 }
-                else
-                {
-                    // logger.error ("Var %s expected %.2f == %.2f PASS", owner.getName (),
-                    // expected, actual);
-                }
-                assertEquals (expected, actual, epsilon);
+                return (expected - actual) < epsilon;
             }
         }
+        return true;
     }
 
     /** The variable that will be derived by this inference. */
@@ -158,47 +158,16 @@ public class Inference
         return false;
     }
 
-    public boolean isDetermined (Set<GeoItem> known, Set<GeoItem> closed, boolean why, int level)
+    public boolean isDetermined ()
     {
-        for (int i = 1; i < terms.length; i++)
+        for (final GeoItem term : terms)
         {
-            final GeoItem term = terms[i];
-            if (!term.isDetermined (known, closed, why, level + 1))
+            if (!term.isDetermined ())
             {
-                if (why)
-                {
-                    final Set<GeoItem> missing = new HashSet<> (closed);
-                    missing.removeAll (known);
-                    logger.info ("%s %s is not determined because %s it not determined without %s", indent (level), this,
-                            term.getName (), GeoItem.getNames (missing));
-                    final Set<GeoItem> supportRequired = term.getSupport ();
-                    if (supportRequired != null)
-                    {
-                        final Set<GeoItem> supportMissing = new HashSet<> (supportRequired);
-                        supportMissing.removeAll (known);
-                        logger.info ("%s %s needs support %s which is missing %s", indent (level), term.getName (),
-                                GeoItem.getNames (supportRequired), GeoItem.getNames (supportMissing));
-                    }
-                }
                 return false;
             }
         }
-        if (why)
-        {
-            logger.info ("%s %s is determined because %s terms are determined", indent (level), this, terms.length - 1);
-            logger.info ("%s --- determined %s", indent (level), GeoItem.getNames (getTermList ().subList (1, terms.length)));
-        }
         return true;
-    }
-
-    public String indent (int level)
-    {
-        final StringBuilder builder = new StringBuilder ();
-        for (int i = 0; i < level; i++)
-        {
-            builder.append ("|  ");
-        }
-        return builder.toString ();
     }
 
     /**
@@ -207,6 +176,12 @@ public class Inference
     public String getInstantiation ()
     {
         final Object[] names = getTermNames ();
+        return String.format (formula, names);
+    }
+
+    public static String getInstantiation (String formula, GeoItem[] terms)
+    {
+        final Object[] names = GeoItem.getNames (terms);
         return String.format (formula, names);
     }
 

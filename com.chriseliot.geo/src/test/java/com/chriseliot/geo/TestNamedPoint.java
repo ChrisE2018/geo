@@ -202,8 +202,7 @@ public class TestNamedPoint
         assertTrue (test.getY ().isDetermined ());
         assertTrue (alpha.getX ().isDetermined ());
         assertTrue (alpha.getY ().isDetermined ());
-        // Beta is not in the same place so propagation should not occur
-        assertFalse (beta.getX ().whyDetermined ());
+        // Beta is not in the same place so propagation does not occur
         assertFalse (beta.getX ().isDetermined ());
         assertFalse (beta.getY ().isDetermined ());
     }

@@ -208,6 +208,7 @@ public class TestGeoItem
         final GeoItem parent = new GeoItem (plane, "t", Color.black);
         final NamedPoint child = new NamedPoint (parent, true, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
         parent.setStatus (GeoStatus.fixed, "test");
+        assertEquals ("test", parent.getReason ());
         child.setGivenStatus (GeoStatus.known);
         assertTrue (child.isDetermined ());
         assertNotNull (parent.toString ());

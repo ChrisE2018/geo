@@ -466,11 +466,6 @@ public class TestGeoLine
         }
         assertEquals ("l01$M$x == (l01$A$x + l01$B$x) / 2", formula);
         final IExpr expr = eval.parse (formula);
-        // System.out.printf ("Expr %s\n", expr);
-        // System.out.printf ("Expr 1 %s\n", expr.getAt (1));
-        // System.out.printf ("Expr 2 %s\n", expr.getAt (2));
-        // System.out.printf ("l01$A$x %s\n", eval.evalf ("l01$A$x"));
-        // System.out.printf ("l01$B$x %s\n", eval.evalf ("l01$B$x"));
         final IExpr f = expr.getAt (2);
         assertEquals (20.0, eval.evalf (f), TestSupport.epsilon);
     }
@@ -547,15 +542,6 @@ public class TestGeoLine
         test.getMidpoint ().getY ().setGivenStatus (GeoStatus.known);
         assertTrue (test.getMidpoint ().isDetermined ());
         assertTrue (test.getFrom ().isDetermined ());
-        // logger.info ("why B.x support: %s", GeoItem.getNames (test.getTo ().getX ().getSupport
-        // ()));
-        // assertTrue (test.getTo ().getX ().whyDetermined ());
-        // logger.info ("why B.y support: %s", GeoItem.getNames (test.getTo ().getX ().getSupport
-        // ()));
-        // assertTrue (test.getTo ().getY ().whyDetermined ());
-        // logger.info ("why %s", test.getName ());
-        // assertTrue (test.getTo ().whyDetermined ());
-        // test.whyDetermined ();
         assertTrue (test.getTo ().isDetermined ());
         assertTrue (test.isDetermined ());
         final String trace = null; // "testSolve7"
@@ -574,7 +560,6 @@ public class TestGeoLine
         assertTrue (test.getFrom ().getX ().isDetermined ());
         assertTrue (test.getFrom ().getY ().isDetermined ());
         assertTrue (test.getFrom ().isDetermined ());
-        assertTrue (test.isDetermined ());
         assertTrue (test.isDetermined ());
         final String trace = null; // "testSolve8"
         checkLineVariables (test, trace);
@@ -682,7 +667,6 @@ public class TestGeoLine
                 v.setGivenStatus (GeoStatus.known);
             }
         }
-        test.solve ();
         assertEquals (expected, test.isDetermined ());
         if (test.isDetermined ())
         {
@@ -809,4 +793,18 @@ public class TestGeoLine
             stream.write ("</html>\n");
         }
     }
+
+    // @Test
+    // public void createParams ()
+    // {
+    // for (int i = 0; i < 256; i++)
+    // {
+    // if (i % 32 == 0)
+    // {
+    // System.out.printf ("\n");
+    // }
+    // System.out.printf ("%d, ", i);
+    // }
+    // System.out.printf ("\n");
+    // }
 }

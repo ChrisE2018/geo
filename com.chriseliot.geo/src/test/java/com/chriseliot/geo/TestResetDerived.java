@@ -158,9 +158,6 @@ class TestResetDerived
     @Test
     public void testResetDerived2 ()
     {
-        t.addStatusChangeListener (new TraceStatusChangeListener ());
-        line1.addStatusChangeListener (new TraceStatusChangeListener ());
-
         logger.info ("Making point %s known", p1.getName ());
         p1.setGivenStatus (GeoStatus.known);
         logger.info ("Changed %s.status to known", p1.getName ());
@@ -205,27 +202,12 @@ class TestResetDerived
             logger.info ("Determined %s", d.subList (i, min (d.size (), i + bucket)));
         }
         final GeoItem mx = plane.get ("l01$M$x");
-        if (!mx.isDetermined ())
-        {
-            logger.info ("Explanation of %s %s: %s", mx.getName (), mx.getStatus (), GeoItem.getNames (mx.getSupport ()));
-            assertTrue (mx.whyDetermined ());
-        }
+        assertTrue (mx.isDetermined ());
         logger.info ("*** mx is determined");
 
         final GeoItem my = plane.get ("l01$M$y");
-        if (!my.isDetermined ())
-        {
-            logger.info ("Explanation of %s %s: %s", my.getName (), my.getStatus (), GeoItem.getNames (my.getSupport ()));
-            assertTrue (my.whyDetermined ());
-        }
+        assertTrue (my.isDetermined ());
         logger.info ("*** my is determined");
-        for (final GeoItem item : plane.getItems ())
-        {
-            if (!item.isSolved ())
-            {
-                logger.info ("%s isSolved %s", item.getName (), item.isSolved ());
-            }
-        }
         final Set<GeoItem> undetermined = new HashSet<> ();
         for (final GeoItem item : plane.getItems ())
         {
@@ -234,16 +216,8 @@ class TestResetDerived
                 final boolean determined = item.isDetermined ();
                 if (!determined)
                 {
-                    logger.info ("Item %s should be determined: %s isSolved: %s", item.getName (), determined, item.isSolved ());
+                    logger.info ("Item %s should be determined: %s", item.getName (), determined);
                     undetermined.add (item);
-                    // for (final Inference inference : item.getInferences ())
-                    // {
-                    // final Set<GeoItem> known = new HashSet<> ();
-                    // final Set<GeoItem> closed = new HashSet<> ();
-                    // logger.info ("**** %s inference %s: %s", item.getName (), inference,
-                    // inference.isDetermined (known, closed, false) ? "isDetermined" : "is not
-                    // determined");
-                    // }
                 }
             }
         }
@@ -254,15 +228,7 @@ class TestResetDerived
         {
             logger.info ("****************************");
             logger.info ("Checking why %s is not determined as expected", item.getName ());
-            for (final Inference inference : item.getInferences ())
-            {
-                final Set<GeoItem> known = new HashSet<> ();
-                final Set<GeoItem> closed = new HashSet<> ();
-                logger.info ("**** %s inference %s: %s", item.getName (), inference,
-                        inference.isDetermined (known, closed, false, 0) ? "isDetermined" : "is not determined");
-            }
-            assertTrue (item.whyDetermined ());
-            // assertEquals (GeoStatus.derived, item.getStatus ());
+            assertTrue (item.isDetermined ());
             logger.info ("%s isDetermined as expected", item.getName ());
         }
         for (final GeoItem item : plane.getItems ())
@@ -271,10 +237,7 @@ class TestResetDerived
             {
                 logger.info ("****************************");
                 logger.info ("Checking if %s isDetermined as expected", item.getName ());
-                if (!item.isDetermined ())
-                {
-                    assertTrue (item.whyDetermined ());
-                }
+                assertTrue (item.isDetermined ());
                 logger.info ("%s isDetermined as expected", item.getName ());
             }
         }

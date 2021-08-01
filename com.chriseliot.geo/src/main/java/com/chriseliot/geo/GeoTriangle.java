@@ -716,11 +716,14 @@ public class GeoTriangle extends GeoItem
      */
     private void lawOfCosines ()
     {
-        // Determine all angles
-        deriveVertexByLawOfCosines (v1);
-        deriveVertexByLawOfCosines (v2);
-        deriveVertexByLawOfCosines (v3);
-
+        final int count = countSidesDetermined ();
+        if (count == 3)
+        {
+            // Determine all angles
+            deriveVertexByLawOfCosines (v1);
+            deriveVertexByLawOfCosines (v2);
+            deriveVertexByLawOfCosines (v3);
+        }
         applyLawOfCosines (v1);
         applyLawOfCosines (v2);
         applyLawOfCosines (v3);

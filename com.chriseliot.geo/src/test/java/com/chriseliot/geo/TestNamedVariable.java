@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.*;
 
 import javax.swing.SwingConstants;
 import javax.xml.parsers.*;
@@ -195,8 +194,7 @@ public class TestNamedVariable
         v.setDoubleValue (11.0);
         x.setFormula ("test", "%s == %s + %s", x, y, v);
         final StringBuilder builder = new StringBuilder ();
-        final Set<GeoItem> closed = new HashSet<> ();
-        x.getDerivation (builder, 3, closed);
+        x.getDerivation (builder, 3);
     }
 
     @Test

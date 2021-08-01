@@ -204,7 +204,6 @@ public class GeoPlane
             if (item.getStatus () == GeoStatus.derived)
             {
                 item.setStatusUnknown ();
-                item.resetInferences ();
             }
         }
         setDirty ();
@@ -638,39 +637,15 @@ public class GeoPlane
         dirty = true;
     }
 
-    public void unsolve ()
-    {
-        for (final GeoItem item : items)
-        {
-            item.getInferences ().clear ();
-            item.resetInferences ();
-        }
-        setDirty ();
-    }
-
     public void solve ()
     {
-        if (dirty)
+        while (dirty)
         {
+            dirty = false;
             for (final GeoItem item : items)
             {
-                item.resetInferences ();
+                item.solve ();
             }
-            while (dirty)
-            {
-                dirty = false;
-                for (final GeoItem item : items)
-                {
-                    item.deriveInferences ();
-                    // Copy deep status to the item itself
-                    // item.isDetermined ();
-                }
-            }
-            // for (final GeoItem item : items)
-            // {
-            // // Copy deep status to the item itself
-            // item.isDetermined ();
-            // }
         }
     }
 

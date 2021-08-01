@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 
 import javax.xml.parsers.*;
 
+import org.apache.logging.log4j.*;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.*;
 
@@ -17,6 +18,7 @@ import com.chriseliot.util.*;
 
 public class TestGeoVertex
 {
+    private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
     private final TestSupport ts = new TestSupport ();
 
     @Test
@@ -34,7 +36,7 @@ public class TestGeoVertex
     {
         final GeoPlane plane = new GeoPlane ();
         final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
-        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 60));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 30));
         final GeoVertex test = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (10, 20));
         assertEquals (line1, test.getLine1 ());
         assertEquals (line2, test.getLine2 ());
@@ -84,7 +86,7 @@ public class TestGeoVertex
 
         final NamedVariable angle = test.getAngle ();
         assertNotNull (angle);
-        assertEquals (90.0, angle.getDoubleValue ());
+        assertEquals (-90.0, angle.getDoubleValue ());
     }
 
     @Test
@@ -252,6 +254,7 @@ public class TestGeoVertex
         final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (0, 0), new Point2D.Double (10, 0));
 
         final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (0, 0));
+        logger.info ("V1 %s angle %.2f", v1.getName (), v1.getAngle ().getDoubleValue ());
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         ts.checkExpression (v1.getVertex ().getX (), 0);
         ts.checkExpression (v1.getVertex ().getY (), 0);
@@ -334,7 +337,7 @@ public class TestGeoVertex
         final String trace = null;// "testSolve6";
         ts.checkExpression (v1.getVertex ().getX (), 0, trace);
         ts.checkExpression (v1.getVertex ().getY (), 0, trace);
-        ts.checkExpression (v1.getAngle (), 3.81407, trace);
+        ts.checkExpression (v1.getAngle (), -3.81407, trace);
     }
 
     @Test
@@ -351,7 +354,7 @@ public class TestGeoVertex
         final String trace = null;// "testSolve7";
         ts.checkExpression (v1.getVertex ().getX (), 10, trace);
         ts.checkExpression (v1.getVertex ().getY (), 20, trace);
-        ts.checkExpression (v1.getAngle (), 3.81407, trace);
+        ts.checkExpression (v1.getAngle (), -3.81407, trace);
     }
 
     @Test
@@ -368,7 +371,7 @@ public class TestGeoVertex
         final String trace = null;// "testSolve8";
         ts.checkExpression (v1.getVertex ().getX (), 10, trace);
         ts.checkExpression (v1.getVertex ().getY (), 20, trace);
-        ts.checkExpression (v1.getAngle (), 3.81407, trace);
+        ts.checkExpression (v1.getAngle (), -3.81407, trace);
     }
 
     @Test

@@ -70,6 +70,7 @@ public class GeoVertex extends GeoItem
         angle = new NamedVariable (vertex, color, name + SEP + "v", theta1);
         addCategory ("simple");
         addCategory ("standard");
+        recalculate ();
     }
 
     /** The first intersecting line. Which is first and which is second is arbitrary. */
@@ -255,8 +256,10 @@ public class GeoVertex extends GeoItem
         else
         {
             vertex.setPosition (position);
-            final double theta1 = line1.angle (line2);
-            angle.setDoubleValue (theta1);
+            final double theta = line1.getAngle ().getDoubleValue () - line2.getAngle ().getDoubleValue ();
+            logger.info ("Theta %s %.2f = %s %.2f - %s %.2f", getName (), theta, line1.getName (),
+                    line1.getAngle ().getDoubleValue (), line2.getName (), line2.getAngle ().getDoubleValue ());
+            angle.setDoubleValue (theta);
             for (final GeoTriangle t : new ArrayList<> (triangles))
             {
                 t.recalculate ();
@@ -283,13 +286,9 @@ public class GeoVertex extends GeoItem
     @Override
     public void solve ()
     {
-        if (line1.getAngle ().isDetermined () && line2.getAngle ().isDetermined ())
-        {
-            if (!angle.isDetermined ())
-            {
-                angle.setFormula ("vertex angles", "%s == %s - %s", angle, line2.getAngle (), line1.getAngle ());
-            }
-        }
+        logger.info ("Solve %s = %s %.2f - %s %.2f", getName (), line1.getName (), line1.getAngle ().getDoubleValue (),
+                line2.getName (), line2.getAngle ().getDoubleValue ());
+        angle.setFormula ("vertex angles *", "%s == %s - %s", angle, line1.getAngle (), line2.getAngle ());
         if (isDetermined ())
         {
             if (!vertex.isDetermined ())
@@ -307,7 +306,7 @@ public class GeoVertex extends GeoItem
             {
                 if (vertex.isDetermined ())
                 {
-                    setStatus (GeoStatus.derived, "vertex determined");
+                    setStatus (GeoStatus.derived, "vertex from angle");
                 }
             }
         }

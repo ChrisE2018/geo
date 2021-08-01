@@ -58,7 +58,7 @@ class TestCentroidVariable
         v.paint (g, labels);
         v.setLocation (parent, p2);
         v.paint (g, labels);
-        v.setFormula ("test", "2 == 1 + 1", v);
+        v.setFormula ("test", "%s == 10 + 1", v);
         final Inference inference = v.getInference ();
         assertNotNull (inference);
         assertNotNull (inference.getInstantiation ());

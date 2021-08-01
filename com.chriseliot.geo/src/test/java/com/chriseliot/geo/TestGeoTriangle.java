@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.*;
 import org.junit.jupiter.api.*;
 
 import com.chriseliot.util.*;
@@ -18,6 +19,7 @@ import com.chriseliot.util.*;
 @Tag ("Triangle")
 public class TestGeoTriangle
 {
+    private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
     private final TestSupport ts = new TestSupport ();
 
     @Test
@@ -405,19 +407,20 @@ public class TestGeoTriangle
         // System.out.printf ("Line1 angle %s \n", line1.getAngle ().getDoubleValue ());
         // System.out.printf ("Line2 angle %s \n", line2.getAngle ().getDoubleValue ());
         // System.out.printf ("Line3 angle %s \n", line3.getAngle ().getDoubleValue ());
-        System.out.printf ("T %s %s %s\n", angle1.getDoubleValue (), angle2.getDoubleValue (), angle3.getDoubleValue ());
+        logger.info ("T %s %s %s", angle1.getDoubleValue (), angle2.getDoubleValue (), angle3.getDoubleValue ());
         assertEquals (90, line1.getAngle ().getDoubleValue ());
         assertEquals (36.869897, line2.getAngle ().getDoubleValue (), TestSupport.epsilon);
         assertEquals (180, line3.getAngle ().getDoubleValue ());
+        assertEquals (40.0, line3.getLength ().getDoubleValue (), TestSupport.epsilon);
         final GeoVertex v1 = t.getV1 ();
         final GeoVertex v2 = t.getV2 ();
         final GeoVertex v3 = t.getV3 ();
         v1.getVertex ().setGivenStatus (GeoStatus.known);
         v2.getVertex ().setGivenStatus (GeoStatus.known);
         v3.getVertex ().setGivenStatus (GeoStatus.known);
-        assertEquals (-143.130102, v1.getAngle ().getDoubleValue (), TestSupport.epsilon);
-        assertEquals (-90, v2.getAngle ().getDoubleValue (), TestSupport.epsilon);
-        assertEquals (53.130101, v3.getAngle ().getDoubleValue (), TestSupport.epsilon);
+        assertEquals (143.130102, v1.getAngle ().getDoubleValue (), TestSupport.epsilon);
+        assertEquals (90, v2.getAngle ().getDoubleValue (), TestSupport.epsilon);
+        assertEquals (-53.130101, v3.getAngle ().getDoubleValue (), TestSupport.epsilon);
         final String trace = null; // "testSolve1";
         ts.checkExpression (t.getL1 (), 30, trace);
         ts.checkExpression (t.getL2 (), 50, trace);

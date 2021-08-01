@@ -1,6 +1,8 @@
 
 package com.chriseliot.geo;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -102,6 +104,32 @@ public class GeoItem
     public void setName (String name)
     {
         this.name = name;
+    }
+
+    public static List<String> getNames (Collection<GeoItem> items)
+    {
+        final List<String> result = new ArrayList<> ();
+        if (items != null)
+        {
+            for (final GeoItem item : items)
+            {
+                result.add (item.getName ());
+            }
+        }
+        return result;
+    }
+
+    public static String[] getNames (GeoItem[] items)
+    {
+        final String[] result = new String[items.length];
+        if (items != null)
+        {
+            for (int i = 0; i < items.length; i++)
+            {
+                result[i] = items[i].getName ();
+            }
+        }
+        return result;
     }
 
     /** The GeoItem parent of this item. */
@@ -216,7 +244,7 @@ public class GeoItem
     /** Set the status to unknown. */
     public void setStatusUnknown ()
     {
-        setStatus (GeoStatus.unknown, null);
+        setStatus (GeoStatus.unknown, "given");
     }
 
     /** Is this value known. */
@@ -256,8 +284,21 @@ public class GeoItem
     {
         final GeoItem[] terms = new GeoItem[variables.length];
         System.arraycopy (variables, 0, terms, 0, variables.length);
-        inferences.add (new Inference (this, formulaExpression, terms));
-        setStatus (GeoStatus.derived, reason);
+        assertTrue (Inference.verifyInference (reason, formulaExpression, terms));
+        final GeoItem owner = terms[0];
+        if (!owner.isDetermined ())
+        {
+            for (int i = 1; i < terms.length; i++)
+            {
+                if (!terms[i].isDetermined ())
+                {
+                    // Can't make this inference at this time.
+                    return;
+                }
+            }
+            inferences.add (new Inference (this, reason, formulaExpression, terms));
+            setStatus (GeoStatus.derived, reason);
+        }
     }
 
     /**

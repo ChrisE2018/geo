@@ -197,48 +197,18 @@ public class NamedPoint extends GeoItem
     @Override
     public void solve ()
     {
-        if (isDetermined ())
-        {
-            if (!x.isDetermined ())
-            {
-                x.setFormula ("definition of point", "%s == " + x.getDoubleValue (), x);
-            }
-            if (!y.isDetermined ())
-            {
-                y.setFormula ("definition of point", "%s == " + y.getDoubleValue (), y);
-            }
-        }
-        if (!isDetermined ())
-        {
-            if (x.isDetermined () && y.isDetermined ())
-            {
-                // setStatus (GeoStatus.derived, "definition of point");
-                // Set value to a list of {x, y}
-                setFormula ("definition of point", "%s == {%s, %s}", this, x, y);
-            }
-        }
+        setFormula ("aggregate", "%s == {%s, %s}", this, x, y);
+        x.setFormula ("fixed value", "%s == " + x.getDoubleValue (), x, this);
+        y.setFormula ("fixed value", "%s == " + y.getDoubleValue (), y, this);
     }
 
     /** If two points are at the same screen position, make them equivalent. */
     public void equivalent (NamedPoint p)
     {
-        if (p.getX ().isDetermined () && !getX ().isDetermined ())
-        {
-            getX ().setFormula ("equivalent pont x", "%s == %s", getX (), p.getX ());
-        }
-        if (p.getY ().isDetermined () && !getY ().isDetermined ())
-        {
-            getY ().setFormula ("equivalent pont y", "%s == %s", getY (), p.getY ());
-        }
-
-        if (!p.getX ().isDetermined () && getX ().isDetermined ())
-        {
-            p.getX ().setFormula ("equivalent pont x", "%s == %s", p.getX (), getX ());
-        }
-        if (!p.getY ().isDetermined () && getY ().isDetermined ())
-        {
-            p.getY ().setFormula ("equivalent pont y", "%s == %s", p.getY (), getY ());
-        }
+        x.setFormula ("equivalent point x", "%s == %s", x, p.x);
+        y.setFormula ("equivalent point y", "%s == %s", y, p.y);
+        p.x.setFormula ("equivalent point x", "%s == %s", p.x, x);
+        p.y.setFormula ("equivalent point y", "%s == %s", p.y, y);
     }
 
     /**

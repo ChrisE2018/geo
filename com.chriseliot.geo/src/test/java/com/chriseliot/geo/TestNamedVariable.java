@@ -78,11 +78,10 @@ public class TestNamedVariable
         final Color color = Color.red;
         final String name = "test1";
         final NamedVariable test = new NamedVariable (parent, color, name, 43.0);
-        test.setFormula ("test", "1 + 1 = 2", test);
+        test.setFormula ("test", "%s == 43", test);
         final Inference inference = test.getInference ();
         assertNotNull (inference);
-        assertEquals ("1 + 1 = 2", inference.getInstantiation ());
-        assertEquals ("test", test.getReason ());
+        assertEquals ("test1 == 43", inference.getInstantiation ());
         plane.solve ();
     }
 
@@ -97,12 +96,11 @@ public class TestNamedVariable
         final NamedVariable x = new NamedVariable (parent, color, "x", 44.0);
         final NamedVariable y = new NamedVariable (parent, color, "y", 45.0);
         test.setFormula ("test", "c == 43.0", test);
-        assertEquals ("test", test.getReason ());
         assertEquals ("c==43.0", test.getDerivedFormula ());
         plane.solve ();
         x.setStatusUnknown ();
-        y.setFormula ("test", "y == 55", y);
-        test.setFormula ("test", "%s == %s + 4", test, y);
+        y.setFormula ("test", "%s == 45", y);
+        test.setFormula ("test", "%s == %s - 2", test, y);
         assertEquals ("c==43.0", test.getDerivedFormula ());
     }
 
@@ -116,7 +114,7 @@ public class TestNamedVariable
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedPoint test2 = new NamedPoint (parent, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedPoint test3 = new NamedPoint (parent, false, Color.green, "test", position2, SwingConstants.NORTH_WEST);
-        test.getX ().setFormula ("1 + 1 = 2", "test", test.getX ());
+        test.getX ().setFormula ("test", "%s == 10", test.getX ());
         plane.solve ();
         assertNotNull (test2);
         assertNotNull (test3);
@@ -161,7 +159,7 @@ public class TestNamedVariable
         assertNotEquals (v, parent.getY ());
 
         v.setFormula ("test", "%s == 55", v);
-        assertEquals (GeoStatus.derived, v.getStatus ());
+        assertTrue (v.isDetermined ());
 
         // Try to change to a conflicting name
         final String oldName = v.getName ();
@@ -187,54 +185,17 @@ public class TestNamedVariable
         final Point2D.Double position = new Point2D.Double (10, 20);
         final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position, SwingConstants.NORTH_WEST);
         final NamedVariable v = new NamedVariable (parent, Color.red, "test1");
-        // final CloseDialogThread thread = new CloseDialogThread ();
-        // thread.start ();
-        // v.showDerivationAction ();
-        // thread.halt ();
-        // thread.dream (10);
-        // System.out.printf ("Derivation dialog returns\n");
-        // assertTrue (thread.isDialogSeen ());
-
         final NamedVariable x = parent.getX ();
         final NamedVariable y = parent.getY ();
         v.setGivenStatus (GeoStatus.known);
         y.setGivenStatus (GeoStatus.fixed);
+        x.setDoubleValue (28.0);
+        y.setDoubleValue (17.0);
+        v.setDoubleValue (11.0);
         x.setFormula ("test", "%s == %s + %s", x, y, v);
         final StringBuilder builder = new StringBuilder ();
         x.getDerivation (builder, 3);
     }
-
-    // @Test
-    // public void testAttributes ()
-    // {
-    // final GeoPlane plane = new GeoPlane ();
-    // final GeoItem item = new GeoItem (plane, "t", Color.black);
-    // final Point2D.Double position = new Point2D.Double (10, 20);
-    // final NamedPoint parent = new NamedPoint (item, false, Color.green, "test", position,
-    // SwingConstants.NORTH_WEST);
-    // final NamedVariable test = new NamedVariable (parent, Color.red, "test1");
-    // test.setDoubleValue (9.5);
-    // final Map<String, Object> attributes = test.getAttributes ();
-    // assertEquals (9.5, attributes.get ("value"));
-    // final Map<String, String> attributes2 = new HashMap<> ();
-    // for (final Entry<String, Object> entry : attributes.entrySet ())
-    // {
-    // final String key = entry.getKey ();
-    // final Object value = entry.getValue ();
-    // if (value == null)
-    // {
-    // attributes2.put (key, (String)value);
-    // }
-    // else
-    // {
-    // attributes2.put (key, value.toString ());
-    // }
-    // }
-    // test.readAttributes (attributes2);
-    // assertNotNull (test.getAttributes ());
-    // test.setLocation (null);
-    // assertNotNull (test.getAttributes ());
-    // }
 
     @Test
     public void testSetValueAction ()
@@ -275,7 +236,7 @@ public class TestNamedVariable
         final String name = GeoItem.class.getSimpleName ();
         assertNull (xu.getNthChild (root, name, 0));
         x.getElement (root);
-        x.setFormula ("test", "%s == 123", x);
+        x.setFormula ("test", "%s == 10", x);
         x.setLocation (null);
         x.setDoubleValue (null);
         x.getElement (root);

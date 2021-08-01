@@ -300,7 +300,7 @@ public class GeoControls extends JPanel implements ActionListener
         }
     }
 
-    private void readXml (File file) throws ParserConfigurationException, IOException, SAXException
+    public void readXml (File file) throws ParserConfigurationException, IOException, SAXException
     {
         final GeoPlane plane = geo.getPlane ();
         plane.clear ();

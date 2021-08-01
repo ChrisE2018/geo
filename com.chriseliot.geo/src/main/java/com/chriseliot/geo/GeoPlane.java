@@ -13,7 +13,7 @@ import javax.swing.event.*;
 
 import org.apache.logging.log4j.*;
 
-import com.chriseliot.util.Labels;
+import com.chriseliot.util.*;
 
 /**
  * Container for geometry items. Nothing accessible from this class should be a GUI element so a
@@ -100,6 +100,7 @@ public class GeoPlane
     /** Clear the geometry plane. */
     public void clear ()
     {
+        Namer.reset ();
         items.clear ();
         bindings.clear ();
     }
@@ -205,6 +206,7 @@ public class GeoPlane
                 item.setStatusUnknown ();
             }
         }
+        setDirty ();
         solve ();
         fireChangeListeners (this);
     }

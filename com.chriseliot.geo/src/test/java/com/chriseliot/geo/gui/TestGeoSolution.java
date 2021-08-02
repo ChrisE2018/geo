@@ -12,7 +12,6 @@ import javax.swing.RowFilter.Entry;
 import org.junit.jupiter.api.Test;
 
 import com.chriseliot.geo.*;
-import com.chriseliot.geo.gui.GeoSolution.SolutionRowFilter;
 
 public class TestGeoSolution
 {

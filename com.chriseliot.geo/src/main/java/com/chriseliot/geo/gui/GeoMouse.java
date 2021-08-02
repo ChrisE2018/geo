@@ -289,7 +289,7 @@ public class GeoMouse implements MouseListener, MouseMotionListener
             popup.add (menuItem);
         }
         popup.show (geo, p.x, p.y);
-        geo.repaint ();
+        geo.repaint (10);
         return true;
     }
 }

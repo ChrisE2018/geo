@@ -61,10 +61,10 @@ public class Geo extends JPanel
     /** Setup this panel. */
     public void setup ()
     {
+        addListeners ();
         splitPane.setPreferredSize (new Dimension (1000, 1000));
         setPreferredSize (new Dimension (3000, 3000));
         setBackground (Color.black);
-        addListeners ();
         solutionScroll.setPreferredSize (new Dimension (700, 1500));
         solutionTable.setPreferredSize (new Dimension (700, 1500));
         solutionTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);
@@ -123,12 +123,11 @@ public class Geo extends JPanel
                 {
                     final Object name = table.getValueAt (row, column);
                     logger.info ("Double click on %s", name);
+                    geoMouse.handleClick (point, item);
                 }
                 frame.repaint ();
             }
         });
-        // Use lambda to repaint when plane changes
-        plane.addChangeListener (e -> frame.repaint (10));
     }
 
     public void open ()
@@ -288,5 +287,7 @@ public class Geo extends JPanel
     {
         addMouseListener (geoMouse);
         addMouseMotionListener (geoMouse);
+        // Use lambda to repaint when plane changes
+        plane.addChangeListener (e -> frame.repaint (10));
     }
 }

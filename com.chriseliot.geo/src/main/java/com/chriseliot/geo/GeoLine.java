@@ -533,6 +533,7 @@ public class GeoLine extends GeoItem
     @Override
     public void popup (Map<String, Consumer<GeoItem>> result)
     {
+        super.popup (result);
         result.put ("Delete", item -> item.remove ());
     }
 

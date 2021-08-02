@@ -4,7 +4,6 @@ package com.chriseliot.geo.gui;
 import java.awt.Color;
 import java.util.*;
 
-import javax.swing.RowFilter;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.logging.log4j.*;
@@ -38,35 +37,9 @@ public class GeoSolution extends AbstractTableModel
         this.plane = plane;
     }
 
-    public class SolutionRowFilter extends RowFilter<GeoSolution, Integer>
-    {
-        @Override
-        public boolean include (Entry<? extends GeoSolution, ? extends Integer> entry)
-        {
-            final Integer id = entry.getIdentifier ();
-            final GeoItem item = items.get (id);
-            if (item instanceof GeoVertex)
-            {
-                final GeoVertex v = (GeoVertex)item;
-                final GeoItem line1 = v.getLine1 ();
-                if (line1.isOpen () && visibleItems.contains (line1))
-                {
-                    return true;
-                }
-                final GeoItem line2 = v.getLine2 ();
-                if (line2.isOpen () && visibleItems.contains (line2))
-                {
-                    return true;
-                }
-                return false;
-            }
-            return visibleItems.contains (item);
-        }
-    }
-
     public SolutionRowFilter getRowFilter ()
     {
-        return new SolutionRowFilter ();
+        return new SolutionRowFilter (this);
     }
 
     public void update ()
@@ -116,6 +89,16 @@ public class GeoSolution extends AbstractTableModel
         visibleItems.clear ();
         items.clear ();
         fireTableDataChanged ();
+    }
+
+    public GeoItem getItem (Integer id)
+    {
+        return items.get (id);
+    }
+
+    public List<GeoItem> getVisibleItems ()
+    {
+        return visibleItems;
     }
 
     public void setVisible (GeoItem item, boolean isVisible)
@@ -425,17 +408,5 @@ public class GeoSolution extends AbstractTableModel
             final GeoStatus status = (GeoStatus)value;
             row.setGivenStatus (status);
         }
-    }
-
-    @Override
-    public String toString ()
-    {
-        final StringBuilder buffer = new StringBuilder ();
-        buffer.append ("#<");
-        buffer.append (getClass ().getSimpleName ());
-        buffer.append (" ");
-        buffer.append (System.identityHashCode (this));
-        buffer.append (">");
-        return buffer.toString ();
     }
 }

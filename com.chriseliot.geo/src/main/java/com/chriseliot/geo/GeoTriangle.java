@@ -618,7 +618,7 @@ public class GeoTriangle extends GeoItem
 
         l.setFormula ("triangle vertices", "%s == sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)", l, bv.getX (), av.getX (), bv.getY (),
                 av.getY ());
-        logger.info ("Length %s derived from vertices %s, %s", l.getName (), a.getName (), b.getName ());
+        logger.debug ("Length %s derived from vertices %s, %s", l.getName (), a.getName (), b.getName ());
     }
 
     private void deriveThirdAngle ()
@@ -641,22 +641,22 @@ public class GeoTriangle extends GeoItem
         if (abs (vertexValue - angleValue) < epsilon)
         {
             angle.setFormula ("Angle from vertex", "%s == %s", angle, vertexAngle);
-            logger.info ("Angle %s == vertex %s", angleName, vertexName);
+            logger.debug ("Angle %s == vertex %s", angleName, vertexName);
         }
         else if (vertexValue < 0 && abs (angleValue + vertexValue) < epsilon)
         {
             angle.setFormula ("Angle from -vertex", "%s == -%s", angle, vertexAngle);
-            logger.info ("Angle %s == -vertex %s", angleName, vertexName);
+            logger.debug ("Angle %s == -vertex %s", angleName, vertexName);
         }
         else if (vertexValue >= 0 && abs (180 - angleValue - vertexValue) < epsilon)
         {
             angle.setFormula ("Angle from 180-vertex", "%s == 180-%s", angle, vertexAngle);
-            logger.info ("Angle %s == 180-vertex %s", angleName, vertexName);
+            logger.debug ("Angle %s == 180-vertex %s", angleName, vertexName);
         }
         else if (vertexValue < 0 && abs (180 - angleValue + vertexValue) < epsilon)
         {
             angle.setFormula ("Angle from vertex+180", "%s == %s+180", angle, vertexAngle);
-            logger.info ("Angle %s == vertex %s + 180", angleName, vertexName);
+            logger.debug ("Angle %s == vertex %s + 180", angleName, vertexName);
         }
         else
         {
@@ -683,22 +683,22 @@ public class GeoTriangle extends GeoItem
         if (vertexValue == angleValue)
         {
             vertexAngle.setFormula ("Vertex from angle", "%s == %s", vertexAngle, angle);
-            logger.info ("Vertex %s == angle %s", vertexName, angleName);
+            logger.debug ("Vertex %s == angle %s", vertexName, angleName);
         }
         else if (vertexValue < 0 && vertexValue == -angleValue)
         {
             vertexAngle.setFormula ("Vertex from -angle", "%s == -%s", vertexAngle, angle);
-            logger.info ("Vertex %s == -angle %s", vertexName, angleName);
+            logger.debug ("Vertex %s == -angle %s", vertexName, angleName);
         }
         else if (vertexValue >= 0 && vertexValue == 180 - angleValue)
         {
             vertexAngle.setFormula ("Vertex from 180-angle", "%s == 180-%s", vertexAngle, angle);
-            logger.info ("Vertex %s == 180-angle %s", vertexName, angleName);
+            logger.debug ("Vertex %s == 180-angle %s", vertexName, angleName);
         }
         else if (vertexValue < 0 && vertexValue == angleValue - 180)
         {
             vertexAngle.setFormula ("Vertex from angle-180", "%s == %s-180", vertexAngle, angle);
-            logger.info ("Vertex %s == angle %s - 180", vertexName, angleName);
+            logger.debug ("Vertex %s == angle %s - 180", vertexName, angleName);
         }
         else
         {
@@ -814,7 +814,7 @@ public class GeoTriangle extends GeoItem
         a.setFormula ("law of sines",
                 "%s == Block({angleA=%s, sideB=%s, angleB=%s}, Return((sideB * Sin (angleA * Degree)) / Sin(angleB * Degree)))",
                 a, A, b, B);
-        logger.info ("Calculate %s", a.getName ());
+        logger.debug ("Calculate %s", a.getName ());
     }
 
     /** Location of centroid */

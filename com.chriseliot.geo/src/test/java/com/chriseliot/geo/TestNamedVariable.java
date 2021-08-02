@@ -199,7 +199,7 @@ public class TestNamedVariable
         v.setDoubleValue (11.0);
         x.setFormula ("test", "%s == %s + %s", x, y, v);
         final StringBuilder builder = new StringBuilder ();
-        x.getDerivation (builder, 3);
+        x.getDerivation (builder);
     }
 
     @Test

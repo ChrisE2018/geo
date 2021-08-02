@@ -29,8 +29,8 @@ public class NamedVariableActions
             final StringBuilder builder = new StringBuilder ();
             final String formula = inference.getInstantiation ();
             builder.append (String.format ("Derivation: %s\n\n", formula));
-            item.getDerivation (builder, 0);
-            item.getFormulaLine (builder, 0);
+            item.getDerivation (builder);
+            item.getFormulaLine (builder);
             JOptionPane.showMessageDialog (null, builder.toString (), "Derivation", JOptionPane.INFORMATION_MESSAGE);
         }
     }

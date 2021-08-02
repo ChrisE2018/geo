@@ -1,8 +1,6 @@
 
 package com.chriseliot.geo;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -284,7 +282,7 @@ public class GeoItem
     {
         final GeoItem[] terms = new GeoItem[variables.length];
         System.arraycopy (variables, 0, terms, 0, variables.length);
-        assertTrue (Inference.verifyInference (reason, formulaExpression, terms));
+        Inference.verifyInference (reason, formulaExpression, terms);
         final GeoItem owner = terms[0];
         if (!owner.isDetermined ())
         {
@@ -371,22 +369,37 @@ public class GeoItem
         }
     }
 
-    public void getDerivation (StringBuilder builder, int level)
+    public void getDerivation (StringBuilder builder)
     {
-        final Inference inference = getInference ();
-        if (inference != null)
+        final Set<GeoItem> closed = new HashSet<> ();
+        getDerivation (builder, 0, closed);
+    }
+
+    private void getDerivation (StringBuilder builder, int level, Set<GeoItem> closed)
+    {
+        if (!closed.contains (this))
         {
-            final GeoItem[] terms = inference.getTerms ();
-            for (int i = 1; i < terms.length; i++)
+            final Inference inference = getInference ();
+            if (inference != null)
             {
-                final GeoItem ti = terms[i];
-                ti.getDerivation (builder, level + 1);
-                ti.getFormulaLine (builder, level);
+                closed.add (this);
+                final GeoItem[] terms = inference.getTerms ();
+                for (int i = 1; i < terms.length; i++)
+                {
+                    final GeoItem ti = terms[i];
+                    ti.getDerivation (builder, level + 1, closed);
+                    ti.getFormulaLine (builder, level);
+                }
             }
         }
     }
 
-    public void getFormulaLine (StringBuilder builder, int level)
+    public void getFormulaLine (StringBuilder builder)
+    {
+        getFormulaLine (builder, 0);
+    }
+
+    private void getFormulaLine (StringBuilder builder, int level)
     {
         for (int i = 0; i < level; i++)
         {

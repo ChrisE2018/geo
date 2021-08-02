@@ -71,17 +71,12 @@
 			<version>${matheclipse.version}</version>
 		</dependency>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>${opencsv.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.chriseliot.service</groupId>
-			<artifactId>com.chriseliot.service</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
+		
 	</dependencies>
 
 	<repositories>

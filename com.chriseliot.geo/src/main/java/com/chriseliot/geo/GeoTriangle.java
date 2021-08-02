@@ -768,7 +768,7 @@ public class GeoTriangle extends GeoItem
         c.setFormula ("law of cosines",
                 "%s == Block({$a=%s, $b=%s, $theta=%s}, Return(sqrt($a^2 + $b^2 - 2*$a*$b*cos($theta * Degree))))", c, a, b,
                 theta);
-        logger.info ("Calculate %s", c.getName ());
+        // logger.info ("Calculate %s", c.getName ());
     }
 
     /**

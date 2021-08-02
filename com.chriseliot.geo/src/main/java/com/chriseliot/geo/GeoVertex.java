@@ -286,7 +286,7 @@ public class GeoVertex extends GeoItem
     @Override
     public void solve ()
     {
-        logger.info ("Solve %s = %s %.2f - %s %.2f", getName (), line1.getName (), line1.getAngle ().getDoubleValue (),
+        logger.debug ("Solve %s = %s %.2f - %s %.2f", getName (), line1.getName (), line1.getAngle ().getDoubleValue (),
                 line2.getName (), line2.getAngle ().getDoubleValue ());
         angle.setFormula ("vertex angles *", "%s == %s - %s", angle, line1.getAngle (), line2.getAngle ());
         if (isDetermined ())

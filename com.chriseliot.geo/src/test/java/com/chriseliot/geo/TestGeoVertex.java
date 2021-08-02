@@ -114,10 +114,14 @@ public class TestGeoVertex
         final BufferedImage image = new BufferedImage (500, 500, BufferedImage.TYPE_INT_RGB);
         final Graphics g = image.getGraphics ();
         final Labels labels = new Labels ();
+        test.setPosition (new Point2D.Double (10, 20));
+        assertNotNull (test.getPosition ());
+        assertNotNull (test.getIntPosition ());
         test.paint (g, labels);
         test.setSelected (true);
         test.paint (g, labels);
         test.recalculate ();
+        test.setSelected (true);
         test.paint (g, labels);
     }
 
@@ -197,30 +201,6 @@ public class TestGeoVertex
         assertFalse (v3.getLine1 ().getVertices ().contains (v3));
         assertFalse (t.getPlane ().contains (t));
     }
-
-    // @Test
-    // public void testAttributes ()
-    // {
-    // final GeoPlane plane = new GeoPlane ();
-    // final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new
-    // Point2D.Double (30, 40));
-    // final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new
-    // Point2D.Double (50, 55));
-    //
-    // final GeoVertex v1 = new GeoVertex (plane, Color.green, line1, line2, new Point2D.Double (10,
-    // 20));
-    // final Map<String, Object> attributes = v1.getAttributes ();
-    // assertEquals (v1.getPosition ().x, attributes.get ("positionx"));
-    // assertEquals (v1.getPosition ().y, attributes.get ("positiony"));
-    // assertEquals (v1.getAngle ().getDoubleValue (), attributes.get ("angle"));
-    //
-    // attributes.clear ();
-    // v1.getAttributes (attributes);
-    // assertEquals (3, attributes.size ());
-    // assertEquals (v1.getPosition ().x, attributes.get ("positionx"));
-    // assertEquals (v1.getPosition ().y, attributes.get ("positiony"));
-    // assertEquals (v1.getAngle ().getDoubleValue (), attributes.get ("angle"));
-    // }
 
     @Test
     public void testXmlAttributes () throws ParserConfigurationException

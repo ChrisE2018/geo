@@ -8,8 +8,9 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.*;
 import org.junit.jupiter.api.*;
@@ -191,6 +192,25 @@ public class TestGeoTriangle
         t.paint (g, labels);
         t.getV2 ().setPosition (null);
         t.paint (g, labels);
+    }
+
+    @Test
+    public void testPopup ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (0, 0), new Point2D.Double (30, 0));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (0, 0), new Point2D.Double (30, 40));
+        final GeoLine line3 = new GeoLine (plane, Color.blue, new Point2D.Double (30, 40), new Point2D.Double (30, 0));
+        assertNotNull (line1);
+        assertNotNull (line2);
+        assertNotNull (line3);
+        final GeoVertex v1 = plane.getVertex (new Point2D.Double (0, 0));
+        final GeoVertex v2 = plane.getVertex (new Point2D.Double (30, 40));
+        final GeoVertex v3 = plane.getVertex (new Point2D.Double (30, 0));
+
+        final GeoTriangle t = plane.getTriangle (v1, v2, v3);
+        final Map<String, Consumer<GeoItem>> result = new HashMap<> ();
+        t.popup (result);
     }
 
     @Test

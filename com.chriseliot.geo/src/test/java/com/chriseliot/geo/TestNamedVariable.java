@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.*;
+import java.util.function.Consumer;
 
 import javax.swing.SwingConstants;
 import javax.xml.parsers.*;
@@ -170,6 +172,9 @@ public class TestNamedVariable
         v.renameVariableAction ("change");
         assertEquals ("change", v.getName ());
         assertEquals (v, plane.get ("change"));
+
+        final Map<String, Consumer<GeoItem>> popup = new HashMap<> ();
+        v.popup (popup);
     }
 
     /**

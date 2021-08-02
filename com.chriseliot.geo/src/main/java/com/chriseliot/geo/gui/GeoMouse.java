@@ -1,6 +1,8 @@
 
 package com.chriseliot.geo.gui;
 
+import static java.lang.Math.abs;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
@@ -18,6 +20,15 @@ import com.chriseliot.util.*;
 
 public class GeoMouse implements MouseListener, MouseMotionListener
 {
+    /** Length of shortest line to create by click and drag. */
+    private static final double MINIMUM_LINE_DISTANCE = 10;
+
+    /** Length squared of shortest line to create by click and drag. */
+    private static final double MINIMUM_LINE_DISTANCE2 = MINIMUM_LINE_DISTANCE * MINIMUM_LINE_DISTANCE;
+
+    /** If a line endpoint is this close to an axis, make it align with the axis. */
+    private final double LINE_AXIS_SNAP = 5;
+
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
 
     private final Geo geo;
@@ -159,7 +170,10 @@ public class GeoMouse implements MouseListener, MouseMotionListener
             }
             else if (geoShape == GeoShape.line)
             {
-                plane.addItem (new GeoLine (plane, createColor, c, d));
+                if (getPlane ().distance2 (c, d) > MINIMUM_LINE_DISTANCE2)
+                {
+                    plane.addItem (new GeoLine (plane, createColor, c, d));
+                }
             }
             else if (geoShape == GeoShape.rectangle)
             {
@@ -194,12 +208,30 @@ public class GeoMouse implements MouseListener, MouseMotionListener
     @Override
     public void mouseDragged (MouseEvent e)
     {
+
         final Point p = e.getPoint ();
         dragPoint = new Point2D.Double (p.x, p.y);
         final Point2D.Double s = getPlane ().getSnapPoint (dragPoint, snapLimit);
         if (s != null)
         {
             dragPoint = s;
+        }
+        else
+        {
+            final GeoShape geoShape = geo.getControls ().getSelected ();
+            if (geoShape == GeoShape.line)
+            {
+                final double dx = abs (clickPoint.x - dragPoint.x);
+                if (dx < LINE_AXIS_SNAP)
+                {
+                    dragPoint.x = clickPoint.x;
+                }
+                final double dy = abs (clickPoint.y - dragPoint.y);
+                if (dy < LINE_AXIS_SNAP)
+                {
+                    dragPoint.y = clickPoint.y;
+                }
+            }
         }
         geo.repaint ();
     }

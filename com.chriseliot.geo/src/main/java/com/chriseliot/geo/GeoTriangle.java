@@ -1011,7 +1011,6 @@ public class GeoTriangle extends GeoItem
         final int cx = (int)round (p1x + dx2n);
         final int cy = (int)round (p1y + dy2n);
         // g.drawRect ((int)v.x - 25, (int)v.y - 25, 50, 50);
-        g.setColor (Color.red);
         g.drawLine (cx, cy, (int)round (p1x), (int)round (p1y));
         g.drawLine (cx, cy, p2x, p2y);
     }

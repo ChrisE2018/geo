@@ -116,6 +116,7 @@ public class GeoPlane
         if (!items.contains (item))
         {
             items.add (item);
+            fireChangeListeners (item);
         }
         if (bindings.containsValue (item))
         {

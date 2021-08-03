@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -37,6 +38,11 @@ public class GeoControls extends JPanel implements ActionListener
     private final JButton save = new JButton ("Save");
     private final JButton read = new JButton ("Read");
     private final JButton quit = new JButton ("Quit");
+
+    /** Set true when changes need to be saved to a file. */
+    private boolean dirty = false;
+
+    private static boolean ENABLE_SAVE_CHANGES_ALERTS = true;
 
     /**
      * Create the control panel.
@@ -91,6 +97,30 @@ public class GeoControls extends JPanel implements ActionListener
         save.addActionListener (this);
         read.addActionListener (this);
         quit.addActionListener (this);
+
+        /**
+         * If it is made possible to change the GeoPlane then this listener will have to be updated.
+         */
+        geo.getPlane ().addChangeListener (new ChangeListener ()
+        {
+            @Override
+            public void stateChanged (ChangeEvent e)
+            {
+                dirty = true;
+            }
+        });
+    }
+
+    /** Set true when changes need to be saved to a file. */
+    public boolean isDirty ()
+    {
+        return dirty;
+    }
+
+    /** Set true when changes need to be saved to a file. */
+    public void setDirty (boolean dirty)
+    {
+        this.dirty = dirty;
     }
 
     public GeoShape getSelected ()
@@ -229,14 +259,52 @@ public class GeoControls extends JPanel implements ActionListener
         {
             final FileSave fileSave = new FileSave (geo);
             fileSave.save ();
+            dirty = false;
         }
         else if (source == read)
         {
+            if (ENABLE_SAVE_CHANGES_ALERTS)
+            {
+                if (dirty)
+                {
+                    // Ask if the user wants to save.
+                    final int result = JOptionPane.showConfirmDialog (geo, "Save changes before read?");
+                    if (result == JOptionPane.CANCEL_OPTION)
+                    {
+                        return;
+                    }
+                    if (result == JOptionPane.YES_OPTION)
+                    {
+                        final FileSave fileSave = new FileSave (geo);
+                        fileSave.save ();
+                        dirty = false;
+                    }
+                }
+            }
             final FileSave fileSave = new FileSave (geo);
             fileSave.read ();
+            dirty = false;
         }
         else if (source == quit)
         {
+            if (ENABLE_SAVE_CHANGES_ALERTS)
+            {
+                if (dirty)
+                {
+                    // Ask if the user wants to save.
+                    final int result = JOptionPane.showConfirmDialog (geo, "Save changes before quit?");
+                    if (result == JOptionPane.CANCEL_OPTION)
+                    {
+                        return;
+                    }
+                    if (result == JOptionPane.YES_OPTION)
+                    {
+                        final FileSave fileSave = new FileSave (geo);
+                        fileSave.save ();
+                        dirty = false;
+                    }
+                }
+            }
             System.exit (0);
         }
     }

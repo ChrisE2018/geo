@@ -140,6 +140,33 @@ public class TestSupport
     }
 
     /**
+     * Textual comparison of two files. Asserts failure if files are not the same.
+     *
+     * @throws IOException
+     */
+    public void compare (File expected, File actual) throws IOException
+    {
+        try (final BufferedReader expectedStream = new BufferedReader (new FileReader (expected)))
+        {
+            try (final BufferedReader actualStream = new BufferedReader (new FileReader (actual)))
+            {
+                while (true)
+                {
+                    final String expectedLine = expectedStream.readLine ();
+                    final String actualLine = actualStream.readLine ();
+                    if (expectedLine == null && actualLine == null)
+                    {
+                        return;
+                    }
+                    assertNotNull (expectedLine);
+                    assertNotNull (actualLine);
+                    assertEquals (expectedLine, actualLine);
+                }
+            }
+        }
+    }
+
+    /**
      * Compare a newly generated image to saved data from a test data file. If the file is missing,
      * the data will be saved instead of compared.
      *

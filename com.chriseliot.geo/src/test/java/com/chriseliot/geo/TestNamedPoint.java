@@ -185,7 +185,10 @@ public class TestNamedPoint
         final NamedPoint test = new NamedPoint (parent, false, Color.green, "test", 10, 20, SwingConstants.NORTH_WEST);
 
         test.setGivenStatus (GeoStatus.known);
+        assertEquals (10, test.getX ().getDoubleValue ());
+        assertEquals (20, test.getY ().getDoubleValue ());
         checkVariables (test);
+        assertEquals ("{10.0, 20.0}", test.getStringValue ());
         assertNotNull (test.toString ());
     }
 

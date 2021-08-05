@@ -306,6 +306,8 @@ public class GeoItem
      *
      * 2. Use the Symja solver to eliminate all of the intermediate variables from the derivation.
      *
+     * This is shown by the "Show Solution" popup menu item.
+     *
      * @return an expression for this variable in terms of the given known values only, with no
      *         intermediate terms involved.
      */
@@ -369,12 +371,25 @@ public class GeoItem
         }
     }
 
+    /**
+     * Build a derivation string for a show derivation action.
+     *
+     * @param builder The result is built here.
+     */
     public void getDerivation (StringBuilder builder)
     {
         final Set<GeoItem> closed = new HashSet<> ();
         getDerivation (builder, 0, closed);
     }
 
+    /**
+     * Build a derivation string for a show derivation action. The derivation of the nested terms is
+     * shown in a post-order traversal, so the most primitive terms appear first.
+     *
+     * @param builder The result is built here.
+     * @param level Current indentation level.
+     * @param closed Items already visited that can terminate search.
+     */
     private void getDerivation (StringBuilder builder, int level, Set<GeoItem> closed)
     {
         if (!closed.contains (this))
@@ -399,8 +414,21 @@ public class GeoItem
         getFormulaLine (builder, 0);
     }
 
+    /**
+     * Display one line of an overall derivation.
+     *
+     * @param builder The result is built here.
+     * @param level Current indentation level.
+     */
     private void getFormulaLine (StringBuilder builder, int level)
     {
+        builder.append (getFormulaLine (level));
+        builder.append ("\n");
+    }
+
+    private String getFormulaLine (int level)
+    {
+        final StringBuilder builder = new StringBuilder ();
         for (int i = 0; i < level; i++)
         {
             builder.append ("|  ");
@@ -409,21 +437,35 @@ public class GeoItem
         if (inference == null)
         {
             builder.append (String.format ("%s == %s", getName (), getStringValue ()));
+
+            if (getStatus () == GeoStatus.known)
+            {
+                tab (builder, 45);
+                builder.append (" given");
+            }
+            else if (getStatus () == GeoStatus.fixed)
+            {
+                tab (builder, 45);
+                builder.append (" fixed");
+            }
         }
         else
         {
             final String formula = inference.getInstantiation ();
             builder.append (formula);
+            tab (builder, 45);
+            builder.append (" ");
+            builder.append (inference.getReason ());
         }
-        if (getStatus () == GeoStatus.known)
+        return builder.toString ();
+    }
+
+    private void tab (StringBuilder builder, int column)
+    {
+        while (builder.length () < column)
         {
-            builder.append (" given");
+            builder.append (' ');
         }
-        else if (getStatus () == GeoStatus.fixed)
-        {
-            builder.append (" fixed");
-        }
-        builder.append ("\n");
     }
 
     /**

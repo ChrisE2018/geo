@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.matheclipse.core.eval.ExprEvaluator;
+import org.matheclipse.core.interfaces.IExpr;
 import org.w3c.dom.Element;
 
 import com.chriseliot.geo.gui.NamedPointActions;
@@ -193,13 +195,44 @@ public class NamedPoint extends GeoItem
         return false;
     }
 
+    /**
+     * Define the value of this item for math eclipse. This should be overridden.
+     *
+     * @param eval The symbolic math context. Use the defineVariable method to define a boolean,
+     *            double or IExpr binding the name of this item to some value.
+     */
+    @Override
+    public void defineVariable (ExprEvaluator eval)
+    {
+        final IExpr expr = eval.parse (getStringValue ());
+        eval.defineVariable (getName (), expr);
+    }
+
+    /**
+     * Get a math eclipse expression for the value of this item. This should be overridden.
+     *
+     * @return The item value.
+     */
+    @Override
+    public String getStringValue ()
+    {
+        return String.format ("{%s, %s}", x.getDoubleValue (), y.getDoubleValue ());
+    }
+
     /** Derive inferences from this item. */
     @Override
     public void solve ()
     {
         setFormula ("aggregate", "%s == {%s, %s}", this, x, y);
-        x.setFormula ("fixed value", "%s == " + x.getDoubleValue (), x, this);
-        y.setFormula ("fixed value", "%s == " + y.getDoubleValue (), y, this);
+
+        // This inference isn't really true.
+        // x.setFormula ("known point", "%s == " + x.getDoubleValue (), x, this);
+        // y.setFormula ("known point", "%s == " + y.getDoubleValue (), y, this);
+
+        // New code
+        // Element this[[0]] is the function (list).
+        x.setFormula ("known point", "%s == %s[[1]]", x, this);
+        y.setFormula ("known point", "%s == %s[[2]]", y, this);
     }
 
     /** If two points are at the same screen position, make them equivalent. */

@@ -55,21 +55,19 @@ public class TestSupport
                 final GeoItem var = terms[i];
                 assertNotNull (var);
                 var.defineVariable (eval);
-                // final String name = var.getName ();
-                // eval.defineVariable (name, var.getStringValue ());
                 if (trace != null)
                 {
-                    logger.info ("[%s] Var %s = %s", trace, var.getName (), var.getStringValue ());
+                    logger.info ("[%s] Define %s == %s", trace, var.getName (), eval.eval (var.getName ()));
                 }
             }
             final IExpr expr = eval.parse (formula);
             assertNotEquals ("true", expr.toString ());
-            final IExpr f = expr.getAt (2);
-            final double value = eval.evalf (f);
+            final IExpr rhs = expr.getAt (2);
+            final double value = eval.evalf (rhs);
             if (trace != null)
             {
-                logger.info ("[%s] '%s'", trace, formula);
-                logger.info ("[%s] Eval '%s'", trace, f);
+                logger.info ("[%s] Formula: %s", trace, formula);
+                logger.info ("[%s] RHS '%s'", trace, rhs);
                 logger.info ("[%s] expected %.2f = %.2f actual", trace, expected, value);
                 // Can't do this and get full coverage.
                 // final String grade = abs (value - expected) < epsilon ? "PASS" : "FAIL";

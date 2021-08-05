@@ -4,7 +4,6 @@ package com.chriseliot.geo.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -15,28 +14,29 @@ import org.apache.logging.log4j.*;
 import org.xml.sax.SAXException;
 
 import com.chriseliot.geo.*;
-import com.chriseliot.util.Namer;
 
 public class GeoControls extends JPanel implements ActionListener
 {
     private final Logger logger = LogManager.getFormatterLogger (this.getClass ());
 
     private final Geo geo;
+
+    // These are now controlled by the GeoMenuBar, but exist here to maintain the api
     private final JCheckBox select = new JCheckBox ("Select", false);
     private final JCheckBox line = new JCheckBox ("Line", true);
     private final JCheckBox rectangle = new JCheckBox ("Rectangle", false);
     private final JCheckBox oval = new JCheckBox ("Oval", false);
-    private final JCheckBox simpleCategory = new JCheckBox ("Simple", false);
-    private final JCheckBox standardCategory = new JCheckBox ("Standard", true);
-    private final JCheckBox detailCategory = new JCheckBox ("Detail", false);
+    // private final JCheckBox simpleCategory = new JCheckBox ("Simple", false);
+    // private final JCheckBox standardCategory = new JCheckBox ("Standard", true);
+    // private final JCheckBox detailCategory = new JCheckBox ("Detail", false);
     private final JButton color = new JButton ("Color");
     private final JButton backColor = new JButton ("Background");
-    private final JButton clear = new JButton ("Clear");
+    // private final JButton clear = new JButton ("Clear");
     private final JButton expandAll = new JButton ("Expand All");
     private final JButton unknownAll = new JButton ("Unknown All");
     private final JButton debug = new JButton ("Debug");
-    private final JButton save = new JButton ("Save");
-    private final JButton read = new JButton ("Read");
+    // private final JButton save = new JButton ("Save");
+    // private final JButton read = new JButton ("Read");
     private final JButton quit = new JButton ("Quit");
 
     /** Set true when changes need to be saved to a file. */
@@ -54,48 +54,48 @@ public class GeoControls extends JPanel implements ActionListener
     {
         this.geo = geo;
         setPreferredSize (new Dimension (700, 75));
-        final ButtonGroup toolGroup = new ButtonGroup ();
-        toolGroup.add (select);
-        toolGroup.add (line);
-        toolGroup.add (rectangle);
-        toolGroup.add (oval);
-        add (select);
-        add (line);
+        // final ButtonGroup toolGroup = new ButtonGroup ();
+        // toolGroup.add (select);
+        // toolGroup.add (line);
+        // toolGroup.add (rectangle);
+        // toolGroup.add (oval);
+        // add (select);
+        // add (line);
         if (preview)
         {
-            add (rectangle);
-            add (oval);
+            // add (rectangle);
+            // add (oval);
             add (color);
             add (backColor);
             add (debug);
         }
 
-        final ButtonGroup categoryGroup = new ButtonGroup ();
-        categoryGroup.add (simpleCategory);
-        categoryGroup.add (standardCategory);
-        categoryGroup.add (detailCategory);
+        // final ButtonGroup categoryGroup = new ButtonGroup ();
+        // categoryGroup.add (simpleCategory);
+        // categoryGroup.add (standardCategory);
+        // categoryGroup.add (detailCategory);
 
-        add (simpleCategory);
-        add (standardCategory);
-        add (detailCategory);
+        // add (simpleCategory);
+        // add (standardCategory);
+        // add (detailCategory);
         add (expandAll);
         add (unknownAll);
-        add (clear);
-        add (save);
-        add (read);
+        // add (clear);
+        // add (save);
+        // add (read);
         add (quit);
         color.addActionListener (this);
         backColor.addActionListener (this);
-        simpleCategory.addActionListener (this);
-        standardCategory.addActionListener (this);
-        detailCategory.addActionListener (this);
+        // simpleCategory.addActionListener (this);
+        // standardCategory.addActionListener (this);
+        // detailCategory.addActionListener (this);
 
-        clear.addActionListener (this);
+        // clear.addActionListener (this);
         expandAll.addActionListener (this);
         unknownAll.addActionListener (this);
         debug.addActionListener (this);
-        save.addActionListener (this);
-        read.addActionListener (this);
+        // save.addActionListener (this);
+        // read.addActionListener (this);
         quit.addActionListener (this);
 
         /**
@@ -149,9 +149,19 @@ public class GeoControls extends JPanel implements ActionListener
         return select.isSelected ();
     }
 
+    public void setSelectSelected (boolean selected)
+    {
+        select.setSelected (selected);
+    }
+
     public boolean isLineSelected ()
     {
         return line.isSelected ();
+    }
+
+    public void setLineSelected (boolean selected)
+    {
+        line.setSelected (selected);
     }
 
     public boolean isRectangleSelected ()
@@ -159,28 +169,38 @@ public class GeoControls extends JPanel implements ActionListener
         return rectangle.isSelected ();
     }
 
+    public void setRectangleSelected (boolean selected)
+    {
+        rectangle.setSelected (selected);
+    }
+
     public boolean isOvalSelected ()
     {
         return oval.isSelected ();
     }
 
-    public Set<String> getCategories ()
+    public void setOvalSelected (boolean selected)
     {
-        final Set<String> result = new TreeSet<> ();
-        if (simpleCategory.isSelected ())
-        {
-            result.add ("simple");
-        }
-        if (standardCategory.isSelected ())
-        {
-            result.add ("standard");
-        }
-        if (detailCategory.isSelected ())
-        {
-            result.add ("detail");
-        }
-        return result;
+        oval.setSelected (selected);
     }
+
+    // public Set<String> getCategories ()
+    // {
+    // final Set<String> result = new TreeSet<> ();
+    // if (simpleCategory.isSelected ())
+    // {
+    // result.add ("simple");
+    // }
+    // if (standardCategory.isSelected ())
+    // {
+    // result.add ("standard");
+    // }
+    // if (detailCategory.isSelected ())
+    // {
+    // result.add ("detail");
+    // }
+    // return result;
+    // }
 
     @Override
     public void paintComponent (Graphics g)
@@ -208,7 +228,7 @@ public class GeoControls extends JPanel implements ActionListener
     }
 
     private void doAction (Object source) throws UnsupportedEncodingException, FileNotFoundException, IOException,
-            ParserConfigurationException, TransformerException, SAXException
+            ParserConfigurationException, TransformerException
     {
         if (source == color)
         {
@@ -223,12 +243,11 @@ public class GeoControls extends JPanel implements ActionListener
             geo.setBackground (color);
             geo.repaint ();
         }
-        else if (source == clear)
-        {
-            logger.info ("Clear");
-            geo.clear ();
-            Namer.reset ();
-        }
+        // else if (source == clear)
+        // {
+        // logger.info ("Clear");
+        // geo.clear ();
+        // }
         else if (source == expandAll)
         {
             geo.getSolution ().expandAll ();
@@ -255,58 +274,84 @@ public class GeoControls extends JPanel implements ActionListener
                 }
             }
         }
-        else if (source == save)
-        {
-            final FileSave fileSave = new FileSave (geo);
-            fileSave.save ();
-            dirty = false;
-        }
-        else if (source == read)
-        {
-            if (ENABLE_SAVE_CHANGES_ALERTS)
-            {
-                if (dirty)
-                {
-                    // Ask if the user wants to save.
-                    final int result = JOptionPane.showConfirmDialog (geo, "Save changes before read?");
-                    if (result == JOptionPane.CANCEL_OPTION)
-                    {
-                        return;
-                    }
-                    if (result == JOptionPane.YES_OPTION)
-                    {
-                        final FileSave fileSave = new FileSave (geo);
-                        fileSave.save ();
-                        dirty = false;
-                    }
-                }
-            }
-            final FileSave fileSave = new FileSave (geo);
-            fileSave.read ();
-            dirty = false;
-        }
+        // else if (source == save)
+        // {
+        // save ();
+        // }
+        // else if (source == read)
+        // {
+        // read ();
+        // }
         else if (source == quit)
         {
-            if (ENABLE_SAVE_CHANGES_ALERTS)
+            quit ();
+        }
+    }
+
+    public void save () throws UnsupportedEncodingException, FileNotFoundException, IOException, ParserConfigurationException,
+            TransformerException
+    {
+        final FileSave fileSave = new FileSave (geo);
+        fileSave.save ();
+        dirty = false;
+    }
+
+    public void read () throws UnsupportedEncodingException, FileNotFoundException, IOException, ParserConfigurationException,
+            TransformerException, SAXException
+    {
+        if (ENABLE_SAVE_CHANGES_ALERTS)
+        {
+            if (dirty)
             {
-                if (dirty)
+                // Ask if the user wants to save.
+                final int result = JOptionPane.showConfirmDialog (geo, "Save changes before read?");
+                if (result == JOptionPane.CANCEL_OPTION)
                 {
-                    // Ask if the user wants to save.
-                    final int result = JOptionPane.showConfirmDialog (geo, "Save changes before quit?");
-                    if (result == JOptionPane.CANCEL_OPTION)
-                    {
-                        return;
-                    }
-                    if (result == JOptionPane.YES_OPTION)
-                    {
-                        final FileSave fileSave = new FileSave (geo);
-                        fileSave.save ();
-                        dirty = false;
-                    }
+                    return;
+                }
+                if (result == JOptionPane.YES_OPTION)
+                {
+                    final FileSave fileSave = new FileSave (geo);
+                    fileSave.save ();
+                    dirty = false;
                 }
             }
-            System.exit (0);
+            else
+            {
+                logger.info ("Nothing to save");
+            }
         }
+        final FileSave fileSave = new FileSave (geo);
+        fileSave.read ();
+        dirty = false;
+    }
+
+    public void quit () throws UnsupportedEncodingException, FileNotFoundException, IOException, ParserConfigurationException,
+            TransformerException
+    {
+        if (ENABLE_SAVE_CHANGES_ALERTS)
+        {
+            if (dirty)
+            {
+                // Ask if the user wants to save.
+                final int result = JOptionPane.showConfirmDialog (geo, "Save changes before quit?");
+                if (result == JOptionPane.CANCEL_OPTION)
+                {
+                    return;
+                }
+                if (result == JOptionPane.YES_OPTION)
+                {
+                    final FileSave fileSave = new FileSave (geo);
+                    fileSave.save ();
+                    dirty = false;
+                }
+            }
+            else
+            {
+                logger.info ("Nothing to save");
+            }
+        }
+        System.exit (0);
     }
 
     @Override

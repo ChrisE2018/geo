@@ -39,6 +39,7 @@ public class Geo extends JPanel
 
     /** Panel for user controls. */
     private final GeoControls controls = new GeoControls (this, false);
+    private final GeoMenuBar menuBar = new GeoMenuBar (this);
     private final JTable solutionTable = new JTable (solution);
     private final JScrollPane solutionScroll =
         new JScrollPane (solutionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -56,6 +57,7 @@ public class Geo extends JPanel
         frame.setLayout (new BorderLayout ());
         frame.add (controls, BorderLayout.NORTH);
         frame.add (splitPane, BorderLayout.CENTER);
+        frame.setJMenuBar (menuBar);
     }
 
     /** Setup this panel. */
@@ -191,11 +193,12 @@ public class Geo extends JPanel
     @Override
     public void paintComponent (Graphics g)
     {
+        final boolean print = isPaintingForPrint ();
         final int width = getWidth ();
         final int height = getHeight ();
-        g.setColor (getBackground ());
+        g.setColor (print ? Color.white : getBackground ());
         g.fillRect (0, 0, width, height);
-        plane.paintItems (g, controls.getCategories ());
+        plane.paintItems (g, menuBar.getCategories ());
         final Point2D.Double c = geoMouse.getClickPoint ();
         final Point2D.Double d = geoMouse.getDragPoint ();
         if (c != null && d != null)

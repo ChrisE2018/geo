@@ -257,7 +257,7 @@ public class GeoVertex extends GeoItem
         {
             vertex.setPosition (position);
             final double theta = line1.getAngle ().getDoubleValue () - line2.getAngle ().getDoubleValue ();
-            logger.info ("Theta %s %.2f = %s %.2f - %s %.2f", getName (), theta, line1.getName (),
+            logger.debug ("Theta %s %.2f = %s %.2f - %s %.2f", getName (), theta, line1.getName (),
                     line1.getAngle ().getDoubleValue (), line2.getName (), line2.getAngle ().getDoubleValue ());
             angle.setDoubleValue (theta);
             for (final GeoTriangle t : new ArrayList<> (triangles))

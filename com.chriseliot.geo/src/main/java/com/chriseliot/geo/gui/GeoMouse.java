@@ -69,7 +69,7 @@ public class GeoMouse implements MouseListener, MouseMotionListener
         createColor = color;
     }
 
-    private GeoPlane getPlane ()
+    public GeoPlane getPlane ()
     {
         return geo.getPlane ();
     }

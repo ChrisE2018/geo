@@ -129,7 +129,9 @@ public class NamedVariable extends GeoItem
                 }
             }
         }
-        setFormula ("fixed value", "%s == " + getDoubleValue (), this, this);
+        // This can't do anything, I think, because its action depends on this being !isDetermined
+        // and isDetermined.
+        // setFormula ("fixed value", "%s == " + getDoubleValue (), this, this);
     }
 
     /** Location on screen to draw label for this variable. */

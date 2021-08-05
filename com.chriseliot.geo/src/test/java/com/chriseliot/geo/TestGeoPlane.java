@@ -240,6 +240,17 @@ public class TestGeoPlane
         assertEquals (line1.getFrom (), plane.getClickObject (new Point2D.Double (39, 0), 100));
     }
 
+    @Test
+    public void testGetClickObject3 ()
+    {
+        final GeoPlane plane = new GeoPlane ();
+        final GeoLine line1 = new GeoLine (plane, Color.red, new Point2D.Double (10, 20), new Point2D.Double (30, 40));
+        final GeoLine line2 = new GeoLine (plane, Color.blue, new Point2D.Double (10, 20), new Point2D.Double (50, 55));
+
+        final GeoVertex v1 = line1.getVertex (line2);
+        assertEquals (v1.getVertex (), plane.getClickObject (v1.getPosition (), 1));
+    }
+
     private boolean fired = false;
 
     @Test

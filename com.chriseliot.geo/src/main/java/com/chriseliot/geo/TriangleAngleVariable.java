@@ -40,6 +40,7 @@ public class TriangleAngleVariable extends NamedVariable
      * Action to take when the dialog returns. This only works for variables that are x or y of a
      * named point. If calls the point to make the adjustment.
      */
+    @SuppressWarnings ("unused")
     @Override
     public void setValueAction (double result)
     {

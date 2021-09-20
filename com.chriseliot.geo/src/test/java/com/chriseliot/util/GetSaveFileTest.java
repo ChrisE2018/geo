@@ -18,6 +18,8 @@ public class GetSaveFileTest
     // Can't run many times
     @DisabledIfSystemProperty (named = "java.awt.headless", matches = "true")
     @Test
+    @Timeout (value = 5)
+    @Disabled
     void getSaveFile (TestInfo testInfo)
     {
         logger.info ("Test %s", testInfo);

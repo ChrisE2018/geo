@@ -24,10 +24,11 @@ public class XMLUtil
 
     public Document getDocument (URL url) throws ParserConfigurationException, SAXException, IOException
     {
-        final InputStream stream = url.openStream ();
-        final Document result = getDocument (stream);
-        stream.close ();
-        return result;
+        try (InputStream stream = url.openStream ())
+        {
+            final Document result = getDocument (stream);
+            return result;
+        }
     }
 
     public Document getDocument (InputStream stream) throws ParserConfigurationException, SAXException, IOException

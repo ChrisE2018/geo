@@ -230,8 +230,9 @@ public class TestNamedPoint
         result.get ("Set Value").accept (test);
         thread.halt ();
         TestSupport.dream (10);
-        System.out.printf ("Set Value dialog returns\n");
+        System.out.printf ("Checking if Value dialog returns\n");
         assertTrue (thread.isDialogSeen ());
+        System.out.printf ("Value dialog returns ok\n");
     }
 
     @Test
